@@ -1,0 +1,16 @@
+Same School - Tom
+	- dfs to find number of people at a school (n)
+	- dfs to add them to hashmap and vertex array (n)
+		- if someone does not go to the school:
+			- remove reference from parent (if they go to correct school)
+			- remove reference from children (if they go to correct school)
+			- NOTE: New vertices
+
+Shortest Path - Katie
+	- Dijkstras
+
+Cliques - Tom
+	- SameSchool only with graphs for each clique
+
+Connector - Katie
+	- See his notes
