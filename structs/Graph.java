@@ -8,17 +8,20 @@ import java.io.IOException;
 public class Graph {
 	
 	public Vertex[] vertices;
+	public HashMap indexes'
 	
 	public Graph() {
 	}
 	
-	public void build(String filename) throws IOException {
+	public void buildFromFile(String filename) throws IOException {
 		//read the file
 		BufferedReader in = new BufferedReader(new FileReader(filename));
 		
 		//read first line to get size of graph
-		vertices = new Vertex[Integer.parseInt(in.readLine())];
+		int size = Integer.parseInt(in.readLine());
+		vertices = new Vertex[size];
 		if(vertices.length==0) return;
+		indexes = new HashMap(size);
 		
 		//Population vertex array
 		for(int i=0; i<vertices.length; i++) {
@@ -28,18 +31,19 @@ public class Graph {
 			}else {
 				vertices[i] = new Vertex(line.substring(0, line.indexOf('|')), line.substring(line.lastIndexOf('|')));
 			}
+			indexes.put(vertices[i].name, i);
 		}
 		
 		//create nodes for every connection
 		String line=in.readLine();
 		int i=0;
 		while(line!=null) {
-			if(line.substring(0,line.indexOf('|')).equals(vertices[i].name)) {
-				for(int j=0; j<vertices.length; j++) {
-					if(line.substring(line.indexOf('|')).equals(vertices[j].name)
-						
-				}
-			}
+			Vertex firstTex = vertices[indexes.get(line.substring(0, line.indexOf('|')];
+			Vertex secondTex = vertices[indexes.get(line.sunstring(line.indexOf('|')+1)];
+			Node tmp = firstTex.nieghbor;
+			firstTex.neighbor = new Node(secondTex, tmp);
+			tmp = secondTex.neighbor;
+			secondTex.neighbor = new Node(firstTex, tmp);
 		}
 	}
 	
