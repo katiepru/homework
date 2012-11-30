@@ -53,11 +53,11 @@ public class Graph {
 		}
 			
 		}
-		public void dfs(Vertex ptr, HashMap<Vertex, Integer> visited){
-			
-			//visit each node
-			if(visited.get(ptr.name) != null){
-				//do something
+	
+	public void dfs(Vertex ptr, HashMap<Vertex, Integer> visited){
+		//visit each node
+		if(visited.get(ptr.name) != null){
+			//do something
 				return;
 			}
 			else{
@@ -70,14 +70,30 @@ public class Graph {
 			}	
 		
 		}
-
-		public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
-			
-			//visit each node
+	
+	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
+		int numStudents = 0;
+		//visit each node
 			if(visited.get(ptr.name) != null){
 				if(ptr.school.compareToIgnoreCase(school)==0){
-					schoolmates.next = schoolmates;
-					schoolmates.data = ptr;
+					numStudents++;
+				}
+				return;
+			}
+			else{
+				visited.put(ptr, 1);
+				while(ptr.neighbor != null){
+					dfs(ptr.neighbor.data, visited);
+					ptr = ptr.neighbor.data;
+				}
+			
+			}
+			int count = 0;
+			Vertex[] studentVerticies = new Vertex[numStudents];
+			if(visited.get(ptr.name) != null){
+				if(ptr.school.compareToIgnoreCase(school)==0){
+					studentVerticies[count] = ptr;
+					studentHash.put(ptr, studentHash)
 				}
 				return;
 			}
@@ -89,8 +105,9 @@ public class Graph {
 				}
 			
 			}	
+			Graph subgraph = new Graph(studentVerticies, studentHash);
 		
 		}
-
-
+	
+	
 }
