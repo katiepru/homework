@@ -13,6 +13,11 @@ public class Graph {
 	
 	public Graph() {
 	}
+
+	public void build(Vertex[] vertices, HashMap indexes) {
+		this.indexes=indexes;
+		this.vertices=verteces;
+	}
 	
 	public void buildFromFile(String filename) throws IOException {
 		//read the file
