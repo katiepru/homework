@@ -5,6 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class Graph {
 	
@@ -16,7 +20,7 @@ public class Graph {
 
 	public void build(Vertex[] vertices, HashMap indexes) {
 		this.indexes=indexes;
-		this.vertices=verteces;
+		this.vertices=vertices;
 	}
 	
 	public void buildFromFile(String filename) throws IOException {
@@ -44,8 +48,8 @@ public class Graph {
 		String line=in.readLine();
 		int i=0;
 		while(line!=null) {
-			Vertex firstTex = vertices[(int) indexes.get(line.substring(0, line.indexOf('|')))];
-			Vertex secondTex = vertices[(int) indexes.get(line.substring(line.indexOf('|')+1))];
+			Vertex firstTex = vertices[(Integer) indexes.get(line.substring(0, line.indexOf('|')))];
+			Vertex secondTex = vertices[(Integer) indexes.get(line.substring(line.indexOf('|')+1))];
 			Node tmp = firstTex.neighbor;
 			firstTex.neighbor = new Node(secondTex, tmp);
 			tmp = secondTex.neighbor;
@@ -109,5 +113,37 @@ public class Graph {
 		
 		}
 	
+	public Node shortestPath(Vertex start, Vertex finish) {
+		//implement a breadth first search to find shortest path
+
+		Set<Vertex> visited = new HashSet<Vertex>(this.vertices.length);
+		Queue<Vertex> queue = new LinkedList<Vertex>();
+		HashMap<Vertex, Node> pathTo = new HashMap<Vertex, Node>(this.vertices.length); 
+		
+		queue.add(start);
+		pathTo.put(start, null);
+		
+		while(queue.peek()!=null) {
+			if(bfs(queue.poll(), finish, visited, queue, pathTo)) break;
+		}
+		
+		return pathTo.get(finish);
+	}
+	
+	private boolean bfs(Vertex curr, Vertex finish, Set visited, Queue<Vertex> queue, HashMap<Vertex, Node> pathTo) {
+		if(!visited.contains(curr)) {
+			if(curr==finish) {
+				return true;
+			}else {
+				visited.add(curr);
+				Node ptr = curr.neighbor;
+				while(ptr!=null) {
+					pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));
+					queue.add(ptr.data);
+				}
+			}
+		}
+		return false;
+	}
 	
 }
