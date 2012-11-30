@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Graph {
 	
@@ -45,7 +46,46 @@ public class Graph {
 			tmp = secondTex.neighbor;
 			secondTex.neighbor = new Node(firstTex, tmp);
 		}
-	}
-	
+			
+		}
+		public void dfs(Vertex ptr, HashMap<Vertex, Integer> visited){
+			
+			//visit each node
+			if(visited.get(ptr.name) != null){
+				//do something
+				return;
+			}
+			else{
+				visited.put(ptr, 1);
+				while(ptr.neighbor != null){
+					dfs(ptr.neighbor.data, visited);
+					ptr = ptr.neighbor.data;
+				}
+			
+			}	
+		
+		}
+
+		public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
+			
+			//visit each node
+			if(visited.get(ptr.name) != null){
+				if(ptr.school.compareToIgnoreCase(school)==0){
+					schoolmates.next = schoolmates;
+					schoolmates.data = ptr;
+				}
+				return;
+			}
+			else{
+				visited.put(ptr, 1);
+				while(ptr.neighbor != null){
+					dfs(ptr.neighbor.data, visited);
+					ptr = ptr.neighbor.data;
+				}
+			
+			}	
+		
+		}
+
 
 }
