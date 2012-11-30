@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class Graph {
 	
 	public Vertex[] vertices;
-	public HashMap indexes'
+	public HashMap indexes;
 	
 	public Graph() {
 	}
@@ -39,9 +39,9 @@ public class Graph {
 		String line=in.readLine();
 		int i=0;
 		while(line!=null) {
-			Vertex firstTex = vertices[indexes.get(line.substring(0, line.indexOf('|')];
-			Vertex secondTex = vertices[indexes.get(line.sunstring(line.indexOf('|')+1)];
-			Node tmp = firstTex.nieghbor;
+			Vertex firstTex = vertices[(int) indexes.get(line.substring(0, line.indexOf('|')))];
+			Vertex secondTex = vertices[(int) indexes.get(line.substring(line.indexOf('|')+1))];
+			Node tmp = firstTex.neighbor;
 			firstTex.neighbor = new Node(secondTex, tmp);
 			tmp = secondTex.neighbor;
 			secondTex.neighbor = new Node(firstTex, tmp);
