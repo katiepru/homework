@@ -21,7 +21,23 @@ public class Friends {
 		}
 		
 		Graph graph = new Graph();
-		graph.build(file);
+		graph.buildFromFile(file);
+		
+		boolean terminate=false;
+		while(!terminate) {
+			System.out.println("Select an option:");
+			System.out.println("\t1. Students at a School");
+			System.out.println("\t2. Shortest Intro Chain");
+			System.out.println("\t3. Cliques at a School");
+			System.out.println("\t4. Connectors");
+			System.out.println("\t5. Quit");
+			
+			int option = Integer.parseInt(in.readLine());
+			if(option<1 || option>5) {
+				System.out.println("Bad input");
+				continue;
+			}
+		}
 	}
 
 }
