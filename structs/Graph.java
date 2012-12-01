@@ -13,12 +13,12 @@ import java.util.Set;
 public class Graph {
 	
 	public Vertex[] vertices;
-	public HashMap indexes;
+	public HashMap<String, Integer> indexes;
 	
 	public Graph() {
 	}
 
-	public void build(Vertex[] vertices, HashMap indexes) {
+	public void build(Vertex[] vertices, HashMap<String, Integer> indexes) {
 		this.indexes=indexes;
 		this.vertices=vertices;
 	}
@@ -30,8 +30,11 @@ public class Graph {
 		//read first line to get size of graph
 		int size = Integer.parseInt(in.readLine());
 		vertices = new Vertex[size];
-		if(vertices.length==0) return;
-		indexes = new HashMap(size);
+		if(vertices.length==0) {
+			in.close();
+			return;
+		}
+		indexes = new HashMap<String, Integer>(size);
 		
 		//Population vertex array
 		for(int i=0; i<vertices.length; i++) {
@@ -46,7 +49,6 @@ public class Graph {
 		
 		//create nodes for every connection
 		String line=in.readLine();
-		int i=0;
 		while(line!=null) {
 			Vertex firstTex = vertices[(Integer) indexes.get(line.substring(0, line.indexOf('|')))];
 			Vertex secondTex = vertices[(Integer) indexes.get(line.substring(line.indexOf('|')+1))];
@@ -54,9 +56,23 @@ public class Graph {
 			firstTex.neighbor = new Node(secondTex, tmp);
 			tmp = secondTex.neighbor;
 			secondTex.neighbor = new Node(firstTex, tmp);
+			line=in.readLine();
 		}
+		in.close();
 			
 		}
+	
+	public void print() {
+		for(int i=0; i<vertices.length; i++) {
+			System.out.print(vertices[i].name+" -> ");
+			Node ptr = vertices[i].neighbor;
+			while(ptr!=null) {
+				System.out.print(ptr.data.name+" -> ");
+				ptr=ptr.next;
+			}
+			System.out.println("");
+		}
+	}
 	
 	public void dfs(Vertex ptr, HashMap<Vertex, Integer> visited){
 		//visit each node
@@ -97,7 +113,7 @@ public class Graph {
 			if(visited.get(ptr.name) != null){
 				if(ptr.school.compareToIgnoreCase(school)==0){
 					studentVerticies[count] = ptr;
-					studentHash.put(ptr, studentHash)
+			//		studentHash.put(ptr, studentHash)
 				}
 				return;
 			}
@@ -109,7 +125,7 @@ public class Graph {
 				}
 			
 			}	
-			Graph subgraph = new Graph(studentVerticies, studentHash);
+		//	Graph subgraph = new Graph(studentVerticies, studentHash);
 		
 		}
 	
@@ -130,7 +146,7 @@ public class Graph {
 		return pathTo.get(finish);
 	}
 	
-	private boolean bfs(Vertex curr, Vertex finish, Set visited, Queue<Vertex> queue, HashMap<Vertex, Node> pathTo) {
+	private boolean bfs(Vertex curr, Vertex finish, Set<Vertex> visited, Queue<Vertex> queue, HashMap<Vertex, Node> pathTo) {
 		if(!visited.contains(curr)) {
 			if(curr==finish) {
 				return true;

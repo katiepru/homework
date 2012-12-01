@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import structs.Graph;
+import structs.Node;
+import structs.Vertex;
 
 public class Friends {
 	
@@ -33,11 +35,38 @@ public class Friends {
 			System.out.println("\t5. Quit");
 			
 			int option = Integer.parseInt(in.readLine());
-			if(option<1 || option>5) {
+			if(option<0 || option>5) {
 				System.out.println("Bad input");
 				continue;
 			}
+			switch(option) {
+			case(0):	graph.print();
+						break;
+			case(1):	System.out.println("do same school");
+						break;
+			case(2):	shortestPath(graph);
+						break;
+			case(3):	System.out.println("Cliques");
+						break;
+			case(4):	System.out.println("Connectors");
+						break;
+			case(5):	terminate=true;
+						break;
+			default:	continue;
+			}
 		}
+	}
+	
+	public static void shortestPath(Graph graph) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Who is the starting person?");
+		String startName = in.readLine();
+		System.out.println("Who is the destination?");
+		String endName = in.readLine();
+		
+		Vertex start = graph.vertices[graph.indexes.get(startName)];
+		Vertex end = graph.vertices[graph.indexes.get(endName)];
+		Node ptr = graph.shortestPath(start, end);
 	}
 
 }
