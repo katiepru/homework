@@ -137,7 +137,7 @@ public class Graph {
 		HashMap<Vertex, Node> pathTo = new HashMap<Vertex, Node>(this.vertices.length); 
 		
 		queue.add(start);
-		pathTo.put(start, null);
+		pathTo.put(start, new Node(start, null));
 		
 		while(queue.peek()!=null) {
 			if(bfs(queue.poll(), finish, visited, queue, pathTo)) break;
@@ -151,11 +151,30 @@ public class Graph {
 			if(curr==finish) {
 				return true;
 			}else {
+				System.out.println("curr= "+curr.name);
 				visited.add(curr);
 				Node ptr = curr.neighbor;
 				while(ptr!=null) {
-					pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));
+					System.out.println("ptr= "+ptr.data.name);
+					if(visited.contains(ptr.data)) {
+						System.out.println("skipping this ptr");
+						ptr=ptr.next;
+						continue;
+					}
+					//pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));
+					Node temp = pathTo.get(curr);
+					Node ptr2=temp;
+					System.out.print("ptr2= "+ptr2.data.name + " -> ");
+					while(ptr2.next!=null){
+						ptr2=ptr2.next;
+						if(!ptr.data.name.equals("bob"))
+							System.out.print(ptr2.data.name+" -> ");
+					}
+					System.out.println("");
+					ptr2.next=ptr;
+					pathTo.put(ptr.data, temp);
 					queue.add(ptr.data);
+					ptr=ptr.next;
 				}
 			}
 		}
