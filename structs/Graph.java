@@ -170,5 +170,32 @@ public class Graph {
 		}
 		return false;
 	}
+
+	
+	public Node connectors() {
+		int[] nums = new int[2]; //index 0 is dfsnum, index 1 is back
+		Node connectors=null;
+		Set<Vertex> visited = new HashSet<Vertex>(vertices.length);
+		for(int i=0; i<vertices.length; i++) {
+			if(!visited.contains(vertices[i]))
+				dfsConnect(vertices[i], connectors, nums, visited);
+		}
+		return connectors;
+	}
+	
+	private void dfsConnect(Vertex curr, Node connectors, int[] nums, Set<Vertex> visited) {
+		visited.add(curr);
+		nums[0]++;
+		nums[1]++;
+		Node ptr = curr.neighbor;
+		while(ptr!=null) {
+			if(!visited.contains(ptr.data)) {
+				dfsConnect(ptr.data, connectors, nums, visited);
+			}else {
+				nums[1]--;
+			}
+			ptr=ptr.next;
+		}
+	}
 	
 }
