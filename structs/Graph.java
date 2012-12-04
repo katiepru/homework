@@ -150,7 +150,6 @@ public class Graph {
 	
 	//This works for most test cases, except sam -> aparna. Will work on it
 	private boolean bfs(Vertex curr, Vertex finish, Set<Vertex> visited, Queue<Vertex> queue, HashMap<Vertex, Node> pathTo) {
-		System.out.println("Curr= "+curr.name);
 		if(!visited.contains(curr)) {
 			if(curr==finish) {
 				return true;
@@ -160,7 +159,7 @@ public class Graph {
 				
 				Node ptr = curr.neighbor;
 				while(ptr!=null) {
-					if(!visited.contains(ptr.data)) {
+					if(!visited.contains(ptr.data) && pathTo.get(ptr.data)==null) {
 						pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));	
 						queue.add(ptr.data);
 					}

@@ -68,7 +68,7 @@ public class Friends {
 		Vertex end = graph.vertices[graph.indexes.get(endName)];
 		System.out.println("Start= "+start.name);
 		System.out.println("End= "+end.name);
-		Node ptr = graph.shortestPath(start, end);
+		Node ptr = graph.shortestPath(end, start);
 		
 		//print chain
 		if(ptr==null)
