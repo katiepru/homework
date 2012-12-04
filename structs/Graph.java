@@ -140,40 +140,30 @@ public class Graph {
 		pathTo.put(start, new Node(start, null));
 		
 		while(queue.peek()!=null) {
-			if(bfs(queue.poll(), finish, visited, queue, pathTo)) break;
+			if(bfs(queue.poll(), finish, visited, queue, pathTo)) {
+				break;
+			}
 		}
 		
 		return pathTo.get(finish);
 	}
 	
+	//This works for most test cases, except sam -> aparna. Will work on it
 	private boolean bfs(Vertex curr, Vertex finish, Set<Vertex> visited, Queue<Vertex> queue, HashMap<Vertex, Node> pathTo) {
+		System.out.println("Curr= "+curr.name);
 		if(!visited.contains(curr)) {
 			if(curr==finish) {
 				return true;
 			}else {
-				System.out.println("curr= "+curr.name);
+				//add curr to visited
 				visited.add(curr);
+				
 				Node ptr = curr.neighbor;
 				while(ptr!=null) {
-					System.out.println("ptr= "+ptr.data.name);
-					if(visited.contains(ptr.data)) {
-						System.out.println("skipping this ptr");
-						ptr=ptr.next;
-						continue;
+					if(!visited.contains(ptr.data)) {
+						pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));	
+						queue.add(ptr.data);
 					}
-					//pathTo.put(ptr.data, new Node(ptr.data, pathTo.get(curr)));
-					Node temp = pathTo.get(curr);
-					Node ptr2=temp;
-					System.out.print("ptr2= "+ptr2.data.name + " -> ");
-					while(ptr2.next!=null){
-						ptr2=ptr2.next;
-						if(!ptr.data.name.equals("bob"))
-							System.out.print(ptr2.data.name+" -> ");
-					}
-					System.out.println("");
-					ptr2.next=ptr;
-					pathTo.put(ptr.data, temp);
-					queue.add(ptr.data);
 					ptr=ptr.next;
 				}
 			}
