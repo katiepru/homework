@@ -42,7 +42,7 @@ public class Graph {
 			if(line.indexOf('|')==-1) {
 				vertices[i] = new Vertex(line, "");
 			}else {
-				vertices[i] = new Vertex(line.substring(0, line.indexOf('|')), line.substring(line.lastIndexOf('|')));
+				vertices[i] = new Vertex(line.substring(0, line.indexOf('|')), line.substring(line.lastIndexOf('|')+1));
 			}
 			indexes.put(vertices[i].name, i);
 		}
@@ -91,28 +91,33 @@ public class Graph {
 		
 		}
 	
-	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
-		int numStudents = 0;
+	public int getPupilCount(Vertex ptr, HashMap<Vertex, Integer> visited, String school, int count){
 		//visit each node
-			if(visited.get(ptr.name) != null){
-				if(ptr.school.compareToIgnoreCase(school)==0){
-					numStudents++;
-				}
-				return;
+		if(visited.get(ptr.name) != null){
+			if(ptr.school.substring(1).compareToIgnoreCase(school) == 0){
+				count++;
+			}
+				return count;
 			}
 			else{
 				visited.put(ptr, 1);
 				while(ptr.neighbor != null){
-					dfs(ptr.neighbor.data, visited);
+					getPupilCount(ptr.neighbor.data, visited, school, count);
 					ptr = ptr.neighbor.data;
-				}
-			
+				}	
 			}
-			int count = 0;
+		return count;
+		}
+	
+	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
+		int numStudents = 0;
+		//visit each node
+			numStudents = getPupilCount(ptr, visited, school, 0);
+			System.out.println(numStudents);
 			Vertex[] studentVerticies = new Vertex[numStudents];
 			if(visited.get(ptr.name) != null){
 				if(ptr.school.compareToIgnoreCase(school)==0){
-					studentVerticies[count] = ptr;
+					//studentVerticies[count] = ptr;
 			//		studentHash.put(ptr, studentHash)
 				}
 				return;
@@ -125,7 +130,7 @@ public class Graph {
 				}
 			
 			}	
-		//	Graph subgraph = new Graph(studentVerticies, studentHash);
+	//		Graph subgraph = new Graph(studentVerticies, studentHash);
 		
 		}
 	
