@@ -93,21 +93,29 @@ public class Graph {
 	
 	public int getPupilCount(Vertex ptr, HashMap<Vertex, Integer> visited, String school, int count){
 		//visit each node
+		
+		//has been visited
 		if(visited.get(ptr.name) != null){
-			if(ptr.school.substring(1).compareToIgnoreCase(school) == 0){
+			if(ptr.school.compareToIgnoreCase(school) == 0){
 				count++;
 			}
-				return count;
-			}
-			else{
-				visited.put(ptr, 1);
-				while(ptr.neighbor != null){
+			return count;
+		}
+		//hasn't been visited
+		else{
+			visited.put(ptr, 1);
+			while(ptr.neighbor.data != null){
+				if(visited.get(ptr.neighbor.data) == null){
 					getPupilCount(ptr.neighbor.data, visited, school, count);
+				}
+				else{
 					ptr = ptr.neighbor.data;
 				}	
-			}
-		return count;
-		}
+			}	
+			return count;
+		}	
+	}
+		
 	
 	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
 		int numStudents = 0;
