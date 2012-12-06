@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import structs.Graph;
 import structs.Node;
@@ -95,15 +97,11 @@ public class Friends {
 	}
 	
 	public static void connectors(Graph graph) {
-		Node ptr = graph.connectors();
-		if(ptr==null)
-			System.out.println("No connectos found");
-		else {
-			while(ptr.next!=null) {
-				System.out.print(ptr.data.name+" -> ");
-				ptr=ptr.next;
-			}
-			System.out.println(ptr.data.name);
+		HashSet nodes = graph.connectors();
+		Iterator<Vertex> i = nodes.iterator();
+		while(i.hasNext()) {
+			Vertex v = i.next();
+			System.out.print(v.name+" -> ");
 		}
 	}
 
