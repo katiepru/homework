@@ -177,29 +177,38 @@ public class Graph {
 
 	
 	public Node connectors() {
-		int[] nums = new int[2]; //index 0 is dfsnum, index 1 is back
+		HashMap<Vertex, Integer> dfsNums = new HashMap<Vertex, Integer>(vertices.length);
 		Node connectors=null;
 		Set<Vertex> visited = new HashSet<Vertex>(vertices.length);
 		for(int i=0; i<vertices.length; i++) {
 			if(!visited.contains(vertices[i]))
-				dfsConnect(vertices[i], connectors, nums, visited);
+				dfsConnect(vertices[i], true, connectors, 1, dfsNums, visited);
 		}
 		return connectors;
 	}
 	
-	private void dfsConnect(Vertex curr, Node connectors, int[] nums, Set<Vertex> visited) {
+	private int dfsConnect(Vertex curr, boolean start, Node connectors, int dfsnum, HashMap<Vertex, Integer> dfsnums, Set<Vertex> visited) {
+		
 		visited.add(curr);
-		nums[0]++;
-		nums[1]++;
 		Node ptr = curr.neighbor;
 		while(ptr!=null) {
 			if(!visited.contains(ptr.data)) {
-				dfsConnect(ptr.data, connectors, nums, visited);
+				int returned = dfsConnect(ptr.data, false, connectors, ++dfsnum, dfsnums, visited);
+				if(dfsnum>returned) {
+					dfsnums.put(curr, Math.min(dfsnums.get(ptr.data), returned));
+				}else {
+					if(!start) {
+						Node tmp = new Node(ptr.data, connectors);
+						connectors=tmp;
+					}else {
+						start=false;
+					}
+				}
 			}else {
-				nums[1]--;
+				dfsnums.put(curr, Math.min(dfsnum, dfsnums.get(ptr.data)));
 			}
-			ptr=ptr.next;
 		}
+		return dfsnums.get(curr);
 	}
 	
 }

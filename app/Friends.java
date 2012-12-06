@@ -50,7 +50,7 @@ public class Friends {
 						break;
 			case(3):	System.out.println("Cliques");
 						break;
-			case(4):	System.out.println("Connectors");
+			case(4):	connectors(graph);
 						break;
 			case(5):	terminate=true;
 						break;
@@ -92,6 +92,19 @@ public class Friends {
 		
 		int pupil = graph.getPupilCount(start, visited, school, 0);
 		System.out.println(pupil);
+	}
+	
+	public static void connectors(Graph graph) {
+		Node ptr = graph.connectors();
+		if(ptr==null)
+			System.out.println("No connectos found");
+		else {
+			while(ptr.next!=null) {
+				System.out.print(ptr.data.name+" -> ");
+				ptr=ptr.next;
+			}
+			System.out.println(ptr.data.name);
+		}
 	}
 
 }
