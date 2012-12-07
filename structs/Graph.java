@@ -91,33 +91,29 @@ public class Graph {
 		
 		}
 	
-	public int getPupilCount(Vertex ptr, HashMap<Vertex, Integer> visited, String school, int count){
-		//visit each node
+	public int getPupilCount(Vertex curr, Set<Vertex> visited, String school){
+		//Vertex has been visited
+		visited.add(curr);
 		
-		//has been visited
-		if(visited.get(ptr.name) != null){
-			if(ptr.school.compareToIgnoreCase(school) == 0){
-				count++;
-			}
-			return count;
+		int count=0;
+		if(curr.school.equals(school)) {
+			count=1;
 		}
-		//hasn't been visited
-		else{
-			visited.put(ptr, 1);
-			while(ptr.neighbor.data != null){
-				if(visited.get(ptr.neighbor.data) == null){
-					getPupilCount(ptr.neighbor.data, visited, school, count);
-				}
-				else{
-					ptr = ptr.neighbor.data;
-				}	
-			}	
-			return count;
-		}	
+		Node ptr = curr.neighbor;
+		while(ptr!=null) {
+			if(!visited.contains(ptr.data))
+				count+=getPupilCount(ptr.data, visited, school);
+			System.out.println("count= "+count);
+			ptr=ptr.next;
+		}
+		
+		return count;
+		
+		
 	}
 		
 	
-	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
+	/*public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
 		int numStudents = 0;
 		//visit each node
 			numStudents = getPupilCount(ptr, visited, school, 0);
@@ -125,8 +121,8 @@ public class Graph {
 			Vertex[] studentVerticies = new Vertex[numStudents];
 			if(visited.get(ptr.name) != null){
 				if(ptr.school.compareToIgnoreCase(school)==0){
-					//studentVerticies[count] = ptr;
-			//		studentHash.put(ptr, studentHash)
+					studentVerticies[count] = ptr;
+					studentHash.put(ptr, studentHash)
 				}
 				return;
 			}
@@ -138,9 +134,19 @@ public class Graph {
 				}
 			
 			}	
-	//		Graph subgraph = new Graph(studentVerticies, studentHash);
+			Graph subgraph = new Graph(studentVerticies, studentHash);
+			subgraph.build(studentHash, studentVertices);
 		
-		}
+		}*/
+	
+	public Graph sameSchool() {
+		
+		Set<Vertex> visited = new HashSet<Vertex>(vertices.length);
+		
+		return null;
+	}
+	
+	private void dfsSchool(Vertex curr, Vertex[] school, Set<Vertex> visited){}
 	
 	public Node shortestPath(Vertex start, Vertex finish) {
 		//implement a breadth first search to find shortest path
