@@ -6,12 +6,12 @@
 
 package structs;
 
-public class Node {
+public class Node<T> {
 	
-	public Vertex data;
-	public Node next;
+	public T data;
+	public Node<T> next;
 	
-	public Node(Vertex data, Node next) {
+	public Node(T data, Node<T> next) {
 		this.data=data;
 		this.next=next;
 	}

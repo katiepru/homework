@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import structs.Graph;
 import structs.Node;
@@ -45,12 +46,11 @@ public class Friends {
 			switch(option) {
 			case(0):	graph.print();
 						break;
-			case(1):	System.out.println("do same school");
-						sameSchool(graph);
+			case(1):	sameSchool(graph);
 						break;
 			case(2):	shortestPath(graph);
 						break;
-			case(3):	System.out.println("Cliques");
+			case(3):	cliques(graph);
 						break;
 			case(4):	connectors(graph);
 						break;
@@ -68,11 +68,9 @@ public class Friends {
 		System.out.println("Who is the destination?");
 		String endName = in.readLine();
 		
-		Vertex start = graph.vertices[graph.indexes.get(startName)];
-		Vertex end = graph.vertices[graph.indexes.get(endName)];
-		System.out.println("Start= "+start.name);
-		System.out.println("End= "+end.name);
-		Node ptr = graph.shortestPath(end, start);
+		Vertex start = graph.vertices.get(graph.indexes.get(startName));
+		Vertex end = graph.vertices.get(graph.indexes.get(endName));
+		Node<Vertex> ptr = graph.shortestPath(end, start);
 		
 		//print chain
 		if(ptr==null)
@@ -85,16 +83,6 @@ public class Friends {
 			System.out.println(ptr.data.name);
 		}
 	}
-	public static void sameSchool(Graph graph) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("What is the name of the school?");
-		String school = in.readLine();
-		Vertex start = graph.vertices[0];
-		HashMap<Vertex, Integer> visited = new HashMap<Vertex, Integer>(graph.vertices.length);
-		
-		int pupil = graph.getPupilCount(start, visited, school, 0);
-		System.out.println(pupil);
-	}
 	
 	public static void connectors(Graph graph) {
 		HashSet nodes = graph.connectors();
@@ -102,6 +90,31 @@ public class Friends {
 		while(i.hasNext()) {
 			Vertex v = i.next();
 			System.out.print(v.name+" -> ");
+		}
+	}
+	
+	public static void sameSchool(Graph graph) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("What is the name of the school?");
+		String school = in.readLine();
+		Graph subgraph = graph.sameSchool(school);
+		subgraph.print();
+		if(subgraph.vertices.size()==0)
+			System.out.println("No one found");
+	}
+	
+	public static void cliques(Graph graph) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("What is the name of the school?");
+		String school = in.readLine();
+		Node<Graph> graphs = graph.cliques(school);
+		int i=1;
+		while(graphs!=null) {
+			System.out.println("Clique "+i+":");
+			graphs.data.print();
+			System.out.println("");
+			i++;
+			graphs=graphs.next;
 		}
 	}
 
