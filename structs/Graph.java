@@ -71,6 +71,21 @@ public class Graph {
 		indexes.put(v.name, vertices.indexOf(v));
 	}
 	
+	public void print(){
+		Set<Vertex> visited = new HashSet<Vertex>(vertices.size());
+		
+		for(int i=0; i<vertices.size(); i++) {
+			if(!visited.contains(vertices.get(i)))
+				printVertex(vertices.get(i), visited);
+		}
+	}
+	
+	public boolean printVertex(Vertex curr, Set<Vertex> visited){
+		
+		return false;
+	}
+	
+	/*
 	public void print() {
 		for(int i=0; i<vertices.size(); i++) {
 			System.out.print(vertices.get(i).name+" -> ");
@@ -82,7 +97,7 @@ public class Graph {
 			System.out.println("");
 		}
 	}
-
+	*/
 	
 	public Graph sameSchool(String school) {
 		
@@ -121,6 +136,7 @@ public class Graph {
 		//add curr to visited
 		visited.add(curr);
 		if(curr.school.equalsIgnoreCase(school)) {
+			System.out.println(curr.name+"llll");
 			Vertex tmp = new Vertex(curr.name, curr.school);
 			schoolMembers.addVertex(tmp);
 			Node<Vertex> ptr = curr.neighbor;
