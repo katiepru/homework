@@ -72,19 +72,31 @@ public class Graph {
 	}
 	
 	public void print(){
+		System.out.println(vertices.size());
+		for(int i=0; i<vertices.size(); i++){
+			System.out.println(vertices.get(i).name);
+		}
 		Set<Vertex> visited = new HashSet<Vertex>(vertices.size());
-		
 		for(int i=0; i<vertices.size(); i++) {
 			if(!visited.contains(vertices.get(i)))
 				printVertex(vertices.get(i), visited);
 		}
 	}
 	
-	public boolean printVertex(Vertex curr, Set<Vertex> visited){
-		
-		return false;
+	private void printVertex(Vertex curr, Set<Vertex> visited) {
+		if(!visited.contains(curr)){
+			visited.add(curr);
+			Node<Vertex> ptr = curr.neighbor;
+			while(ptr!=null) {
+				if(!visited.contains(ptr.data)){
+					System.out.println(curr.name + "|" + ptr.data.name);
+				}
+				ptr=ptr.next;
+			}
+		}
+		return;
 	}
-	
+
 	/*
 	public void print() {
 		for(int i=0; i<vertices.size(); i++) {
@@ -136,7 +148,6 @@ public class Graph {
 		//add curr to visited
 		visited.add(curr);
 		if(curr.school.equalsIgnoreCase(school)) {
-			System.out.println(curr.name+"llll");
 			Vertex tmp = new Vertex(curr.name, curr.school);
 			schoolMembers.addVertex(tmp);
 			Node<Vertex> ptr = curr.neighbor;

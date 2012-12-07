@@ -102,7 +102,9 @@ public class Friends {
 		System.out.println("What is the name of the school?");
 		String school = in.readLine();
 		Graph subgraph = graph.sameSchool(school);
+		System.out.println();
 		subgraph.print();
+		System.out.println();
 		if(subgraph.vertices.size()==0)
 			System.out.println("No one found");
 	}
@@ -113,6 +115,7 @@ public class Friends {
 		String school = in.readLine();
 		Node<Graph> graphs = graph.cliques(school);
 		int i=1;
+		System.out.println();
 		while(graphs!=null) {
 			System.out.println("Clique "+i+":");
 			graphs.data.print();
