@@ -50,8 +50,8 @@ public class Graph {
 		//create nodes for every connection
 		String line=in.readLine();
 		while(line!=null) {
-			Vertex firstTex = vertices[(Integer) indexes.get(line.substring(0, line.indexOf('|')))];
-			Vertex secondTex = vertices[(Integer) indexes.get(line.substring(line.indexOf('|')+1))];
+			Vertex firstTex = vertices[indexes.get(line.substring(0, line.indexOf('|')))];
+			Vertex secondTex = vertices[indexes.get(line.substring(line.indexOf('|')+1))];
 			Node tmp = firstTex.neighbor;
 			firstTex.neighbor = new Node(secondTex, tmp);
 			tmp = secondTex.neighbor;
@@ -74,74 +74,69 @@ public class Graph {
 		}
 	}
 	
-	public void dfs(Vertex ptr, HashMap<Vertex, Integer> visited){
-		//visit each node
-		if(visited.get(ptr.name) != null){
-			//do something
-				return;
-			}
-			else{
-				visited.put(ptr, 1);
-				while(ptr.neighbor != null){
-					dfs(ptr.neighbor.data, visited);
-					ptr = ptr.neighbor.data;
-				}
-			
-			}	
+	public int pupilCount(Vertex curr, HashMap<Vertex, Integer> visited, String school, int count){
 		
-		}
-	
-	public int getPupilCount(Vertex ptr, HashMap<Vertex, Integer> visited, String school, int count){
-		//visit each node
-		
-		//has been visited
-		if(visited.get(ptr.name) != null){
-			if(ptr.school.compareToIgnoreCase(school) == 0){
+		if(visited.get(curr) == null){
+			visited.put(curr, 1);
+			if(curr.school.compareToIgnoreCase(school)==0){
 				count++;
 			}
-			return count;
-		}
-		//hasn't been visited
-		else{
-			visited.put(ptr, 1);
-			while(ptr.neighbor.data != null){
-				if(visited.get(ptr.neighbor.data) == null){
-					getPupilCount(ptr.neighbor.data, visited, school, count);
+			Node ptr = curr.neighbor;
+			while(ptr != null){
+				if((visited.get(ptr.data) == null)){
+					count = pupilCount(ptr.data, visited, school, count);
 				}
 				else{
-					ptr = ptr.neighbor.data;
+					ptr = ptr.next;
 				}	
 			}	
-			return count;
-		}	
-	}
-		
-	
-	public void sameSchool(Vertex ptr, HashMap<Vertex, Integer> visited, String school, Node schoolmates){
-		int numStudents = 0;
-		//visit each node
-			numStudents = getPupilCount(ptr, visited, school, 0);
-			System.out.println(numStudents);
-			Vertex[] studentVerticies = new Vertex[numStudents];
-			if(visited.get(ptr.name) != null){
-				if(ptr.school.compareToIgnoreCase(school)==0){
-					//studentVerticies[count] = ptr;
-			//		studentHash.put(ptr, studentHash)
-				}
-				return;
-			}
-			else{
-				visited.put(ptr, 1);
-				while(ptr.neighbor != null){
-					dfs(ptr.neighbor.data, visited);
-					ptr = ptr.neighbor.data;
-				}
-			
-			}	
-	//		Graph subgraph = new Graph(studentVerticies, studentHash);
-		
 		}
+		return count;		
+	}
+
+	public Vertex sameSchool(String school){
+		HashMap<Vertex, Integer> visited = new HashMap<Vertex, Integer>(vertices.length);
+		int pupils = 0;
+		for(int i = 0; i<vertices.length; i++){
+			pupils+=pupilCount(vertices[i], visited, school, 0);
+		}
+		Vertex[] subSchool = new Vertex[pupils];
+		HashMap<Vertex, Integer> subGraph = new HashMap<Vertex, Integer>(pupils);
+		
+		for(int i = 0; i<vertices.length; i++){
+			Vertex temp = onlySubSchool(vertices[i], school);
+			if(temp!=null){
+				subGraph.put(temp, 1);
+			}
+		}		
+		return null;
+	}
 	
+	public Vertex onlySubSchool(Vertex curr, String school){
+		
+		if(curr.school.compareToIgnoreCase(school) == 0){
+			
+			System.out.println(curr.name);
+			for(Node ptr = curr.neighbor; ptr != null; ptr = ptr.next){
+				System.out.println(ptr.data.name);
+				if(ptr.data.school.compareToIgnoreCase(school) != 0){
+					if(ptr.next != null){
+						ptr.data = ptr.next.data;
+						ptr = ptr.next;
+					}
+					else{
+						ptr = null;
+						break;
+					}
+					
+				}
+			}
+			return curr;
+		}
+		return null;
+		
+	}
+
 	public Node shortestPath(Vertex start, Vertex finish) {
 		//implement a breadth first search to find shortest path
 
@@ -184,9 +179,9 @@ public class Graph {
 	}
 
 	
-	public HashSet connectors() {
+	public HashSet<Vertex> connectors() {
 		HashMap<Vertex, Integer> dfsNums = new HashMap<Vertex, Integer>(vertices.length);
-		HashSet connectors = new HashSet(vertices.length);
+		HashSet<Vertex> connectors = new HashSet<Vertex>(vertices.length);
 		Set<Vertex> visited = new HashSet<Vertex>(vertices.length);
 		for(int i=0; i<vertices.length; i++) {
 			if(!visited.contains(vertices[i]))
@@ -195,7 +190,7 @@ public class Graph {
 		return connectors;
 	}
 	
-	private int dfsConnect(Vertex curr, boolean start, HashSet connectors, int dfsnum, HashMap<Vertex, Integer> dfsnums, Set<Vertex> visited) {
+	private int dfsConnect(Vertex curr, boolean start, HashSet<Vertex> connectors, int dfsnum, HashMap<Vertex, Integer> dfsnums, Set<Vertex> visited) {
 		visited.add(curr);
 		dfsnums.put(curr, dfsnum);
 		int back=dfsnum;

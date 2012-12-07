@@ -89,12 +89,8 @@ public class Friends {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("What is the name of the school?");
 		String school = in.readLine();
-		Vertex start = graph.vertices[0];
-		HashMap<Vertex, Integer> visited = new HashMap<Vertex, Integer>(graph.vertices.length);
-		
-		int pupil = graph.getPupilCount(start, visited, school, 0);
-		System.out.println(pupil);
-	}
+		Vertex start = graph.sameSchool(school);
+		}
 	
 	public static void connectors(Graph graph) {
 		HashSet nodes = graph.connectors();
