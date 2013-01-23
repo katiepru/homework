@@ -77,7 +77,7 @@ public class Friends {
 			System.out.println("No path found");
 		else {
 			while(ptr.next!=null) {
-				System.out.print(ptr.data.name+" -> ");
+				System.out.print(ptr.data.name+"--");
 				ptr=ptr.next;
 			}
 			System.out.println(ptr.data.name);
@@ -89,8 +89,12 @@ public class Friends {
 		Iterator<Vertex> i = nodes.iterator();
 		while(i.hasNext()) {
 			Vertex v = i.next();
-			System.out.print(v.name+" -> ");
+			System.out.print(v.name);
+			if(i.hasNext()){
+				System.out.print(", ");
+			}
 		}
+		System.out.println();
 	}
 	
 	public static void sameSchool(Graph graph) throws IOException {
@@ -98,7 +102,9 @@ public class Friends {
 		System.out.println("What is the name of the school?");
 		String school = in.readLine();
 		Graph subgraph = graph.sameSchool(school);
+		System.out.println();
 		subgraph.print();
+		System.out.println();
 		if(subgraph.vertices.size()==0)
 			System.out.println("No one found");
 	}
@@ -109,6 +115,7 @@ public class Friends {
 		String school = in.readLine();
 		Node<Graph> graphs = graph.cliques(school);
 		int i=1;
+		System.out.println();
 		while(graphs!=null) {
 			System.out.println("Clique "+i+":");
 			graphs.data.print();
