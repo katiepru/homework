@@ -1,7 +1,9 @@
+#include "wordstat.h"
 #include <stdio.h>
 #include <string.h>
 
 void print_help();
+Node read_file();
 
 int main(int argc, char *argv[])
 {
@@ -33,14 +35,26 @@ int main(int argc, char *argv[])
 	}
 
 	//File was successfully found, begin parsing file
+	Node *head;
+	head=read_file(file);
 
 	return 0;
 }
 
-/*------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------/
+* Read file and create linked list of unique words-----------------------------/
+------------------------------------------------------------------------------*/
+Node read_file(FILE file)
+{
+	return NULL;
+}
+
+/*-----------------------------------------------------------------------------/
 * Print help text
 *-----------------------------------------------------------------------------*/
 void print_help()
 {
-	printf("wooo");
+	printf("wordstat - a word counting program.\n \
+	Usage: wordstat [-h] file\n \
+		help (-h)		Display this message");
 }

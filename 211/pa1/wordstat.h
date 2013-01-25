@@ -1,8 +1,8 @@
-struct Node
+typedef struct Node
 {
 	char *word;
 	int count;
 	int num_vars;
-	Node *variations;
-	Node *next;
-};
+	struct Node *variations;
+	struct Node *next;
+} Node;
