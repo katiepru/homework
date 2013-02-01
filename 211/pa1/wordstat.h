@@ -1,7 +1,7 @@
 typedef struct VarNode
 {
 	char* word;
-	VarNode *next;
+	struct VarNode *next;
 } VarNode;
 
 typedef struct Node
@@ -11,14 +11,12 @@ typedef struct Node
 	int num_vars;
 	int balance_factor;
 	struct VarNode *variations;
-	struct Node *left;
-	struct Node *right;
-	struct Node *parent;
+	struct Node *next;
 } Node;
 
-typedef struct AVLTree
+typedef struct LinkedList
 {
-	Node *head;
-	int height;
-	int size;
-} AVLTree;
+	int length;
+	struct Node *head;
+	struct Node *tail;
+} LinkedList;

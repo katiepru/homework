@@ -3,7 +3,8 @@
 #include <string.h>
 
 void print_help();
-Node read_file();
+struct Node *read_file();
+struct Node *create_node();
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
 	}
 
 	//File was successfully found, begin parsing file
-	Node *head;
+	struct Node *head;
 	head=read_file(file);
 
 	return 0;
@@ -44,8 +45,14 @@ int main(int argc, char *argv[])
 /*-----------------------------------------------------------------------------/
 * Read file and create linked list of unique words-----------------------------/
 ------------------------------------------------------------------------------*/
-Node read_file(FILE file)
+struct Node *read_file(FILE file)
 {
+	return NULL;
+}
+
+struct Node *create_node(char *str, Node *next)
+{
+
 	return NULL;
 }
 
