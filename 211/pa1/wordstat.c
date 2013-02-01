@@ -55,19 +55,28 @@ int main(int argc, char *argv[])
 struct LinkedList *read_file(FILE *file)
 {
 	struct LinkedList *ll = create_linkedlist(NULL);
-	char* word;
+	char* real_word;
 	int c;
 	while((c = fgetc(file)) != EOF)
 	{
-		if(isalpha(c) || (isdigit(c) && strlen(word)>0))
+		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
-			int len = strlen(word);
-			word[len]=c;
-			word[len+1]='\0';
+			int len = strlen(real_word);
+			real_word[len]=c;
+			real_word[len+1]='\0';
 		}
-		else if(strlen(word)>0)
+		else if(strlen(real_word)>0)
 		{
+			//Copy real_word and make it lower case
+			char *word;
+			int i=0;
+			for(i=0; i<strlen(real_word); i++)
+			{
+				word[i]=tolower(real_word[i]);
+			}
+			word[i+1]='\0';
 
+			//Create Node and place it in linked list
 			Node *node = create_node(word, NULL);
 			if(ll->head==NULL)
 			{
@@ -90,14 +99,14 @@ struct LinkedList *read_file(FILE *file)
 /*-----------------------------------------------------------------------------/
 /- Creates a new Node from a word and next Node--------------------------------/
 /-----------------------------------------------------------------------------*/
-struct Node *create_node(char *str, Node *next)
+struct Node *create_node(char *str, Node *next, char *var)
 {
 	struct Node *node = malloc(sizeof(struct Node));
 	node->word=strdup(str);
 	node->next=next;
 	node->count=1;
 	node->num_vars=1;
-	node->variations=NULL;
+	node->variations=create_linkedlist(create_node(var, NULL, NULL));
 	return node;
 }
 
