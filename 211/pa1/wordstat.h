@@ -3,12 +3,14 @@ typedef struct Node
 	char *word;
 	int count;
 	int num_vars;
-	struct LinkedList *variations;
+	struct Node *variations;
 	struct Node *next;
 } Node;
 
-typedef struct LinkedList
+typedef struct TrieNode
 {
-	int length;
-	struct Node *head;
-} LinkedList;
+	char letter;
+	struct TrieNode *children;
+	struct TrieNode *parent;
+	struct Node *full_word;
+} TrieNode;

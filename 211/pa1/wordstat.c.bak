@@ -6,11 +6,11 @@
 #include <ctype.h>
 
 void print_help();
-struct TrieNode *read_file();
+struct LinkedList *read_file();
 struct Node *create_node();
-struct TrieNode *create_trienode();
+struct LinkedList *create_linkedlist();
 void destroy_node();
-void destroy_trienode();
+void destroy_linkedlist();
 
 int main(int argc, char *argv[])
 {
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 	}
 
 	//File was successfully found, begin parsing file
-	struct TrieNode *tree;
-	tree=read_file(file);
+	struct LinkedList *ll;
+	ll=read_file(file);
 
 	return 0;
 }
@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
 /*-----------------------------------------------------------------------------/
 * Read file and create linked list of unique words-----------------------------/
 ------------------------------------------------------------------------------*/
-struct TrieNode *read_file(FILE *file)
+struct LinkedList *read_file(FILE *file)
 {
-	struct TrieNode *tree = create_trienode(NULL);
+	struct LinkedList *ll = create_linkedlist(NULL);
 	char* real_word;
 	int c;
 	while((c = fgetc(file)) != EOF)
@@ -78,13 +78,13 @@ struct TrieNode *read_file(FILE *file)
 
 			//Create Node and place it in linked list
 			Node *node = create_node(word, NULL);
-			if(tree->parent==NULL)
+			if(ll->head==NULL)
 			{
-				tree->full_word=node;
+				ll->head=node;
 			}
 			else
 			{
-				Node *ptr = tree->full_word;
+				Node *ptr = ll->head;
 				if(strcmp(ptr->word, word)>0)
 				{
 					ptr->next=node;
@@ -106,7 +106,7 @@ struct Node *create_node(char *str, Node *next, char *var)
 	node->next=next;
 	node->count=1;
 	node->num_vars=1;
-	node->variations=create_node(var, NULL, NULL);
+	node->variations=create_linkedlist(create_node(var, NULL, NULL));
 	return node;
 }
 
@@ -114,14 +114,13 @@ struct Node *create_node(char *str, Node *next, char *var)
 /*-----------------------------------------------------------------------------/
 /- Creates a new Linked List from a Node --------------------------------------/
 /-----------------------------------------------------------------------------*/
-struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node *word)
+struct LinkedList *create_linkedlist(struct Node *node)
 {
-	struct TrieNode *tree = malloc(sizeof(struct TrieNode));
-	assert(tree!=NULL);
-	tree->parent=parent;
-	tree->letter=c;
-	tree->full_word=word;
-	return tree;
+	struct LinkedList *ll = malloc(sizeof(struct LinkedList));
+	assert(ll!=NULL);
+	ll->head=node;
+	ll->length = node!=NULL ? 1 : 0;
+	return ll;
 }
 
 
@@ -132,6 +131,7 @@ void destroy_node(struct Node *node)
 {
 	assert(node!=NULL);
 	free(node->word);
+	destroy_linkedlist(node->variations);
 	free(node);
 }
 
@@ -139,11 +139,10 @@ void destroy_node(struct Node *node)
 /*-----------------------------------------------------------------------------/
 /- Destroys (frees) a Linked List ---------------------------------------------/
 /-----------------------------------------------------------------------------*/
-void destroy_trienode(struct TrieNode *tree)
+void destroy_linkedlist(struct LinkedList *ll)
 {
-	assert(tree!=NULL);
-	free(tree->children);
-	free(tree);
+	assert(ll!=NULL);
+	free(ll);
 }
 
 
