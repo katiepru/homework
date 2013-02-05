@@ -11,6 +11,7 @@ struct Node *create_node();
 struct TrieNode *create_trienode();
 void destroy_node();
 void destroy_trienode();
+void print_results();
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +46,12 @@ int main(int argc, char *argv[])
 	struct TrieNode *tree;
 	tree=read_file(file);
 
+	//Close the file
+	fclose(file);
+
+	//Print out results
+	print_results(tree);
+
 	return 0;
 }
 
@@ -72,7 +79,7 @@ struct TrieNode *read_file(FILE *file)
 			int converted = isalpha(c) ? c-97 : c-12;
 			if(ptr->children[converted]==NULL)
 			{
-				ptr->children[convereted]=create_trienode(ptr, c, NULL);
+				ptr->children[converted]=create_trienode(ptr, c, NULL);
 			}
 			ptr=ptr->children[converted];
 		}
@@ -87,25 +94,27 @@ struct TrieNode *read_file(FILE *file)
 			}
 			word[i+1]='\0';
 
-			//Create Node and place it in linked list
-			Node *node = create_node(word, NULL);
-			if(tree->parent==NULL)
-			{
-				tree->full_word=node;
-			}
-			else
-			{
-				Node *ptr = tree->full_word;
-				if(strcmp(ptr->word, word)>0)
-				{
-					ptr->next=node;
-				}
-			}
+			//Create Node and place it in trienode
+			ptr->full_word = create_node(word, NULL, real_word);
+
+			//Free real word and word
+			free(real_word);
+			free(word);
+
+			//Reset ptr to root node
+			ptr=tree;
 		}
 	}
-	return NULL;
+	return tree;
 }
 
+/*-----------------------------------------------------------------------------/
+/- Prints out results in tree use preorder traversal---------------------------/
+/-----------------------------------------------------------------------------*/
+void print_results(TrieNode *tree)
+{
+
+}
 
 /*-----------------------------------------------------------------------------/
 /- Creates a new Node from a word and next Node--------------------------------/

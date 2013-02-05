@@ -10,7 +10,7 @@ typedef struct Node
 typedef struct TrieNode
 {
 	char letter;
-	struct TrieNode *children;
 	struct TrieNode *parent;
 	struct Node *full_word;
+	struct TrieNode *children[];
 } TrieNode;
