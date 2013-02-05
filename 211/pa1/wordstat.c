@@ -54,16 +54,27 @@ int main(int argc, char *argv[])
 ------------------------------------------------------------------------------*/
 struct TrieNode *read_file(FILE *file)
 {
-	struct TrieNode *tree = create_trienode(NULL);
+	struct TrieNode *tree = create_trienode(NULL, ' ', NULL);
+	struct TrieNode *ptr = tree;
 	char* real_word;
 	int c;
 	while((c = fgetc(file)) != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
+			//First, add case-sensitive version to real_word
 			int len = strlen(real_word);
 			real_word[len]=c;
 			real_word[len+1]='\0';
+
+			//Next, traverse prefix tree case-insensitively
+			//Note: proabbly not the way to convert c
+			int converted = isalpha(c) ? c-97 : c-12;
+			if(ptr->children[converted]==NULL)
+			{
+				ptr->children[convereted]=create_trienode(ptr, c, NULL);
+			}
+			ptr=ptr->children[converted];
 		}
 		else if(strlen(real_word)>0)
 		{
