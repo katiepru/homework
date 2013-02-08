@@ -2,6 +2,7 @@
 \usepackage[margin=0.75in]{geometry}
 \usepackage{sectsty}
 \usepackage{indentfirst}
+\usepackage{qtree}
 \sectionfont{\large}
 
 \title{\bf Kaitlin Poskaitis - Homework 2}
@@ -13,11 +14,13 @@
 \maketitle
 
 \section{Regular Expressions in Unix Shell Script}
-1. *A*.*
+1. This cannot be done because we would need to find the last occurance of a 
+dot, which we cannot do with this regex.
 
 2. ?????*
 
-3. [A-Za-z][0-9]*[0-9][0-9][0-9]
+3. This cannot be done either because there is no way to ensure that only 1 
+dot is used.
 
 \section{Context-Free Languages}
 1. This is not context-free because the number of a's depends on the number of 
@@ -59,7 +62,9 @@ proportional.
 		\indent\indent $<$expr1$>$ ::= {\bf a}$<$expr1$>${\bf d} $|$ $<$expr2$>$
 
 		\indent\indent $<$expr2$>$ ::= {\bf b}$<$expr2$>${\bf c} $|$ 
-		{\bf \epsilon}
+		{\bf $\epsilon$}
+
+\vspace{5mm}
 
 5. {\bf Terminals: a, b, $\epsilon$}
 
@@ -68,5 +73,39 @@ proportional.
 	\indent {\bf Productions:}
 
 	\indent\indent $<$S$>$ ::= 
+{\bf a} $|$ {\bf b} $|$ {\bf aa} $|$ {\bf bb} $|$ {\bf ab} $|$ {\bf ba} $|$ 
+{\bf aaa} $|$ {\bf aab} $|$ {\bf aba} $|$ {\bf baa} $|$ {\bf abb} $|$ {\bf bab} 
+$|$ {\bf bba} $|$ {\bf bbb} $|$ {\bf aaaa} $|$ {\bf aaab} $|$ {\bf aaba} $|$ 
+{\bf abaa} $|$ {\bf baaa} $|$ {\bf aabb} $|$ {\bf abab} $|$ {\bf abba} $|$ 
+{\bf baba} $|$ {\bf bbaa} $|$ {\bf abbb} $|$ {\bf babb} $|$ {\bf bbab} $|$ 
+{\bf bbba} $|$ {\bf bbbb} $|$ {\bf aaaaa} $|$ {\bf aaaba} $|$ {\bf aabaa} $|$ 
+{\bf abaaa} $|$ {\bf baaaa} $|$ {\bf aabba} $|$ {\bf ababa} $|$ {\bf abbaa} $|$ 
+{\bf babaa} $|$ {\bf bbaaa} $|$ {\bf abbba} $|$ {\bf babba} $|$ {\bf bbaba} $|$ 
+{\bf bbbaa} $|$ {\bf bbbba} $|$ {\bf aaaab} $|$ {\bf aaabb} $|$ {\bf aabab} $|$ 
+{\bf abaab} $|$ {\bf baaab} $|$ {\bf aabbb} $|$ {\bf ababb} $|$ {\bf abbab} $|$ 
+{\bf babab} $|$ {\bf bbaab} $|$ {\bf abbbb} $|$ {\bf babbb} $|$ {\bf bbabb} $|$ 
+{\bf bbbab} $|$ {\bf bbbbb} $|$ $\epsilon$
+
+\section{Parse Tree and Ambiguity}
+1. See attached
+
+2. No, because the rightmost and leftmost parse trees are different.
+
+3. {\bf Terminals: a, b...z, true, false, V, -$>$, and}
+
+	\indent {\bf Nonterminals:} $<$start$>$, $<$imp$>$, $<$or$>$, $<$and$>$, $<$val$>$
+
+	\indent {\bf Productions:}
+
+	\indent\indent $<$start$>$ ::= $<$imp$>$
+
+	\indent\indent $<$imp$>$ ::= $<$imp$>$ {\bf -$>$} $<$val$>$ $|$ $<$or$>$
+
+	\indent\indent $<$or$>$ ::= $<$val$>$ {\bf V} $<$or$>$ $|$ $<$and$>$
+
+	\indent\indent $<$and$>$ ::= $<$val$>$ {\bf and} $<$and$>$ $|$ $<$val$>$
+
+	\indent\indent $<$val$>$ ::= {\bf a $|$ b $|$ ... $|$ z $|$ true $|$ false}
+
 
 \end{document}
