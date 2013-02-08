@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage[margin=0.75in]{geometry}
 \usepackage{sectsty}
+\usepackage{indentfirst}
 \sectionfont{\large}
 
 \title{\bf Kaitlin Poskaitis - Homework 2}
@@ -10,5 +11,41 @@
 \begin{document}
 
 \maketitle
+
+\section{Regular Expressions in Unix Shell Script}
+1. *A*.*
+
+2. ?????*
+
+3. [A-Za-z][0-9]*[0-9][0-9][0-9]
+
+\section{Context-Free Languages}
+1. This is not context-free because the number of a's depends on the number of b's, but they are not
+
+proportional.
+
+\vspace{5mm}
+
+2. {\bf Terminals: a, b, $\epsilon$}
+	
+	\indent {\bf Nonterminals:} $<$S$>$
+
+	\indent {\bf Productions:}
+		
+		\indent \indent $<$S$>$ ::= {\bf a}$<$S$>${\bf bb} $|$ {\bf $\epsilon$}
+
+\vspace{5mm}
+
+3. {\bf Terminals: a, b, $\epsilon$}
+
+	\indent {\bf Nonterminals:} $<$S$>$
+
+	\indent {\bf Productions:}
+
+		\indent \indent $<$S$>$ ::= {\bf a}$<$S$>${\bf a} $|$ {\bf b}$<$S$>${\bf b} $|$ $\epsilon$
+
+\vspace{5mm}
+
+4. {\bf Terminals: a, b, $\epsilon$ 
 
 \end{document}
