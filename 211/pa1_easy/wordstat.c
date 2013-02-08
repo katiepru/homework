@@ -11,6 +11,8 @@ struct Node *create_node();
 struct LinkedList *create_linkedlist();
 void destroy_node();
 void destroy_linkedlist();
+struct LinkedList *insert_node();
+void print_ll();
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +47,9 @@ int main(int argc, char *argv[])
 	struct LinkedList *ll;
 	ll=read_file(file);
 
+	//Linked list created, now print results
+	print_ll(ll);
+
 	return 0;
 }
 
@@ -78,22 +83,78 @@ struct LinkedList *read_file(FILE *file)
 			word[i+1]='\0';
 
 			//Create Node and place it in linked list
-			Node *node = create_node(word, NULL);
+			Node *node = create_node(word, NULL, real_word);
 			if(ll->head==NULL)
 			{
 				ll->head=node;
 			}
 			else
 			{
-				Node *ptr = ll->head;
-				if(strcmp(ptr->word, word)>0)
-				{
-					ptr->next=node;
-				}
+				ll = insert_node(ll, node, real_word);
 			}
+			memset(real_word, 0, strlen(real_word));
 		}
 	}
 	return NULL;
+}
+
+
+struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
+	char* word)
+{
+	//Head is not null
+	Node *ptr = ll->head;
+	int done = 0;
+
+	//Do checks on the head first
+	if(strcmp(ptr->word, node->word)>0)
+	{
+		ll->head=node;
+		node->next=ptr;
+		done=1;
+	}
+	else if(strcmp(ptr->word, node->word)==0)
+	{
+		if(word!=NULL)
+		{
+			insert_node(ptr->variations, create_node(word, NULL, 
+				NULL), NULL);
+			done=1;
+		}
+	}
+
+	//Done with head, can enter loop
+	while(!done)
+	{
+		if(ptr->next==NULL)
+		{
+			ptr->next=node;
+		}
+		else if(strcmp(ptr->next->word, node->word)<0)
+		{
+			//Word in node still bigger, increment ptr
+			ptr=ptr->next;
+		}
+		else if(strcmp(ptr->next->word, node->word)==0)
+		{
+			//They are equal. If this is main linked list insert variation.
+			//Otherwise, we are done.
+			if(word!=NULL)
+			{
+				insert_node(ptr->next->variations, create_node(word, NULL,
+					NULL), NULL);
+			}
+			done=1;
+		}
+		else
+		{
+			//Node goes here
+			node->next=ptr->next;
+			ptr->next=node;
+			done=1;
+		}
+	}
+	return ll;
 }
 
 
@@ -155,4 +216,9 @@ void print_help()
 	printf("wordstat - a word counting program.\n \
 	Usage: wordstat [-h] file\n \
 		help (-h)		Display this message");
+}
+
+void print_ll()
+{
+	puts("hi");
 }
