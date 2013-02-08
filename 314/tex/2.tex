@@ -20,7 +20,8 @@
 3. [A-Za-z][0-9]*[0-9][0-9][0-9]
 
 \section{Context-Free Languages}
-1. This is not context-free because the number of a's depends on the number of b's, but they are not
+1. This is not context-free because the number of a's depends on the number of 
+b's, but they are not
 
 proportional.
 
@@ -32,7 +33,7 @@ proportional.
 
 	\indent {\bf Productions:}
 		
-		\indent \indent $<$S$>$ ::= {\bf a}$<$S$>${\bf bb} $|$ {\bf $\epsilon$}
+		\indent\indent $<$S$>$ ::= {\bf a}$<$S$>${\bf bb} $|$ {\bf $\epsilon$}
 
 \vspace{5mm}
 
@@ -42,10 +43,30 @@ proportional.
 
 	\indent {\bf Productions:}
 
-		\indent \indent $<$S$>$ ::= {\bf a}$<$S$>${\bf a} $|$ {\bf b}$<$S$>${\bf b} $|$ $\epsilon$
+		\indent\indent $<$S$>$ ::= {\bf a}$<$S$>${\bf a} $|$ {\bf b}$<$S$>$
+		{\bf b} $|$ $\epsilon$
 
 \vspace{5mm}
 
-4. {\bf Terminals: a, b, $\epsilon$ 
+4. {\bf Terminals: a, b, $\epsilon$}
+
+	\indent {\bf Nonterminals:} $<$start$>$, $<$expr1$>$, $<$expr2$>$
+
+	\indent {\bf Productions:}
+
+		\indent\indent $<$start$>$ ::= $<$expr1$>$
+
+		\indent\indent $<$expr1$>$ ::= {\bf a}$<$expr1$>${\bf d} $|$ $<$expr2$>$
+
+		\indent\indent $<$expr2$>$ ::= {\bf b}$<$expr2$>${\bf c} $|$ 
+		{\bf \epsilon}
+
+5. {\bf Terminals: a, b, $\epsilon$}
+
+	\indent {\bf Nonterminals:} $<$S$>$
+
+	\indent {\bf Productions:}
+
+	\indent\indent $<$S$>$ ::= 
 
 \end{document}
