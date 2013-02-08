@@ -55,7 +55,8 @@ int main(int argc, char *argv[])
 struct LinkedList *read_file(FILE *file)
 {
 	struct LinkedList *ll = create_linkedlist(NULL);
-	char* real_word;
+	//Longest word in dictionary is 45 chars, so 100 should be fine
+	char real_word[100];
 	int c;
 	while((c = fgetc(file)) != EOF)
 	{
