@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
 	//File was successfully found, begin parsing file
 	struct LinkedList *ll;
 	ll=read_file(file);
+	fclose(file);
 
 	//Linked list created, now print results
 	print_ll(ll);
+	destroy_linkedlist(ll);
 
 	return 0;
 }
@@ -218,7 +220,12 @@ void print_help()
 		help (-h)		Display this message");
 }
 
-void print_ll()
+void print_ll(struct LinkedList *ll)
 {
-	puts("hi");
+	puts("Word              Occurrences          Versions ");
+	struct Node *ptr = ll->head;
+	while(ptr!=NULL)
+	{
+		printf("%s        %n         %n", ptr->word, ptr->count, ptr->num_vars);
+	}
 }
