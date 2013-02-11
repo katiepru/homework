@@ -50,6 +50,9 @@ int main(int argc, char *argv[])
 	//Linked list created, now print results
 	print_ll(ll);
 
+	//Free linked list
+	destroy_linkedlist(ll);
+
 	return 0;
 }
 
@@ -74,7 +77,7 @@ struct LinkedList *read_file(FILE *file)
 		else if(strlen(real_word)>0)
 		{
 			//Copy real_word and make it lower case
-			char *word;
+			char word[strlen(real_word)];
 			int i=0;
 			for(i=0; i<strlen(real_word); i++)
 			{
@@ -95,7 +98,7 @@ struct LinkedList *read_file(FILE *file)
 			memset(real_word, 0, strlen(real_word));
 		}
 	}
-	return NULL;
+	return ll;
 }
 
 
@@ -168,7 +171,10 @@ struct Node *create_node(char *str, Node *next, char *var)
 	node->next=next;
 	node->count=1;
 	node->num_vars=1;
-	node->variations=create_linkedlist(create_node(var, NULL, NULL));
+	if(var!=NULL)
+	{
+		node->variations=create_linkedlist(create_node(var, NULL, NULL));
+	}
 	return node;
 }
 
@@ -218,7 +224,15 @@ void print_help()
 		help (-h)		Display this message");
 }
 
-void print_ll()
+void print_ll(LinkedList *ll)
 {
-	puts("hi");
+	assert(ll!=NULL);
+	struct Node *ptr = ll->head;
+
+	while(ptr!=NULL)
+	{
+		printf("word= %s \n", ptr->word);
+		ptr=ptr->next;
+	}
+	puts("Done");
 }
