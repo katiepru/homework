@@ -16,7 +16,7 @@ void print_ll();
 
 int main(int argc, char *argv[])
 {
-	//Check that there is the correct number of args
+	/*Check that there is the correct number of args*/
 	if(argc!=2)
 	{
 			printf("Wrong number of arguments");
@@ -24,34 +24,34 @@ int main(int argc, char *argv[])
 			return 1;
 	}
 
-	//Check if in help mode
-	const char help[] = "-h";
+	/*Check if in help mode*/
+	const char help[3]="-h";
 	if(strcmp(argv[1], help)==0)
 	{
 		print_help();
 		return 0;
 	}
 
-	//Open the file
+	/*Open the file*/
 	FILE *file;
 	file=fopen(argv[1], "r");
 
-	//If fopen returns 0, file not found
+	/*If fopen returns 0, file not found*/
 	if(file==0)
 	{
 		printf("Could not find file: %s. Exiting.\n", argv[1]);
 		return 1;
 	}
 
-	//File was successfully found, begin parsing file
+	/*File was successfully found, begin parsing file*/
 	struct LinkedList *ll;
 	ll=read_file(file);
 	fclose(file);
 
-	//Linked list created, now print results
+	/*Linked list created, now print results*/
 	print_ll(ll);
 
-	//Free linked list
+	/*Free linked list*/
 	destroy_linkedlist(ll);
 
 	return 0;
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 struct LinkedList *read_file(FILE *file)
 {
 	struct LinkedList *ll = create_linkedlist(NULL);
-	//Longest word in dictionary is 45 chars, so 100 should be fine
+	/*Longest word in dictionary is 45 chars, so 100 should be fine*/
 	char real_word[100];
 	int c;
 	while((c = fgetc(file)) != EOF)
@@ -77,7 +77,7 @@ struct LinkedList *read_file(FILE *file)
 		}
 		else if(strlen(real_word)>0)
 		{
-			//Copy real_word and make it lower case
+			/*Copy real_word and make it lower case*/
 			char word[strlen(real_word)];
 			int i=0;
 			for(i=0; i<=strlen(real_word); i++)
@@ -85,7 +85,7 @@ struct LinkedList *read_file(FILE *file)
 				word[i]=tolower(real_word[i]);
 			}
 
-			//Create Node and place it in linked list
+			/*Create Node and place it in linked list*/
 			Node *node = create_node(word, NULL, real_word);
 			if(ll->head==NULL)
 			{
@@ -105,11 +105,11 @@ struct LinkedList *read_file(FILE *file)
 struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
 	char* word)
 {
-	//Head is not null
+	/*Head is not null*/
 	Node *ptr = ll->head;
 	int done = 0;
 
-	//Do checks on the head first
+	/*Do checks on the head first*/
 	if(strcmp(ptr->word, node->word)>0)
 	{
 		ll->head=node;
@@ -126,7 +126,7 @@ struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
 		}
 	}
 
-	//Done with head, can enter loop
+	/*Done with head, can enter loop*/
 	while(!done)
 	{
 		if(ptr->next==NULL)
@@ -135,13 +135,13 @@ struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
 		}
 		else if(strcmp(ptr->next->word, node->word)<0)
 		{
-			//Word in node still bigger, increment ptr
+			/*Word in node still bigger, increment ptr*/
 			ptr=ptr->next;
 		}
 		else if(strcmp(ptr->next->word, node->word)==0)
 		{
-			//They are equal. If this is main linked list insert variation.
-			//Otherwise, we are done.
+			/*They are equal. If this is main linked list insert variation.
+			Otherwise, we are done.*/
 			if(word!=NULL)
 			{
 				insert_node(ptr->next->variations, create_node(word, NULL,
@@ -151,7 +151,7 @@ struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
 		}
 		else
 		{
-			//Node goes here
+			/*Node goes here*/
 			node->next=ptr->next;
 			ptr->next=node;
 			done=1;
