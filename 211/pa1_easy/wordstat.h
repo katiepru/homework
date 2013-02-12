@@ -17,7 +17,7 @@ void destroy_linkedlist(struct LinkedList *ll);
 struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node, 
 	char *word);
 void print_ll(struct LinkedList *ll);
-
+char *strdup(const char *str);
 
 typedef struct Node
 {
