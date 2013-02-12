@@ -16,6 +16,9 @@ void print_ll();
 
 int main(int argc, char *argv[])
 {
+	const char help[3]="-h";
+	FILE *file;
+	struct LinkedList *ll;
 	/*Check that there is the correct number of args*/
 	if(argc!=2)
 	{
@@ -25,7 +28,6 @@ int main(int argc, char *argv[])
 	}
 
 	/*Check if in help mode*/
-	const char help[3]="-h";
 	if(strcmp(argv[1], help)==0)
 	{
 		print_help();
@@ -33,7 +35,6 @@ int main(int argc, char *argv[])
 	}
 
 	/*Open the file*/
-	FILE *file;
 	file=fopen(argv[1], "r");
 
 	/*If fopen returns 0, file not found*/
@@ -44,7 +45,6 @@ int main(int argc, char *argv[])
 	}
 
 	/*File was successfully found, begin parsing file*/
-	struct LinkedList *ll;
 	ll=read_file(file);
 	fclose(file);
 
@@ -66,6 +66,8 @@ struct LinkedList *read_file(FILE *file)
 	struct LinkedList *ll = create_linkedlist(NULL);
 	/*Longest word in dictionary is 45 chars, so 100 should be fine*/
 	char real_word[100];
+	char word[100];
+	Node *node;
 	int c;
 	while((c = fgetc(file)) != EOF)
 	{
@@ -78,7 +80,6 @@ struct LinkedList *read_file(FILE *file)
 		else if(strlen(real_word)>0)
 		{
 			/*Copy real_word and make it lower case*/
-			char word[strlen(real_word)];
 			int i=0;
 			for(i=0; i<=strlen(real_word); i++)
 			{
@@ -86,7 +87,7 @@ struct LinkedList *read_file(FILE *file)
 			}
 
 			/*Create Node and place it in linked list*/
-			Node *node = create_node(word, NULL, real_word);
+			node = create_node(word, NULL, real_word);
 			if(ll->head==NULL)
 			{
 				ll->head=node;
@@ -209,9 +210,10 @@ void destroy_node(struct Node *node)
 /-----------------------------------------------------------------------------*/
 void destroy_linkedlist(struct LinkedList *ll)
 {
-	if(ll==NULL) return;
-	struct Node *ptr = ll->head;
+	struct Node *ptr;
 	struct Node *temp;
+	if(ll==NULL) return;
+	ptr=ll->head;
 	while(ptr!=NULL)
 	{
 		temp = ptr->next;
@@ -234,8 +236,9 @@ void print_help()
 
 void print_ll(LinkedList *ll)
 {
+	struct Node *ptr;
 	assert(ll!=NULL);
-	struct Node *ptr = ll->head;
+	ptr = ll->head;
 
 	while(ptr!=NULL)
 	{
