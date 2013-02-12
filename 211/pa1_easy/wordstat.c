@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
 
 	//Linked list created, now print results
 	print_ll(ll);
-	destroy_linkedlist(ll);
 
 	//Free linked list
 	destroy_linkedlist(ll);
@@ -81,11 +80,10 @@ struct LinkedList *read_file(FILE *file)
 			//Copy real_word and make it lower case
 			char word[strlen(real_word)];
 			int i=0;
-			for(i=0; i<strlen(real_word); i++)
+			for(i=0; i<=strlen(real_word); i++)
 			{
 				word[i]=tolower(real_word[i]);
 			}
-			word[i+1]='\0';
 
 			//Create Node and place it in linked list
 			Node *node = create_node(word, NULL, real_word);
@@ -199,7 +197,7 @@ struct LinkedList *create_linkedlist(struct Node *node)
 /-----------------------------------------------------------------------------*/
 void destroy_node(struct Node *node)
 {
-	assert(node!=NULL);
+	if(node==NULL) return;
 	free(node->word);
 	destroy_linkedlist(node->variations);
 	free(node);
@@ -211,7 +209,15 @@ void destroy_node(struct Node *node)
 /-----------------------------------------------------------------------------*/
 void destroy_linkedlist(struct LinkedList *ll)
 {
-	assert(ll!=NULL);
+	if(ll==NULL) return;
+	struct Node *ptr = ll->head;
+	struct Node *temp;
+	while(ptr!=NULL)
+	{
+		temp = ptr->next;
+		destroy_node(ptr);
+		ptr=temp;
+	}
 	free(ll);
 }
 
