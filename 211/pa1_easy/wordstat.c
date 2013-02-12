@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
 	//File was successfully found, begin parsing file
 	struct LinkedList *ll;
 	ll=read_file(file);
+	fclose(file);
 
 	//Linked list created, now print results
 	print_ll(ll);
+	destroy_linkedlist(ll);
 
 	//Free linked list
 	destroy_linkedlist(ll);
