@@ -1,18 +1,4 @@
 #include "wordstat.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
-
-void print_help();
-struct LinkedList *read_file();
-struct Node *create_node();
-struct LinkedList *create_linkedlist();
-void destroy_node();
-void destroy_linkedlist();
-struct LinkedList *insert_node();
-void print_ll();
 
 int main(int argc, char *argv[])
 {
@@ -59,8 +45,8 @@ int main(int argc, char *argv[])
 
 
 /*-----------------------------------------------------------------------------/
-* Read file and create linked list of unique words-----------------------------/
-------------------------------------------------------------------------------*/
+/- Read file and create linked list of unique words----------------------------/
+/-----------------------------------------------------------------------------*/
 struct LinkedList *read_file(FILE *file)
 {
 	struct LinkedList *ll = create_linkedlist(NULL);
@@ -102,9 +88,12 @@ struct LinkedList *read_file(FILE *file)
 	return ll;
 }
 
-
+/*-----------------------------------------------------------------------------/
+/- Inserts node into linked list in alphabetical order, or adds case-sensitive-/
+/- variation of the word into existing Node if word was already found before --/
+/-----------------------------------------------------------------------------*/
 struct LinkedList *insert_node(struct LinkedList *ll, struct Node *node,
-	char* word)
+	char *word)
 {
 	/*Head is not null*/
 	Node *ptr = ll->head;
@@ -234,6 +223,9 @@ void print_help()
 		help (-h)		Display this message");
 }
 
+/*-----------------------------------------------------------------------------/
+/- Prints data from linked list in order --------------------------------------/
+/-----------------------------------------------------------------------------*/
 void print_ll(LinkedList *ll)
 {
 	struct Node *ptr;
