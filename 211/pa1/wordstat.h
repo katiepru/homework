@@ -33,5 +33,5 @@ typedef struct TrieNode
 	char letter;
 	struct TrieNode *parent;
 	struct Node *full_word;
-	struct TrieNode *children[];
+	struct TrieNode *children[36];
 } TrieNode;

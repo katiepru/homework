@@ -2,7 +2,12 @@
 
 int main(int argc, char *argv[])
 {
-	//Check that there is the correct number of args
+	/*Initialize everything*/
+	const char help[] = "-h";
+	FILE *file;
+	struct TrieNode *tree;
+
+	/*Check that there is the correct number of args*/
 	if(argc!=2)
 	{
 			printf("Wrong number of arguments");
@@ -10,33 +15,30 @@ int main(int argc, char *argv[])
 			return 1;
 	}
 
-	//Check if in help mode
-	const char help[] = "-h";
+	/*Check if in help mode*/
 	if(strcmp(argv[1], help)==0)
 	{
 		print_help();
 		return 0;
 	}
 
-	//Open the file
-	FILE *file;
+	/*Open the file*/
 	file=fopen(argv[1], "r");
 
-	//If fopen returns 0, file not found
+	/*If fopen returns 0, file not found*/
 	if(file==0)
 	{
 		printf("Could not find file: %s. Exiting.\n", argv[1]);
 		return 1;
 	}
 
-	//File was successfully found, begin parsing file
-	struct TrieNode *tree;
+	/*File was successfully found, begin parsing file*/
 	tree=read_file(file);
 
-	//Close the file
+	/*Close the file*/
 	fclose(file);
 
-	//Print out results
+	/*Print out results*/
 	print_results(tree);
 
 	return 0;
@@ -48,23 +50,28 @@ int main(int argc, char *argv[])
 ------------------------------------------------------------------------------*/
 struct TrieNode *read_file(FILE *file)
 {
+	/*Initialize evrything - words likely less than 400 chars long*/
 	struct TrieNode *tree = create_trienode(NULL, ' ', NULL);
 	struct TrieNode *ptr = tree;
 	char real_word[400];
+	char word[400];
 	int c;
+	int len;
+	int converted;
+	int i;
 	memset(real_word, 0, strlen(real_word));
 
 	while((c = fgetc(file)) != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
-			//First, add case-sensitive version to real_word
-			int len = strlen(real_word);
+			/*First, add case-sensitive version to real_word*/
+			len = strlen(real_word);
 			real_word[len]=c;
 			real_word[len+1]='\0';
 
-			//Next, traverse prefix tree case-insensitively
-			int converted = isalpha(c) ? c-97 : c-12;
+			/*Next, traverse prefix tree case-insensitively*/
+			converted = isalpha(c) ? c-97 : c-12;
 			if(ptr->children[converted]==NULL)
 			{
 				ptr->children[converted]=create_trienode(ptr, c, NULL);
@@ -73,24 +80,22 @@ struct TrieNode *read_file(FILE *file)
 		}
 		else if(strlen(real_word)>0)
 		{
-			//Copy real_word and make it lower case
-			char *word;
-			int i=0;
+			/*Copy real_word and make it lower case*/
 			for(i=0; i<strlen(real_word); i++)
 			{
 				word[i]=tolower(real_word[i]);
 			}
 			word[i+1]='\0';
 
-			//Create Node and place it in trienode
+			/*Create Node and place it in trienode*/
 			ptr->full_word = create_node(word, NULL, real_word);
 
-			//Free real word and word
-			free(real_word);
-			free(word);
-
-			//Reset ptr to root node
+			/*Reset ptr to root node*/
 			ptr=tree;
+
+			/*Reset strings*/
+			memset(real_word, 0, strlen(real_word));
+			memset(word, 0, strlen(word));
 		}
 	}
 	return tree;
