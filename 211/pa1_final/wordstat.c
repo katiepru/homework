@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	/*Check that there is the correct number of args*/
 	if(argc!=2)
 	{
-			printf("Wrong number of arguments");
+			fprintf(stderr, "Wrong number of arguments");
 			print_help();
 			return 1;
 	}
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	/*If fopen returns 0, file not found*/
 	if(file==0)
 	{
-		printf("Could not find file: %s. Exiting.\n", argv[1]);
+		fprintf(stderr, "Could not find file: %s. Exiting.\n", argv[1]);
 		return 1;
 	}
 
@@ -39,7 +39,11 @@ int main(int argc, char *argv[])
 	fclose(file);
 
 	/*Print out results*/
+	puts("Word	Total No. Occurences	No. Case-Sensitive Versions");
 	print_results(tree);
+
+	/*Free all the things!*/
+	destroy_trienode(tree);
 
 	return 0;
 }
@@ -68,25 +72,22 @@ struct TrieNode *read_file(FILE *file)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
-			puts("b if");
 			/*First, add case-sensitive version to real_word*/
 			len = strlen(real_word);
 			real_word[len]=c;
 			real_word[len+1]='\0';
 
 			/*Next, traverse prefix tree case-insensitively*/
-			converted = isalpha(c) ? c-97 : c-12;
-			printf("ptr letter=%c", ptr->letter);
+			c=tolower(c);
+			converted = isalpha(c) ? c-97 : c-22;
 			if(ptr->children[converted]==NULL)
 			{
 				ptr->children[converted]=create_trienode(ptr, c, NULL);
 			}
 			ptr=ptr->children[converted];
-			puts("e if");
 		}
 		else if(strlen(real_word)>0)
 		{
-			puts("b else");
 			/*Copy real_word and make it lower case*/
 			for(i=0; i<strlen(real_word); i++)
 			{
@@ -97,12 +98,14 @@ struct TrieNode *read_file(FILE *file)
 			/*Create Node and place it in trienode*/
 			if(ptr->full_word==NULL)
 			{
-				ptr->full_word = create_node(word, NULL, real_word);
+				ptr->full_word = create_wordnode(word, real_word);
 			} 
+			/*Word was already found at least once*/
 			else
 			{
-				ptr->full_word->variations=create_node(real_word, 
-					ptr->full_word->variations, NULL);
+				/*Increment word count*/
+				ptr->full_word->count+=1;
+				check_variations(ptr->full_word, real_word);
 			}
 
 			/*Reset ptr to root node*/
@@ -111,10 +114,48 @@ struct TrieNode *read_file(FILE *file)
 			/*Reset strings*/
 			memset(real_word, 0, strlen(real_word));
 			memset(word, 0, strlen(word));
-			puts("e else");
 		}
 	}
 	return tree;
+}
+
+
+void check_variations(struct WordNode *node, char *real_word)
+{
+	struct NumNode *numptr;
+	int i;
+	numptr=node->variations;
+	for(i=0; i<strlen(real_word)-1; i++)
+	{
+		if(isupper(real_word[i]))
+		{
+			if(numptr->right==NULL)
+			{
+				numptr->right=create_numnode(1);
+			}
+			numptr=numptr->right;
+		}
+		else
+		{
+			if(numptr->left==NULL)
+			{
+				numptr->left=create_numnode(0);
+			}
+			numptr=numptr->left;
+		}
+	}
+				
+	/*On last char in string..see if variation exists*/
+	if(isupper(real_word[i]) && numptr->right==NULL)
+	{
+		numptr->right=create_numnode(1);
+		node->num_vars+=1;
+	}
+	else if(!isupper(real_word[i]) && numptr->left==NULL)
+	{
+		numptr->left=create_numnode(0);
+		node->num_vars+=1;
+	}
 }
 
 /*-----------------------------------------------------------------------------/
@@ -125,7 +166,7 @@ void print_results(struct TrieNode *tree)
 	int i=0;
 	if(tree->full_word!=NULL)
 	{
-		print_node(tree->full_word);
+		print_wordnode(tree->full_word);
 	}
 	for(i=0; i<36; i++)
 	{
@@ -139,35 +180,61 @@ void print_results(struct TrieNode *tree)
 /*-----------------------------------------------------------------------------/
 /- Prints out data stored in a node -------------------------------------------/
 /-----------------------------------------------------------------------------*/
-void print_node(struct Node *node)
+void print_wordnode(struct WordNode *node)
 {
-	printf("word=%s, count=%d, num vars=%d\n", node->word, node->count, 
+	printf("%s	%d	%d\n", node->word, node->count, 
 		node->num_vars);
 }
 
 /*-----------------------------------------------------------------------------/
 /- Creates a new Node from a word and next Node--------------------------------/
 /-----------------------------------------------------------------------------*/
-struct Node *create_node(char *str, Node *next, char *var)
+struct WordNode *create_wordnode(char *str, char *var)
 {
-	struct Node *node = malloc(sizeof(struct Node));
+	int i;
+	struct NumNode *ptr;
+	struct WordNode *node = malloc(sizeof(struct WordNode));
 	node->word=strdup(str);
-	node->next=next;
 	node->count=1;
 	node->num_vars=1;
-	if(var!=NULL)
+	node->variations=create_numnode(-1);
+	ptr=node->variations;
+	for(i=0; i<strlen(var); i++)
 	{
-		node->variations=create_node(var, NULL, NULL);
+		/*If letter is upcase, go right in tree*/
+		if(isupper(var[i]))
+		{
+			ptr->right=create_numnode(1);
+			ptr=ptr->right;
+		}
+		/*Otherwise, go left*/
+		else
+		{
+			ptr->left=create_numnode(0);
+			ptr=ptr->left;
+		}
 	}
 	return node;
 }
 
 
 /*-----------------------------------------------------------------------------/
-/- Creates a new Linked List from a Node --------------------------------------/
+/- Creates a new num node -----------------------------------------------------/
 /-----------------------------------------------------------------------------*/
-struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node 
-*word)
+struct NumNode *create_numnode(short num)
+{
+	struct NumNode *node = malloc(sizeof(struct NumNode));
+	node->num=num;
+	node->left=NULL;
+	node->right=NULL;
+	return node;
+}
+
+/*-----------------------------------------------------------------------------/
+/- Creates a new trie node ------------- --------------------------------------/
+/-----------------------------------------------------------------------------*/
+struct TrieNode *create_trienode(struct TrieNode *parent, char c, 
+	struct WordNode *word)
 {
 	struct TrieNode *tree = malloc(sizeof(struct TrieNode));
 	assert(tree!=NULL);
@@ -179,18 +246,38 @@ struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node
 
 
 /*-----------------------------------------------------------------------------/
-/- Destroys (frees) a Node ----------------------------------------------------/
+/- Destroys a num node --------------------------------------------------------/
 /-----------------------------------------------------------------------------*/
-void destroy_node(struct Node *node)
+void destroy_numnode(struct NumNode *node)
 {
 	assert(node!=NULL);
-	free(node->word);
+	/*Free the children*/
+	if(node->left!=NULL)
+	{
+		destroy_numnode(node->left);
+	}
+	if(node->right!=NULL)
+	{
+		destroy_numnode(node->right);
+	}
 	free(node);
 }
 
 
 /*-----------------------------------------------------------------------------/
-/- Destroys (frees) a Linked List ---------------------------------------------/
+/- Destroys (frees) a Word Node -----------------------------------------------/
+/-----------------------------------------------------------------------------*/
+void destroy_wordnode(struct WordNode *node)
+{
+	assert(node!=NULL);
+	free(node->word);
+	destroy_numnode(node->variations);
+	free(node);
+}
+
+
+/*-----------------------------------------------------------------------------/
+/- Destroys (frees) a Trie Node-- ---------------------------------------------/
 /-----------------------------------------------------------------------------*/
 void destroy_trienode(struct TrieNode *tree)
 {
@@ -203,7 +290,10 @@ void destroy_trienode(struct TrieNode *tree)
 			destroy_trienode(tree->children[i]);
 		}
 	}
-	free(tree->children);
+	if(tree->full_word!=NULL)
+	{
+		destroy_wordnode(tree->full_word);
+	}
 	free(tree);
 }
 
@@ -213,10 +303,10 @@ void destroy_trienode(struct TrieNode *tree)
 /-----------------------------------------------------------------------------*/
 void print_help()
 {
-	printf("wordstat - a word counting program.\n \
-	Usage: wordstat [-h] file\n \
-	help (-h)		Display this message\n \
-	file			desc here");
+	puts("wordstat - a word counting program.\n\n  \
+Usage: wordstat [-h] file\n  \
+help (-h)		Display this message\n  \
+file			desc here\n");
 }
 
 /*-----------------------------------------------------------------------------/
