@@ -1,17 +1,4 @@
 #include "wordstat.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
-
-void print_help();
-struct TrieNode *read_file();
-struct Node *create_node();
-struct TrieNode *create_trienode();
-void destroy_node();
-void destroy_trienode();
-void print_results();
 
 int main(int argc, char *argv[])
 {
@@ -63,8 +50,10 @@ struct TrieNode *read_file(FILE *file)
 {
 	struct TrieNode *tree = create_trienode(NULL, ' ', NULL);
 	struct TrieNode *ptr = tree;
-	char* real_word;
+	char real_word[400];
 	int c;
+	memset(real_word, 0, strlen(real_word));
+
 	while((c = fgetc(file)) != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
@@ -75,7 +64,6 @@ struct TrieNode *read_file(FILE *file)
 			real_word[len+1]='\0';
 
 			//Next, traverse prefix tree case-insensitively
-			//Note: proabbly not the way to convert c
 			int converted = isalpha(c) ? c-97 : c-12;
 			if(ptr->children[converted]==NULL)
 			{
@@ -111,9 +99,28 @@ struct TrieNode *read_file(FILE *file)
 /*-----------------------------------------------------------------------------/
 /- Prints out results in tree use preorder traversal---------------------------/
 /-----------------------------------------------------------------------------*/
-void print_results(TrieNode *tree)
+void print_results(struct TrieNode *tree)
 {
+	int i=0;
+	if(tree->full_word!=NULL)
+	{
+		print_node(tree->full_word);
+	}
+	for(i=0; i<36; i++)
+	{
+		if(tree->children[i]!=NULL)
+		{
+			print_results(tree->children[i]);
+		}
+	}
+}
 
+/*-----------------------------------------------------------------------------/
+/- Prints out data stored in a node -------------------------------------------/
+/-----------------------------------------------------------------------------*/
+void print_node(struct Node *node)
+{
+	printf("word=%s\n", node->word);
 }
 
 /*-----------------------------------------------------------------------------/
@@ -134,7 +141,8 @@ struct Node *create_node(char *str, Node *next, char *var)
 /*-----------------------------------------------------------------------------/
 /- Creates a new Linked List from a Node --------------------------------------/
 /-----------------------------------------------------------------------------*/
-struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node *word)
+struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node 
+*word)
 {
 	struct TrieNode *tree = malloc(sizeof(struct TrieNode));
 	assert(tree!=NULL);
@@ -161,7 +169,15 @@ void destroy_node(struct Node *node)
 /-----------------------------------------------------------------------------*/
 void destroy_trienode(struct TrieNode *tree)
 {
+	int i;
 	assert(tree!=NULL);
+	for(i=0; i<36; i++)
+	{
+		if(tree->children[i]!=NULL)
+		{
+			destroy_trienode(tree->children[i]);
+		}
+	}
 	free(tree->children);
 	free(tree);
 }
@@ -174,5 +190,20 @@ void print_help()
 {
 	printf("wordstat - a word counting program.\n \
 	Usage: wordstat [-h] file\n \
-		help (-h)		Display this message");
+	help (-h)		Display this message\n \
+	file			desc here");
+}
+
+/*-----------------------------------------------------------------------------/
+/--Duplicate a string and return a pointer to the duplicate--------------------/
+/-----------------------------------------------------------------------------*/
+char *strdup(const char *str)
+{
+    int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup)
+    {
+        strcpy(dup, str);
+    }
+    return dup;
 }
