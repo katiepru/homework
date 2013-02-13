@@ -59,12 +59,16 @@ struct TrieNode *read_file(FILE *file)
 	int len;
 	int converted;
 	int i;
+	
+	/*Make strings ready to use*/
+	memset(word, 0, strlen(word));
 	memset(real_word, 0, strlen(real_word));
 
 	while((c = fgetc(file)) != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
+			puts("b if");
 			/*First, add case-sensitive version to real_word*/
 			len = strlen(real_word);
 			real_word[len]=c;
@@ -72,14 +76,17 @@ struct TrieNode *read_file(FILE *file)
 
 			/*Next, traverse prefix tree case-insensitively*/
 			converted = isalpha(c) ? c-97 : c-12;
+			printf("ptr letter=%c", ptr->letter);
 			if(ptr->children[converted]==NULL)
 			{
 				ptr->children[converted]=create_trienode(ptr, c, NULL);
 			}
 			ptr=ptr->children[converted];
+			puts("e if");
 		}
 		else if(strlen(real_word)>0)
 		{
+			puts("b else");
 			/*Copy real_word and make it lower case*/
 			for(i=0; i<strlen(real_word); i++)
 			{
@@ -88,7 +95,15 @@ struct TrieNode *read_file(FILE *file)
 			word[i+1]='\0';
 
 			/*Create Node and place it in trienode*/
-			ptr->full_word = create_node(word, NULL, real_word);
+			if(ptr->full_word==NULL)
+			{
+				ptr->full_word = create_node(word, NULL, real_word);
+			} 
+			else
+			{
+				ptr->full_word->variations=create_node(real_word, 
+					ptr->full_word->variations, NULL);
+			}
 
 			/*Reset ptr to root node*/
 			ptr=tree;
@@ -96,6 +111,7 @@ struct TrieNode *read_file(FILE *file)
 			/*Reset strings*/
 			memset(real_word, 0, strlen(real_word));
 			memset(word, 0, strlen(word));
+			puts("e else");
 		}
 	}
 	return tree;
@@ -125,7 +141,8 @@ void print_results(struct TrieNode *tree)
 /-----------------------------------------------------------------------------*/
 void print_node(struct Node *node)
 {
-	printf("word=%s\n", node->word);
+	printf("word=%s, count=%d, num vars=%d\n", node->word, node->count, 
+		node->num_vars);
 }
 
 /*-----------------------------------------------------------------------------/
@@ -138,7 +155,10 @@ struct Node *create_node(char *str, Node *next, char *var)
 	node->next=next;
 	node->count=1;
 	node->num_vars=1;
-	node->variations=create_node(var, NULL, NULL);
+	if(var!=NULL)
+	{
+		node->variations=create_node(var, NULL, NULL);
+	}
 	return node;
 }
 
