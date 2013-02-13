@@ -10,28 +10,37 @@
 
 char *strdup(const char *str);
 struct TrieNode *read_file(FILE *file);
-struct Node *create_node(char *str, struct Node *next, char *var);
-struct TrieNode *create_trienode(struct TrieNode *parent, char c, struct Node
-*word);
-void destroy_node(struct Node *node);
+struct NumNode *create_numnode(short num);
+struct WordNode *create_wordnode(char *str, char *var);
+struct TrieNode *create_trienode(struct TrieNode *parent, char c, 
+	struct WordNode *word);
+void check_variations(struct WordNode *node, char *real_word);
+void destroy_numnode(struct NumNode *node);
+void destroy_wordnode(struct WordNode *node);
 void destroy_trienode(struct TrieNode *tree);
 void print_results(struct TrieNode *tree);
-void print_node(struct Node *node);
+void print_wordnode(struct WordNode *node);
 void print_help();
 
-typedef struct Node
+typedef struct WordNode
 {
 	char *word;
 	int count;
 	int num_vars;
-	struct Node *variations;
-	struct Node *next;
-} Node;
+	struct NumNode *variations;
+} WordNode;
 
 typedef struct TrieNode
 {
 	char letter;
 	struct TrieNode *parent;
-	struct Node *full_word;
+	struct WordNode *full_word;
 	struct TrieNode *children[36];
 } TrieNode;
+
+typedef struct NumNode
+{
+	short num;
+	struct NumNode *left;
+	struct NumNode *right;
+} NumNode;
