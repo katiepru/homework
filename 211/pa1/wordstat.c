@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	fclose(file);
 
 	/*Print out results*/
-	puts("Word	Total No. Occurences	No. Case-Sensitive Versions");
+	puts("Word\tTotal No. Occurences\tNo. Case-Sensitive Versions");
 	print_results(tree);
 
 	/*Free all the things!*/
@@ -194,7 +194,7 @@ void print_results(struct TrieNode *tree)
 /-----------------------------------------------------------------------------*/
 void print_wordnode(struct WordNode *node)
 {
-	printf("%s	%d	%d\n", node->word, node->count, 
+	printf("%s\t\t%d\t\t%d\n", node->word, node->count, 
 		node->num_vars);
 }
 
