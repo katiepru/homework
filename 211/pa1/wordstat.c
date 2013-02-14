@@ -50,8 +50,10 @@ int main(int argc, char *argv[])
 
 
 /*-----------------------------------------------------------------------------/
-* Read file and create linked list of unique words-----------------------------/
-------------------------------------------------------------------------------*/
+/- Read file and creates prefix tree of unique words---------------------------/
+/- Takes a file pointer as input (assumes it exists) --------------------------/
+/- Returns root node to the prefix tree ---------------------------------------/
+/-----------------------------------------------------------------------------*/
 struct TrieNode *read_file(FILE *file)
 {
 	/*Initialize evrything - words likely less than 400 chars long*/
@@ -125,7 +127,11 @@ struct TrieNode *read_file(FILE *file)
 	return tree;
 }
 
-
+/*-----------------------------------------------------------------------------/
+/- Traverses through the variations bianry tree to determine if the current ---/
+/- variation exists. Adds it if not. ------------------------------------------/
+/- Takes a wordnode and a string. Does not return anything. -------------------/
+/-----------------------------------------------------------------------------*/
 void check_variations(struct WordNode *node, char *real_word)
 {
 	struct NumNode *numptr;
@@ -205,6 +211,7 @@ struct WordNode *create_wordnode(char *str, char *var)
 	node->num_vars=1;
 	node->variations=create_numnode(-1);
 	ptr=node->variations;
+	/*Create binary tree of variations*/
 	for(i=0; i<strlen(var); i++)
 	{
 		/*If letter is upcase, go right in tree*/
@@ -312,7 +319,9 @@ void print_help()
 	puts("wordstat - a word counting program.\n\n  \
 Usage: wordstat [-h] file\n  \
 help (-h)		Display this message\n  \
-file			desc here\n");
+file			Displays unique case-insensitive words read from file.\n\
+			Displays count of each word and num of case sensitive \
+variations");
 }
 
 /*-----------------------------------------------------------------------------/
