@@ -72,7 +72,7 @@ struct TrieNode *read_file(FILE *file)
 	c = fgetc(file);
 	buff = fgetc(file);
 
-	while((c != EOF)
+	while(c != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
@@ -90,7 +90,7 @@ struct TrieNode *read_file(FILE *file)
 			}
 			ptr=ptr->children[converted];
 		}
-		else if(strlen(real_word)>0 || )
+		if(strlen(real_word)>0 && ((!isalpha(c) && !isdigit(c)) || buff==EOF))
 		{
 			/*Copy real_word and make it lower case*/
 			for(i=0; i<strlen(real_word); i++)
