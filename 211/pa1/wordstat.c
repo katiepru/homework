@@ -60,6 +60,7 @@ struct TrieNode *read_file(FILE *file)
 	char real_word[400];
 	char word[400];
 	int c;
+	int buff;
 	int len;
 	int converted;
 	int i;
@@ -68,7 +69,10 @@ struct TrieNode *read_file(FILE *file)
 	memset(word, 0, strlen(word));
 	memset(real_word, 0, strlen(real_word));
 
-	while((c = fgetc(file)) != EOF)
+	c = fgetc(file);
+	buff = fgetc(file);
+
+	while((c != EOF)
 	{
 		if(isalpha(c) || (isdigit(c) && strlen(real_word)>0))
 		{
@@ -86,7 +90,7 @@ struct TrieNode *read_file(FILE *file)
 			}
 			ptr=ptr->children[converted];
 		}
-		else if(strlen(real_word)>0)
+		else if(strlen(real_word)>0 || )
 		{
 			/*Copy real_word and make it lower case*/
 			for(i=0; i<strlen(real_word); i++)
@@ -115,6 +119,8 @@ struct TrieNode *read_file(FILE *file)
 			memset(real_word, 0, strlen(real_word));
 			memset(word, 0, strlen(word));
 		}
+		c = buff;
+		buff = fgetc(file);
 	}
 	return tree;
 }
