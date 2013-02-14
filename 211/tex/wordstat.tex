@@ -43,9 +43,9 @@ upper-case, the NumNode would branch to the right with a value of 1 in the new
 NumNode. Otherwise (lower case or number), it will branch to the right with a 
 value of 0. This way, it is easy to check if a certain variation has already
 been seen by simply traversing the tree and seeing if the path already exists.
-For example, "Foo1" would produce -1->1->0->0->0, while "FOo1" would produce
--1->1->1->0->0. I chose this data structure because it is a fast way to store 
-variations and check if variations have already been seen.
+For example, "Foo1" would produce -1-$>$1-$>$0-$>$0-$>$0, while "FOo1" would 
+produce -1-$>$1-$>$1-$>$0-$>$0. I chose this data structure because it is a fast
+way to store variations and check if variations have already been seen.
 
 In order to print out the data obtained by this program, a preorder traversal
 of the prefix tree is done to ensure alphabetical order. The data required is 
@@ -67,6 +67,21 @@ time or on the order of n.
 
 Space complexity: O(n)
 
-The space c
+The space complexity of this algorithm is on the order of n, where n is the 
+length of the input file. This is because there will be at most as many 
+TrieNodes as there are characters in the input file. Each TrieNode will 
+contain a fixed number of pointers (max 36). Each WordNode will contain
+a number of NumNodes in the variations binary tree, which is dependent on the 
+length of the individual word. This part will be O(nm), with m being the length
+of the longest word, with will be amortized to O(n).
+
+\section*{Difficulties}
+
+The biggest challenge of this assignment was coming up with an efficient
+algorithm, as linear time was not possible with the basic structures we learned
+in Data Structures. Once i was able to come up with this algorithm, the 
+implementation was pretty straightforward. The most difficult concept for me to
+get used to was how C handles strings as they are so different from Java. Once
+I got this worked out, it was not terribly difficult.
 
 \end{document}
