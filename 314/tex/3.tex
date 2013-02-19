@@ -13,17 +13,19 @@
 \maketitle
 
 \section{Show that the grammar is LL(1) using the formal definition of LL(1)}
+This is true because of the parse table below. It is a complete parse table,
+meaning that each nonterminal has a definitive definition for each terminal
+token. As a result, the $FIRST^{+}$($A_{1}$) $\cap$ $FIRST^{+}$($A_{n}$)
+forall possible outcomes $A_{i}$ is the empty set.
 
 \section{Show the LL(1) parse table}
-	\indent {\bf a    b    c    0    1    2    program    begin    end    if
-	    then    else    while    do    $<=$    +    *    ;}    
+See attached
 
+Last rows:
+	
+	\indent $<$variable$>$ goes to a-c if token = a-c, else error
+	
+	\indent $<$digit$>$ goes to 0-2 if token = 0-2, else error
 
-\section{Write a recursive descent parser for the grammar using an imperative
-pseudocode}
-
-\section{Modify your recursive descent parser such that it prints the number of
-assignment statements in the input program after it successfully parsed the
-program, and the number of variable references.}
 
 \end{document}
