@@ -1,6 +1,8 @@
 \documentclass[12pt]{article}
 \usepackage[margin=0.75in]{geometry}
 \usepackage{indentfirst}
+\usepackage{tikz}
+\usepackage{verbatim}
 
 \title{\bf Money and Banking - Assignment 1}
 \author{Kaitlin Poskaitis and Joshua Matthews}
@@ -59,6 +61,15 @@ to appreciate in value.
 \section{Using the supply and demand for bonds framework show what the effect is
 on interest rates when the riskiness of bonds rises. Use appropriate supply and
 demand diagrams.}
+
+\begin{tikzpicture}[gnuplot]
+	\begin{axis}[
+		xlabel=$x$,
+		ylabel=$\sin(x)$
+	]
+		\addplot gnuplot[id=sin]{sin(x)};
+	\end{axis}
+\end{tikspicture}
 
 %Question 5
 \section{Suppose there are 2 kinds of bonds- default free Treasury bonds and
