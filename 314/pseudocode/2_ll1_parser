@@ -1,0 +1,50 @@
+main
+{
+	token = next_token();
+	if(program(token) and token==eof)
+		print "good";
+	else
+		print "bad";
+}
+
+bool program(String token)
+{
+	switch token
+	{
+		case "program":
+			token = next_token();
+			if(block(token) and token==eof)
+				return true;
+			else
+				return false;
+		case eof
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool block(String token)
+{
+	switch token
+	{
+		case "begin":
+			token = next_token();
+			if(stmtlist(token) and token=="end")
+				return true;
+			else
+				return false;
+		case eof:
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool stmtlist(String token)
+{
+	switch token
+	{
+
+	}
+}
