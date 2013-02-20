@@ -17,26 +17,26 @@
 coupon rate of 10\%? The bond is currently selling for \$1,044.98 and has 2 
 years to maturity.}
 
-\indent $P = \frac{C}{1+i} + \frac{C}{(1+i)^2}$
+$$P = \frac{C}{1+i} + \frac{C}{(1+i)^2}$$
 
 Where C = Coupon payment, F = Face value, P = Price, and i = Yield to maturity
 
-\indent $1044.98 = \frac{100}{1 + i} + \frac{100}{(1 + i)^2}$
+$$1044.98 = \frac{100}{1 + i} + \frac{100}{(1 + i)^2}$$
 
-\indent $i = 7.495\%$
+$$i = 7.495\%$$
 
 
 %Question 2
 \section{What is the yield to maturity on a \$1,000-face value discount bond
 maturing in one year that sells for \$800?}
 
-\indent $i = \frac{F - P}{P}$
+$$i = \frac{F - P}{P}$$
 
 Where F = Face value, i = Yield to maturity, and P = Current price
 
-\indent $i = \frac{200}{800}$
+$$i = \frac{200}{800}$$
 
-\indent $i = 25\%$
+$$i = 25\%$$
 
 
 %Question 3
@@ -68,18 +68,65 @@ to appreciate in value.
 on interest rates when the riskiness of bonds rises. Use appropriate supply and
 demand diagrams.}
 
+\pgfplotsset{
+	every axis/.append style={extra description/.code={
+		\node at (0.87,0.80) {$S_1$};
+		\node at (0.87,0.20) {$D_1$};}
+	}
+}
+\centerline{
 \begin{tikzpicture}
-	\begin{axis}[domain=0:10]
-	\addplot[mark=none, samples=100, red] function{x};
-	\addplot[mark=none, samples=100, blue] function {-x};
+	\begin{axis}[xtick=\empty,ytick=\empty,xlabel=Quantity,ylabel=Price]
+		\addplot[domain=0:10, mark=none, smooth, blue] {x};
+		%\addlegendentry{Supply}
+		\addplot[domain=0:10, mark=none, smooth, red] {-x+10};
+		%\addlegendentry{Demand}
+		%\addplot[mark=none, samples=100, red] function{x};
+		%\addplot[mark=none, samples=100, blue] function {-x};
 	\end{axis}
 \end{tikzpicture}
+}
+
+
+\pgfplotsset{
+	every axis/.append style={extra description/.code={
+		\node at (0.87,0.80) {$S_1$};
+		\node at (0.87,0.20) {$D_1$};
+		\node at (0.70,0.20) {$D_2$};}
+	}
+}
+
+\vspace{5mm}
+
+\centerline{
+\begin{tikzpicture}
+	\begin{axis}[xtick=\empty,ytick=\empty,xlabel=Quantity,ylabel=Price]
+		\addplot[domain=0:10, mark=none, smooth, blue] {x};
+		%\addlegendentry{Supply}
+		\addplot[domain=0:10, mark=none, smooth, red] {-x+10};
+		\addplot[domain=0:8, mark=none, smooth, red] {-x+8};
+		%\addlegendentry{Demand}
+		%\addplot[mark=none, samples=100, red] function{x};
+		%\addplot[mark=none, samples=100, blue] function {-x};
+	\end{axis}
+\end{tikzpicture}
+}
 
 %Question 5
 \section{Suppose there are 2 kinds of bonds- default free Treasury bonds and
 corporate bonds. Risk premium on corporate bonds are usually anticyclical; 
 that is, they decrease during business cycle expansions and increase during
 recessions. Why is this so?}
+
+As the economy goes into a period of expansion, companies are expected
+to be more successful. Fewer companies will go bankrupt, and there is
+expected to be less default risk. Expected default rates will become
+lower, and credit spreads will become more narrow. As the economy goes
+into a recession, the expected default rates will become higher and credit
+spreads will become wider. Therefore, risk premiums on corporate bonds
+will increase.  Therefore, risk premiums on corporate bonds are
+anti-cyclical - they decrease during a business cycle of expansion, and
+increase during a business cycle of recession.
 
 %Question 6
 \section{Suppose that income tax rates on the return on US Treasury bonds are
@@ -92,17 +139,25 @@ interest rates of municipal bonds?}
 you expect to be able to sell in one year for \$20, assuming you require a 
 15\% return.}
 
-\indent $P = \frac{D + P1}{1 + R}$
+$$P = \frac{D + P1}{1 + R}$$
 
 Where P = Price of stock, D = Dividend, P1 = Expected price, and R = Expected 
 return.
 
-\indent $P = \frac{1 + 20}{1 + 0.15}$ \indent $P = \frac{21}{1.15}$ 
-\indent $P = \$18.26$
+$$P = \frac{1 + 20}{1 + 0.15}$$ 
+$$P = \frac{21}{1.15}$$ 
+$$P = \$18.26$$
 
 %Question 8
 \section{If a corporation is expected to lose \$5 per share this year and it
 actually loses \$4, what does the efficient market hypothesis say will happen 
 to the price of stock when the actual loss is announced?}
+
+The efficient market hypothesis states that in an efficient market, a
+security's price fully reflects all publicly available information and
+that all unexpected profit opportunities will be eliminated. Therefore, if
+a stock's price is expected to drop \$5 and it is later announced that it
+only dropped \$4, the price of that stock will then rise. The expected loss
+was greater than the actual loss, so the price reflects upon this.
 
 \end{document}
