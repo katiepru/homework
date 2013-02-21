@@ -15,13 +15,13 @@ int main(int argc, char *argv[])
 	}
 	else if(strcmp(argv[2], "float") == 0)
 	{
+		return 0;
 	}
 	else
 	{
 		fprintf(stderr, "Cannot parse type %s. Try int or float\n", argv[2]);
 		return 2;
 	}
-	return 0;
 }
 
 void print_int(char *num)
