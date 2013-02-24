@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	}
 	else if(strcmp(argv[2], "float") == 0)
 	{
+		print_float(argv[21]);
 		return 0;
 	}
 	else
@@ -74,4 +75,40 @@ void print_int(char *num)
 
 	printf("%d\n", result);
 	return;
+}
+
+
+void print_float(char *num)
+{
+	int is_neg = 0;
+	int exp = 0;
+	int dec = 0;
+	int i;
+	int two_pow = 1;
+
+	if(num[0] == '1')
+	{
+		is_neg = 1;
+	}
+
+	for(i = 8; i >= 1; i--)
+	{
+		if(num[i] == '1')
+		{
+			exp += two_pow;
+		}
+		two_pow *= 2;
+	}
+	
+	two_pow = 1;
+
+	for(i = 31; i > 8; i--)
+	{
+		if(num[i] == '1')
+		{
+			dec += two_pow;
+		}
+
+		two_pow *= 2;
+	}
 }

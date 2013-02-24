@@ -5,5 +5,6 @@
 #include <string.h>
 
 void print_int(char *num);
+void print_float(char *num);
 
 #endif
