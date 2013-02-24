@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	}
 	else if(strcmp(argv[2], "float") == 0)
 	{
-		print_float(argv[21]);
+		print_float(argv[1]);
 		return 0;
 	}
 	else
@@ -103,6 +103,7 @@ void print_float(char *num)
 	}
 
 	exp -= 127;
+	printf("exp= %d", exp);
 	
 	for(i = 9; i < 32; i++)
 	{
@@ -120,4 +121,38 @@ void print_float(char *num)
 	}
 
 	dec *= pow;
+
+	if(is_neg)
+	{
+		dec = -dec;
+	}
+
+	printf("Dec= %f\n", dec);
+}
+
+float pow(float base, int exp)
+{
+	int i;
+	float res = 1;
+
+	if(exp == 0)
+	{
+		return 1.0;
+	}
+	else if(exp > 0)
+	{
+		for(i = 0; i < exp; i++)
+		{
+			res *= base;
+		}
+	}
+	else
+	{
+		 base = 1/base;
+		 for(i = 0; i > exp; i--)
+		 {
+			 res *= base;
+		 }
+	}
+	return res;
 }
