@@ -86,7 +86,6 @@ void print_float(char *num)
 	int i;
 	int two_pow = 1;
 	float half_pow = 1;
-	int pow = 1;
 
 	if(num[0] == '1')
 	{
@@ -103,24 +102,24 @@ void print_float(char *num)
 	}
 
 	exp -= 127;
-	printf("exp= %d", exp);
 	
+	dec += half_pow;
+	half_pow *= 0.5;
+
 	for(i = 9; i < 32; i++)
 	{
 		if(num[i] == '1')
 		{
+			printf("pow = %f\n", half_pow);
 			dec += half_pow;
 		}
 
 		half_pow *= 0.5;
 	}
 
-	for(i = 0; i < exp; i++)
-	{
-		pow *= 2;
-	}
+	printf("dec = %f, Exp = %d\n", dec, exp);
 
-	dec *= pow;
+	dec = dec * power(2.0, exp);
 
 	if(is_neg)
 	{
@@ -130,7 +129,7 @@ void print_float(char *num)
 	printf("Dec= %f\n", dec);
 }
 
-float pow(float base, int exp)
+float power(float base, int exp)
 {
 	int i;
 	float res = 1;
