@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *to_binary(char *input);
+char *hex_to_bin(char *num);
+char *dec_to_bin(char *num);
+char *oct_to_bin(char *num);
 
 #endif

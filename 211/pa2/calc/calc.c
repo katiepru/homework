@@ -2,8 +2,11 @@
 
 int main(int argc, char *argv[])
 {
-	char *num1;
-	char *num2;
+	char *nums[2];	
+	char c;
+	int i;
+	int j = 0;
+	int k;
 
 	if(argc != 5)
 	{
@@ -11,36 +14,53 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	num1 = to_binary(argv[2]);
-	num2 = to_binary(argv[3]);
+	/*Iterate through nums to convert to binary*/	
+	for(k = 0; k<2; k++)
+	{
+		if(argv[k+2][0] == '-')
+		{
+			c = argv[k+2][1];
+		}
+		else
+		{
+			c = argv[k+2][0];
+		}
+	
+		if(c == 'b')
+		{
+			nums[k] = calloc(strlen(argv[k+2])-1, sizeof(char));
+			for(i = 0; i<strlen(argv[k+2]); i++)
+			{
+				if(argv[k+2][i] == 'b')
+				{
+					continue;
+				}
+				nums[k][j] = argv[k+2][i];
+				j++;
+			}
+		}
+		else if(c == 'o')
+		{
+			nums[k] = oct_to_bin(argv[k+2]);
+		}
+		else if(c == 'x')
+		{
+			nums[k] = hex_to_bin(argv[k+2]);
+		}
+		else if(c == 'd')
+		{
+			nums[k] = dec_to_bin(argv[k+2]);
+		}
+		else
+		{
+			fprintf(stderr, "ERROR: Unrecognized format");
+			return 3;
+		}
+	}
 
-	printf("num1= %s; num2=%s\n", num1, num2);
+
+	printf("num1= %s; num2=%s\n", nums[0], nums[1]);
 
 	return 0;
 }
 
-char *to_binary(char *input)
-{
-	int is_neg=0;
-	int i = 0;
-	char *output;
-	if(input[0] == '-')
-	{
-		is_neg=1;
-		i = 1;
-	}
-	if(input[i] == 'b')
-	{
-		output = calloc(strlen(input)-1, sizeof(char));
-		if(is_neg)
-		{
-			output[0] = '-';
-		}
-		for(i=i+1; i<strlen(input); i++)
-		{
-			output[i-1] = input[1];
-		}
-	}
-
-	return output;
-}
