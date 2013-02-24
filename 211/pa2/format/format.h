@@ -6,6 +6,7 @@
 
 void print_int(char *num);
 void print_float(char *num);
+void print_sci(float num);
 float power(float base, int exp);
 
 #endif

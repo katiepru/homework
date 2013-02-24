@@ -125,8 +125,21 @@ void print_float(char *num)
 	{
 		dec = -dec;
 	}
+	print_sci(dec);
+}
 
-	printf("Dec= %f\n", dec);
+void print_sci(float num)
+{
+	int exp = 0;
+
+	if(num > 0 && num < 1)
+	{
+		while(num % 1 == 0)
+		{
+			num *= 10;
+			exp ++;
+		}
+	}
 }
 
 float power(float base, int exp)
