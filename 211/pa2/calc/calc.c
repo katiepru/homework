@@ -64,6 +64,47 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+/*Start arithmetic functions*/
+
+char *add_sub(char *num1, char *num2, int sub)
+{
+	if(num1[0] != '-' && ((num2[0] != '-' && !sub) || 
+		num2[0] == '-' && sub))
+	{
+		add(num1, num2);
+	}
+	else if(num1[0] == '-' && ((num2[0] == '-' && !sub) ||
+		num2[0] != '-' && sub))
+	{
+		add(num1, num2);
+		/*make neg*/
+	}
+	else if(num1[0] == '-')
+	{
+		subtract(num2, num1);
+	}
+	else
+	{
+		subtract(num1, num2);
+	}
+}
+
+char *add(char *num1, char *num2)
+{
+	char *res = calloc(max(strlen(num1), strlen(num2))+1,
+		sizeof(char));
+	int i = 0;
+	int j = 0;
+	int k = 0;
+
+	if(max(strlen(num1), strlen(num2)) == strlen(num1))
+	{
+
+	}
+}
+
+
+
 /*Start Stack Functions*/
 
 struct Node *pop(struct Stack *s)
