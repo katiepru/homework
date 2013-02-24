@@ -131,6 +131,11 @@ void print_sci(float num)
 	int is_neg = 0;
 	int exp = 0;
 
+	if(num == 0 || num == -0)
+	{
+		printf("%fe0\n", num);
+		return;
+	}
 	if(num < 0)
 	{
 		is_neg = 1;
