@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 }
+
 /*Prints an int from twos complement*/
 void print_int(char *num)
 {
@@ -110,14 +111,11 @@ void print_float(char *num)
 	{
 		if(num[i] == '1')
 		{
-			printf("pow = %f\n", half_pow);
 			dec += half_pow;
 		}
 
 		half_pow *= 0.5;
 	}
-
-	printf("dec = %f, Exp = %d\n", dec, exp);
 
 	dec = dec * power(2.0, exp);
 
@@ -130,16 +128,32 @@ void print_float(char *num)
 
 void print_sci(float num)
 {
+	int is_neg = 0;
 	int exp = 0;
 
-	if(num > 0 && num < 1)
+	if(num < 0)
 	{
-		while(num % 1 == 0)
-		{
-			num *= 10;
-			exp ++;
-		}
+		is_neg = 1;
+		num = -num;
 	}
+	while(num < 1)
+	{
+		num *= 10;
+		exp --;
+	}
+	while(num >= 10)
+	{
+		num /= 10;
+		exp ++;
+	}
+
+	if(is_neg)
+	{
+		num = -num;
+	}
+
+	printf("%fe%d\n", num, exp);
+	return;
 }
 
 float power(float base, int exp)
