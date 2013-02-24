@@ -82,9 +82,11 @@ void print_float(char *num)
 {
 	int is_neg = 0;
 	int exp = 0;
-	int dec = 0;
+	float dec = 0;
 	int i;
 	int two_pow = 1;
+	float half_pow = 1;
+	int pow = 1;
 
 	if(num[0] == '1')
 	{
@@ -99,16 +101,23 @@ void print_float(char *num)
 		}
 		two_pow *= 2;
 	}
-	
-	two_pow = 1;
 
-	for(i = 31; i > 8; i--)
+	exp -= 127;
+	
+	for(i = 9; i < 32; i++)
 	{
 		if(num[i] == '1')
 		{
-			dec += two_pow;
+			dec += half_pow;
 		}
 
-		two_pow *= 2;
+		half_pow *= 0.5;
 	}
+
+	for(i = 0; i < exp; i++)
+	{
+		pow *= 2;
+	}
+
+	dec *= pow;
 }
