@@ -64,3 +64,26 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+/*Start Stack Functions*/
+
+struct Node *pop(struct Stack *s)
+{
+	if(peek(s) == NULL) return NULL;
+	struct Node *res = s->head;
+	s->head = s->head->next;
+	return res;
+}
+
+struct Node *peek(struct Stack *s)
+{
+	return s->head;
+}
+
+void push(struct Stack *s, struct Node *node)
+{
+	node->next = s->head;
+	s->head = node;
+	return;
+}
+
+/*End Stack Functions*/
