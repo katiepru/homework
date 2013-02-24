@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 }
-
+/*Prints an int*/
 void print_int(char *num)
 {
 	int i;
