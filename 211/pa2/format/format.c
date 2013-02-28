@@ -69,12 +69,38 @@ void print_int(char *num)
 		pow *= 2;
 	}
 
-	if(is_neg)
-	{
-		result = -result;
-	}
 
 	printf("%d\n", result);
+	int_to_ascii(result, is_neg);
+	return;
+}
+
+void int_to_ascii(int num, int is_neg)
+{
+	char *result = calloc(12, sizeof(char));
+	int ind = 0;
+	int i;
+	double conv_num = (double)num;
+	double div = 1000000000;
+	int tmp;
+	if(is_neg)
+	{
+		result[0] = '-';
+		ind++;
+	}
+
+	for(i = ind; i < 12; i++)
+	{
+		tmp = floor(conv_num/div);
+		if(tmp > 0)
+		{
+			result[ind] = (char)(((int)'0')+tmp);
+			ind++;
+			conv_num = conv_num - (tmp * div);
+		}
+		div = div/10;
+	}
+	printf("converted int is %s", result);
 	return;
 }
 
