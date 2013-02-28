@@ -1,0 +1,57 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+
+\title{\bf Kaitlin Poskaitis - Homework 4}
+\author{Section 2}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Pointers}
+
+\section{Freeing Memory}
+
+\begin{lstlisting}
+/*Deallocate List*/
+Node *curr = head;
+if(curr == NULL) return;
+Node *next = head->next;
+while(next != NULL)
+{
+	free(curr);
+	curr = next;
+	next = next->next;
+}
+free(curr);
+
+\end{lstlisting}
+
+\section{Lexical/Dynamic Scoping}
+
+\end{document}
