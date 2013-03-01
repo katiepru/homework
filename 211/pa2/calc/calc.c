@@ -10,13 +10,14 @@ int main(int argc, char *argv[])
 
 	if(argc != 5)
 	{
-		fprintf(stderr, "ERROR: Wrong number of arguments.");
+		fprintf(stderr, "ERROR: Wrong number of arguments.\n");
 		return 1;
 	}
 
 	/*Iterate through nums to convert to binary*/	
 	for(k = 0; k<2; k++)
 	{
+		j = 0;
 		if(argv[k+2][0] == '-')
 		{
 			c = argv[k+2][1];
@@ -53,13 +54,27 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			fprintf(stderr, "ERROR: Unrecognized format");
+			fprintf(stderr, "ERROR: Unrecognized format\n");
 			return 3;
 		}
 	}
 
 
 	printf("num1= %s; num2=%s\n", nums[0], nums[1]);
+
+	if(argv[1][0] == '+')
+	{
+		add_sub(nums[0], nums[1], 0);
+	}
+	else if(argv[1][0] == '-')
+	{
+		add_sub(nums[0], nums[1], 1);
+	}
+	else if(argv[1][0] == '*')
+	{
+		/*multiply(nums[0], nums[1]);*/
+		puts("maybe later...\n");
+	}
 
 	return 0;
 }
@@ -164,15 +179,69 @@ char *add(char *num1, char *num2)
 		curr_carry = 0;
 	}
 
-	printf("sum is %s", res);
+	while(max_ind >= 0)
+	{
+		res[res_ind] = max[max_ind];
+		if(prev_carry == 1)
+		{
+			if(res[res_ind] == '0')
+			{
+				res[res_ind] = '1';
+				prev_carry = 0;
+			}
+			else
+			{
+				res[res_ind] = '0';
+			}
+		}
+		max_ind--;
+		res_ind--;
+	}
+
+	if(prev_carry == 1)
+	{
+		res[res_ind] = '1';
+		res_ind--;
+	}
+
+	while(res_ind >= 0 && res[res_ind] != '-')
+	{
+		res[res_ind] = '0';
+		res_ind--;
+	}
+
+
+	printf("sum is %s\n", res);
 
 	return res;
 }
 
 char *subtract(char *num1, char *num2)
+{
+	return "foo";
+}
 
 /*End arithmetic functions*/
 
+
+/*Start conversion functions*/
+
+char *hex_to_bin(char *num)
+{
+	return "hex_to_bin";
+}
+
+char *dec_to_bin(char *num)
+{
+	return "dec_to_bin";
+}
+
+char *oct_to_bin(char *num)
+{
+	return "oct_to_bin";
+}
+
+/*End conversion functions*/
 
 
 /*Start Stack Functions*/
