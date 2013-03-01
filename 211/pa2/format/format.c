@@ -100,7 +100,7 @@ char *int_to_ascii(int num, int is_neg)
 		free(tmp);
 	}
 
-	if(strlen(result) == 0)
+	if((strlen(result) == 0) || (strlen(result) == 1 && result[0] == '-'))
 	{
 		result[0] = '0';
 	}
@@ -160,6 +160,7 @@ void print_sci(float num)
 	int is_neg = 0;
 	int exp_is_neg = 0;
 	int exp = 0;
+	int precision = 0;
 	float after_dec;
 
 	if(num < 0)
@@ -167,10 +168,11 @@ void print_sci(float num)
 		is_neg = 1;
 		num = -num;
 	}
-	while(num < 1)
+	while(num < 1 && precision < 7)
 	{
 		num *= 10;
 		exp --;
+		precision++;
 	}
 	while(num >= 10)
 	{
@@ -180,11 +182,11 @@ void print_sci(float num)
 	if(exp < 0)
 	{
 		exp_is_neg = 1;
+		exp = -exp;
 	}
 
 	after_dec = num - (float)((int) num);
 
-	printf("%fe%d\n", num, exp);
 	printf("%s.%se%s\n", int_to_ascii((int) num, is_neg),
 		float_to_ascii(after_dec), 	int_to_ascii(exp, exp_is_neg));
 	return;
@@ -195,6 +197,10 @@ char *float_to_ascii(float num)
 	int tmp_num;
 
 	tmp_num = (int) (num*power(10, 7));
+	if(tmp_num == 0)
+	{
+		return(int_to_ascii(tmp_num, 0));
+	}
 	while(tmp_num%10 == 0)
 	{
 		tmp_num /= 10;
