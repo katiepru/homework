@@ -68,11 +68,11 @@ void print_int(char *num)
 		}
 		pow *= 2;
 	}
-	int_to_ascii(result, is_neg);
+	printf("%s\n", int_to_ascii(result, is_neg));
 	return;
 }
 
-void int_to_ascii(int num, int is_neg)
+char *int_to_ascii(int num, int is_neg)
 {
 	char *result = calloc(12, sizeof(char));
 	int digit;
@@ -95,7 +95,6 @@ void int_to_ascii(int num, int is_neg)
 	while(peek(s) != NULL)
 	{
 		tmp = pop(s);
-		printf("we just popped %c\n", tmp->data);
 		result[is_neg] = tmp->data;
 		is_neg++;
 		free(tmp);
@@ -103,12 +102,9 @@ void int_to_ascii(int num, int is_neg)
 
 	if(strlen(result) == 0)
 	{
-		printf("0\n");
+		result[0] = '0';
 	}
-	else
-	{
-		printf("%s\n", result);
-	}
+	return result;
 }
 
 
@@ -162,13 +158,10 @@ void print_float(char *num)
 void print_sci(float num)
 {
 	int is_neg = 0;
+	int exp_is_neg = 0;
 	int exp = 0;
+	float after_dec;
 
-	if(num == 0 || num == -0)
-	{
-		printf("%fe0\n", num);
-		return;
-	}
 	if(num < 0)
 	{
 		is_neg = 1;
@@ -184,14 +177,30 @@ void print_sci(float num)
 		num /= 10;
 		exp ++;
 	}
-
-	if(is_neg)
+	if(exp < 0)
 	{
-		num = -num;
+		exp_is_neg = 1;
 	}
 
+	after_dec = num - (float)((int) num);
+
 	printf("%fe%d\n", num, exp);
+	printf("%s.%se%s\n", int_to_ascii((int) num, is_neg),
+		float_to_ascii(after_dec), 	int_to_ascii(exp, exp_is_neg));
 	return;
+}
+
+char *float_to_ascii(float num)
+{
+	int tmp_num;
+
+	tmp_num = (int) (num*power(10, 7));
+	while(tmp_num%10 == 0)
+	{
+		tmp_num /= 10;
+	}
+	
+	return int_to_ascii(tmp_num, 0);
 }
 
 float power(float base, int exp)
