@@ -14,6 +14,7 @@ typedef struct Node
 
 typedef struct Stack
 {
+	int size;
 	struct Node *head;
 } Stack;
 
@@ -29,9 +30,10 @@ char *subtract(char *num1, char *num2);
 char *mult(char *num1, char *num2);
 
 /*Stack functions*/
+struct Stack *create_stack(struct Node *n);
+struct Node *create_node(char data);
 struct Node *pop(struct Stack *s);
 struct Node *peek(struct Stack *s);
 void push(struct Stack *s, struct Node *node);
-
-
+void destroy_stack(struct Stack *s);
 

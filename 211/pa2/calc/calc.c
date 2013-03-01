@@ -107,6 +107,38 @@ char *add(char *num1, char *num2)
 
 /*Start Stack Functions*/
 
+struct Node *create_node(char data)
+{
+	struct Node *n = malloc(sizeof(struct Node));
+	n->data = data;
+	n->next = NULL;
+	return n;
+}
+
+struct Stack *create_stack(struct Node *n)
+{
+	struct Stack *s = malloc(sizeof(struct Stack));
+	s->head = n;
+	if(n == NULL)
+	{
+		s->size = 0;
+	}
+	else
+	{
+		s->size = 1;
+	}
+	return s;
+}
+
+void destroy_stack(struct Stack *s)
+{
+	while(peek(s) != NULL)
+	{
+		free(pop(s));
+	}
+	free(s);
+}
+
 struct Node *pop(struct Stack *s)
 {
 	if(peek(s) == NULL) return NULL;
