@@ -68,9 +68,6 @@ void print_int(char *num)
 		}
 		pow *= 2;
 	}
-
-
-	printf("%d\n", result);
 	int_to_ascii(result, is_neg);
 	return;
 }
@@ -87,7 +84,7 @@ void int_to_ascii(int num, int is_neg)
 		result[0] = '-';
 	}
 
-	while(num%10 != 0)
+	while(num > 0)
 	{
 		digit = num%10;
 		push(s, create_node((char)(((int)'0')+digit)));
@@ -98,12 +95,20 @@ void int_to_ascii(int num, int is_neg)
 	while(peek(s) != NULL)
 	{
 		tmp = pop(s);
+		printf("we just popped %c\n", tmp->data);
 		result[is_neg] = tmp->data;
 		is_neg++;
 		free(tmp);
 	}
 
-	printf("We think it is %s\n", result);
+	if(strlen(result) == 0)
+	{
+		printf("0\n");
+	}
+	else
+	{
+		printf("%s\n", result);
+	}
 }
 
 
