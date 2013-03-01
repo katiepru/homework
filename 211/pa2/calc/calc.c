@@ -68,40 +68,110 @@ int main(int argc, char *argv[])
 
 char *add_sub(char *num1, char *num2, int sub)
 {
+	char *result;
+	/*Add two positive numbers*/
 	if(num1[0] != '-' && ((num2[0] != '-' && !sub) || 
-		num2[0] == '-' && sub))
+		(num2[0] == '-' && sub)))
 	{
-		add(num1, num2);
+		result = add(num1, num2);
 	}
+	/*Add two negative numbers*/
 	else if(num1[0] == '-' && ((num2[0] == '-' && !sub) ||
-		num2[0] != '-' && sub))
+		(num2[0] != '-' && sub)))
 	{
-		add(num1, num2);
+		result = add(num1, num2);
 		/*make neg*/
 	}
 	else if(num1[0] == '-')
 	{
-		subtract(num2, num1);
+		result = subtract(num2, num1);
 	}
 	else
 	{
-		subtract(num1, num2);
+		result = subtract(num1, num2);
 	}
+
+	return result;
 }
 
 char *add(char *num1, char *num2)
 {
-	char *res = calloc(max(strlen(num1), strlen(num2))+1,
+	char *res = calloc(MAX(strlen(num1), strlen(num2))+1,
 		sizeof(char));
-	int i = 0;
-	int j = 0;
-	int k = 0;
+	int ind = 0;
+	int curr_carry = 0;
+	int prev_carry = 0;
+	char *max;
+	char *min;
+	int max_ind;
+	int min_ind;
+	int res_ind = MAX(strlen(num1), strlen(num2))+1;
 
-	if(max(strlen(num1), strlen(num2)) == strlen(num1))
+	if(num1[0] == '-')
 	{
-
+		ind = 1;
+		res[0] = '-';
 	}
+
+	/*Find longer number*/
+	if(strlen(num1) >= strlen(num2))
+	{
+		max = num1;
+		min = num2;
+	}
+	else
+	{
+		max = num2;
+		min = num1;
+	}
+
+	max_ind = strlen(max) - 1;
+	min_ind = strlen(min) -1;
+
+	while(min_ind >= ind)
+	{
+		if(max[max_ind] == '0' && min[min_ind] == '0')
+		{
+			res[res_ind] = '0';
+		}
+		else if(max[max_ind] == '1' && min[min_ind] == '1')
+		{
+			res[res_ind] = '0';
+			curr_carry = 1;
+		}
+		else
+		{
+			res[res_ind] = '1';
+		}
+
+		if(prev_carry)
+		{
+			if(res[res_ind] == '0')
+			{
+				res[res_ind] = '1';
+			}
+			else
+			{
+				res[res_ind] = '0';
+				curr_carry = 1;
+			}
+		}
+
+		max_ind--;
+		min_ind--;
+		res_ind--;
+		prev_carry = curr_carry;
+		curr_carry = 0;
+	}
+
+	printf("sum is %s", res);
+
+	return res;
 }
+
+char *subtract(char *num1, char *num2)
+
+/*End arithmetic functions*/
 
 
 
@@ -141,8 +211,9 @@ void destroy_stack(struct Stack *s)
 
 struct Node *pop(struct Stack *s)
 {
+	struct Node *res;
 	if(peek(s) == NULL) return NULL;
-	struct Node *res = s->head;
+	res = s->head;
 	s->head = s->head->next;
 	return res;
 }
