@@ -78,30 +78,32 @@ void print_int(char *num)
 void int_to_ascii(int num, int is_neg)
 {
 	char *result = calloc(12, sizeof(char));
-	int ind = 0;
-	int i;
-	double conv_num = (double)num;
-	double div = 1000000000;
-	int tmp;
-	if(is_neg)
+	int digit;
+	struct Stack *s = create_stack(NULL);
+	struct Node *tmp;
+	
+	if(is_neg == 1)
 	{
 		result[0] = '-';
-		ind++;
 	}
 
-	for(i = ind; i < 12; i++)
+	while(num%10 != 0)
 	{
-		tmp = floor(conv_num/div);
-		if(tmp > 0)
-		{
-			result[ind] = (char)(((int)'0')+tmp);
-			ind++;
-			conv_num = conv_num - (tmp * div);
-		}
-		div = div/10;
+		digit = num%10;
+		push(s, create_node((char)(((int)'0')+digit)));
+		num -= digit;
+		num /= 10;
 	}
-	printf("converted int is %s", result);
-	return;
+
+	while(peek(s) != NULL)
+	{
+		tmp = pop(s);
+		result[is_neg] = tmp->data;
+		is_neg++;
+		free(tmp);
+	}
+
+	printf("We think it is %s\n", result);
 }
 
 
@@ -213,3 +215,62 @@ float power(float base, int exp)
 	}
 	return res;
 }
+
+/*Begin Stack Functions*/
+
+struct Node *create_node(char data)
+{
+	struct Node *n = malloc(sizeof(struct Node));
+	n->data = data;
+	n->next = NULL;
+	return n;
+}
+
+struct Stack *create_stack(struct Node *head)
+{
+	struct Stack *s = malloc(sizeof(struct Stack));
+	s->head = head;
+	if(head != NULL)
+	{
+		s->size = 1;
+	}
+	else
+	{
+		s->size = 0;
+	}
+	return s;
+}
+
+void destroy_stack(struct Stack *s)
+{
+	struct Node *tmp;
+	while(peek(s) != NULL)
+	{
+		tmp = pop(s);
+		free(tmp);
+	}
+	free(s);
+}
+
+void push(struct Stack *s, struct Node *n)
+{
+	n->next = s->head;
+	s->head = n;
+	return;
+}
+
+struct Node *pop(struct Stack *s)
+{
+	struct Node *res = s->head;
+	assert(res != NULL);
+	s->head = s->head->next;
+	s->size--;
+	return res;
+}
+
+struct Node *peek(struct Stack *s)
+{
+	return s->head;
+}
+
+/*End Stack functions*/
