@@ -56,14 +56,12 @@
 
 \begin{lstlisting}
 /*Deallocate List*/
-Node *curr = head;
-if(curr == NULL) return;
-Node *next = head->next;
-while(next != NULL)
+current_cell = head;
+while (current_cell != NULL)
 {
-	free(curr);
-	curr = next;
-	next = next->next;
+	next_cell = current_cell->next;
+	free(current_cell;
+	current_cell = next_cell;
 }
 free(curr);
 
