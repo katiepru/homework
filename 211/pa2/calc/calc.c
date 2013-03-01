@@ -241,6 +241,21 @@ char *oct_to_bin(char *num)
 	return "oct_to_bin";
 }
 
+char *bin_to_hex(char *num)
+{
+	return "bin_to_hex";
+}
+
+char *bin_to_oct(char *num)
+{
+	return "bin_to_oct";
+}
+
+char *bin_to_dec(char *num)
+{
+	return "bin_to_dec";
+}
+
 /*End conversion functions*/
 
 
