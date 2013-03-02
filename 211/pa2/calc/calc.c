@@ -248,7 +248,61 @@ char *bin_to_hex(char *num)
 
 char *bin_to_oct(char *num)
 {
-	return "bin_to_oct";
+	char *result = calloc((strlen(num)/3)+1, sizeof(char));
+	char *triplet = calloc(3, sizeof(char));
+	int bin_ind = strlen(num)-1;
+	int res_ind = strlen(num)/3;
+
+	while(bin_ind >= 3)
+	{
+		triplet[0] = num[bin_ind-2];
+		triplet[1] = num[bin_ind-1];
+		triplet[2] = num[bin_ind];
+
+		if(strcmp(triplet, "000") == 0)
+		{
+			result[res_ind] = '0';
+		}
+		else if(strcmp(triplet, "001") == 0)
+		{
+			result[res_ind] = '1';
+		}
+		else if(strcmp(triplet, "010") == 0)
+		{
+			result[res_ind] = '2';
+		}
+		else if(strcmp(triplet, "011") == 0)
+		{
+			result[res_ind] = '3';
+		}
+		else if(strcmp(triplet, "100") == 0)
+		{
+			result[res_ind] = '4';
+		}
+		else if(strcmp(triplet, "101") == 0)
+		{
+			result[res_ind] = '5';
+		}
+		else if(strcmp(triplet, "110") == 0)
+		{
+			result[res_ind] = '6';
+		}
+		else
+		{
+			result[res_ind] = '7';
+		}
+		res_ind--;
+		bin_ind -= 3;
+		memset(triplet, 0, sizeof(triplet));
+	}
+
+	while(res_ind >= 0)
+	{
+		result[res_ind] = '0';
+		res_ind--;
+	}
+
+	return result;
 }
 
 char *bin_to_dec(char *num)
