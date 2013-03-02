@@ -243,6 +243,24 @@ char *oct_to_bin(char *num)
 
 char *bin_to_hex(char *num)
 {
+	char *result = calloc((strlen(num)/4)+1, sizeof(char));
+	char *quad = calloc(4, sizeof(char));
+	int bin_ind = strlen(num) - 1;
+	int res_ind = strlen(num)/4;
+
+	while(bin_ind >= 4)
+	{
+		quad[0] = num[bin_ind-3];
+		quad[1] = num[bin_ind-2];
+		quad[2] = num[bin_ind-1];
+		quad[3] = num[bin_ind];
+
+		if(strcmp(quad, "0000") == 0)
+		{
+			result[res_ind] = '0';
+		}
+	}
+
 	return "bin_to_hex";
 }
 
