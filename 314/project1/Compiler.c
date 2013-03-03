@@ -107,7 +107,7 @@ static int variable()
 		exit(EXIT_FAILURE);
 	}
 	reg = next_register();
-	CodeGen(LOAD, reg, to_digit(token), EMPTY_FIELD);
+	CodeGen(LOAD, reg, token, EMPTY_FIELD);
 	next_token();
 	return reg;
 }
@@ -138,6 +138,12 @@ static int expr()
 		reg = next_register();
 		CodeGen(MUL, reg, left_reg, right_reg);
 		return reg;
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+		return variable();
 	case '0':
 	case '1':
 	case '2':
@@ -158,7 +164,6 @@ static int expr()
 static void assign()
 {
 	int var = variable();
-	next_token();
 	if(token != '=')
 	{
 		ERROR("Expected =, got %c\n", token);
@@ -166,20 +171,21 @@ static void assign()
 	}
 	else
 	{
+		next_token();
 		CodeGen(STORE, var, expr(), EMPTY_FIELD);
 	}
 }
 
 static void read()
 {
-	CodeGen(READ, variable(), EMPTY_FIELD, EMPTY_FIELD);
-	next_token();
+	int var = variable();
+	CodeGen(READ, var, EMPTY_FIELD, EMPTY_FIELD);
 }
 
 static void print()
 {
-	CodeGen(WRITE, variable(), EMPTY_FIELD, EMPTY_FIELD);
-	next_token();
+	int var = variable();
+	CodeGen(WRITE, var, EMPTY_FIELD, EMPTY_FIELD);
 }
 
 static void stmt()
