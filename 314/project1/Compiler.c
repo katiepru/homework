@@ -147,39 +147,71 @@ static int expr()
 
 static void assign()
 {
-	/* YOUR CODE GOES HERE */
+	int var = variable();
+	next_token();
+	if(token != '=')
+	{
+		ERROR("Expected =, got %c\n", token);
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		CodeGen(STORE, var, expr(), EMPTY_FIELD);
+	}
 }
 
 static void read()
 {
-	/* YOUR CODE GOES HERE */
+	CodeGen(READ, variable(), EMPTY_FIELD, EMPTY_FIELD);
+	next_token();
 }
 
 static void print()
 {
-	/* YOUR CODE GOES HERE */
+	CodeGen(WRITE, variable(), EMPTY_FIELD, EMPTY_FIELD);
+	next_token();
 }
 
 static void stmt()
 {
-	/* YOUR CODE GOES HERE */
+	switch (token)
+	{
+	case '?':
+		next_token();
+		read();
+		break;
+	case '!':
+		next_token();
+		print();
+		break;
+	default:
+		assign();
+		break;
+	}
 }
 
 static void morestmts()
 {
-	/* YOUR CODE GOES HERE */
+	switch (token)
+	{
+		case ';':
+			next_token();
+			stmtlist();
+			break;
+		default:
+			break;
+	}
 }
 
 static void stmtlist()
 {
-	/* YOUR CODE GOES HERE */
+	stmt();
+	morestmts();
 }
 
 static void program()
 {
-	/* YOUR CODE GOES HERE */
-	/* the following expr(); is to get you started */
-	expr();
+	stmtlist();
 	if (token != '.') {
 		ERROR("Program error.  Current input symbol is %c\n", token);
 		exit(EXIT_FAILURE);
