@@ -259,6 +259,70 @@ char *bin_to_hex(char *num)
 		{
 			result[res_ind] = '0';
 		}
+		else if(strcmp(quad, "0001") == 0)
+		{
+			result[res_ind] = '1';
+		}
+		else if(strcmp(quad, "0010") == 0)
+		{
+			result[res_ind] = '2';
+		}
+		else if(strcmp(quad, "0011") == 0)
+		{
+			result[res_ind] = '3';
+		}
+		else if(strcmp(quad, "0100") == 0)
+		{
+			result[res_ind] = '4';
+		}
+		else if(strcmp(quad, "0101") == 0)
+		{
+			result[res_ind] = '5';
+		}
+		else if(strcmp(quad, "0110") == 0)
+		{
+			result[res_ind] = '6';
+		}
+		else if(strcmp(quad, "0111") == 0)
+		{
+			result[res_ind] = '7';
+		}
+		else if(strcmp(quad, "1000") == 0)
+		{
+			result[res_ind] = '8';
+		}
+		else if(strcmp(quad, "1001") == 0)
+		{
+			result[res_ind] = '9';
+		}
+		else if(strcmp(quad, "1010") == 0)
+		{
+			result[res_ind] = 'a';
+		}
+		else if(strcmp(quad, "1011") == 0)
+		{
+			result[res_ind] = 'b';
+		}
+		else if(strcmp(quad, "1100") == 0)
+		{
+			result[res_ind] = 'c';
+		}
+		else if(strcmp(quad, "1101") == 0)
+		{
+			result[res_ind] = 'd';
+		}
+		else if(strcmp(quad, "1110") == 0)
+		{
+			result[res_ind] = 'e';
+		}
+		else if(strcmp(quad, "1111") == 0)
+		{
+			result[res_ind] = 'f';
+		}
+		else
+		{
+			fprintf(stderr, "Unrecognized quad %s\n.", quad);
+		}
 	}
 
 	return "bin_to_hex";
