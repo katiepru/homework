@@ -99,7 +99,17 @@ static int digit()
 
 static int variable()
 {
-	/* YOUR CODE GOES HERE */
+	int reg;
+
+	if(!is_identifier(token))
+	{
+		ERROR("Expected identifier\n");
+		exit(EXIT_FAILURE);
+	}
+	reg = next_register();
+	CodeGen(LOAD, reg, to_digit(token), EMPTY_FIELD);
+	next_token();
+	return reg;
 }
 
 static int expr()
