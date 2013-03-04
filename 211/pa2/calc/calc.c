@@ -2,7 +2,8 @@
 
 int main(int argc, char *argv[])
 {
-	char *nums[2];	
+	char *nums[2];
+	char *result;
 	char c;
 	int i;
 	int j = 0;
@@ -64,17 +65,38 @@ int main(int argc, char *argv[])
 
 	if(argv[1][0] == '+')
 	{
-		add_sub(nums[0], nums[1], 0);
+		result = add_sub(nums[0], nums[1], 0);
 	}
 	else if(argv[1][0] == '-')
 	{
-		add_sub(nums[0], nums[1], 1);
+		result = add_sub(nums[0], nums[1], 1);
 	}
 	else if(argv[1][0] == '*')
 	{
 		/*multiply(nums[0], nums[1]);*/
 		puts("maybe later...\n");
 	}
+
+	c = argv[5][0];
+	switch (c)
+	{
+		case 'b':
+			break;
+		case 'o':
+			result = bin_to_oct(result);
+			break;
+		case 'x':
+			result = bin_to_hex(result);
+			break;
+		case 'd':
+			result = bin_to_dec(result);
+			break;
+		default:
+			fprintf(stderr, "Invalid output base.\n");
+			return 3;
+	}
+
+	printf("%s\n", result);
 
 	return 0;
 }
@@ -219,6 +241,19 @@ char *add(char *num1, char *num2)
 char *subtract(char *num1, char *num2)
 {
 	return "foo";
+}
+
+char *multiply(char *num1, char *num2)
+{
+	char *result = calloc(strlen(num1)+strlen(num2), sizeof(char));
+	result = strdup(num1);
+	subtract(num2, "1");
+	while(num2 != "0")
+	{
+		result = add(result, num1);
+		num2 = subtract(num2, "1");
+	}
+	return result;
 }
 
 /*End arithmetic functions*/
