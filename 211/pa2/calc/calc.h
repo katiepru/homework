@@ -43,3 +43,5 @@ struct Node *peek(struct Stack *s);
 void push(struct Stack *s, struct Node *node);
 void destroy_stack(struct Stack *s);
 
+/*String functions*/
+char *strdup(char *str);

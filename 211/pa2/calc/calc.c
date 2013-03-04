@@ -245,7 +245,48 @@ char *subtract(char *num1, char *num2)
 
 char *multiply(char *num1, char *num2)
 {
-	char *result = calloc(strlen(num1)+strlen(num2), sizeof(char));
+	char *result = calloc(strlen(num1)+strlen(num2)+1, sizeof(char));
+	char *conv_num1;
+	char *conv_num2;
+	int is_neg = 0;
+	int i;
+
+	if((num1[0] == '-' && num2[0] != '-') || (num1[0] != '-' && num2[0] == '-'))
+	{
+		is_neg = 1;
+	}
+
+	if(is_neg)
+	{
+		result[0] = '-';
+	}
+
+	if(num1[0] == '-')
+	{
+		conv_num1 = calloc(strlen(num1)-1, sizeof(char));
+		for(i = 1; i < (strlen(num1)); i++)
+		{
+			conv_num1[i-1] = num1[i];
+		}
+	}
+	else
+	{
+		conv_num1 = num1;
+	}
+
+	if(num2[0] == '-')
+	{
+		conv_num2 = calloc(strlen(num2)-1, sizeof(char));
+		for(i = 1; i < (strlen(num2)); i++)
+		{
+			conv_num2[i-1] = num2[i];
+		}
+	}
+	else
+	{
+		conv_num2 = num2;
+	}
+
 	result = strdup(num1);
 	subtract(num2, "1");
 	while(num2 != "0")
@@ -253,6 +294,10 @@ char *multiply(char *num1, char *num2)
 		result = add(result, num1);
 		num2 = subtract(num2, "1");
 	}
+
+	free(conv_num1);
+	free(conv_num2);
+
 	return result;
 }
 
@@ -360,7 +405,9 @@ char *bin_to_hex(char *num)
 		}
 	}
 
-	return "bin_to_hex";
+	free(quad);
+
+	return result;
 }
 
 char *bin_to_oct(char *num)
@@ -418,6 +465,8 @@ char *bin_to_oct(char *num)
 		result[res_ind] = '0';
 		res_ind--;
 	}
+
+	free(triplet);
 
 	return result;
 }
@@ -486,3 +535,16 @@ void push(struct Stack *s, struct Node *node)
 }
 
 /*End Stack Functions*/
+
+
+/*Implementation of strdup, ANSI does not allow inclusion*/
+char *strdup(const char *str)
+{
+    int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup)
+    {
+        strcpy(dup, str);
+    }
+    return dup;
+}
