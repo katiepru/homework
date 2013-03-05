@@ -88,3 +88,53 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+/*Converts string representation of binary number to decimal int*/
+int bin_to_dec(char *num)
+{
+	int result = 0;
+	int two_pow = 1;
+	int i;
+
+	/*Iterate through num and add to result*/
+	for(i = strlen(num) - 1; i >= 1; i--)
+	{
+		if(num[i] == '1')
+		{
+			result += two_pow;
+		}
+		two_pow *= 2;
+	}
+
+	if(num[0] == '-')
+	{
+		result = -result;
+	}
+
+	return result;
+
+}
+
+int oct_to_dec(char *num)
+{
+	int result = 0;
+	int eight_pow = 1;
+	int dig;
+	int i;
+
+	for(i = strlen(num) - 1; i >= 1; i--)
+	{
+		if(num[i] != 'o')
+		{
+			dig = (char)(((int)'0')+num[i]);
+			result += dig * eight_pow;
+		}
+	}
+
+	if(num[0] == '-')
+	{
+		result = -result;
+	}
+
+	return result;
+}
