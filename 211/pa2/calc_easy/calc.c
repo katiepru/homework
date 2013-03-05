@@ -138,3 +138,77 @@ int oct_to_dec(char *num)
 
 	return result;
 }
+
+/*Converts a decimal int to binary string*/
+char *dec_to_bin(int num)
+{
+	char *result = calloc(35, sizeof(char));
+	struct Stack *s = create_stack(NULL);
+	int i = 0;
+	int mod;
+
+	if(num < 0)
+	{
+		result[0] = '-';
+		i = 1;
+		num = -num;
+	}
+
+	result[i] = 'b';
+	i++;
+
+	if(num == 0)
+	{
+		result[i] = '0';
+	}
+
+	while(num > 0)
+	{
+		mod = num % 2;
+		push(s, create_node((char)(((int)'0')+mod)));
+		num /= 2;
+	}
+
+	while(s->size > 0)
+	{
+		result[i] = pop(s)->data;
+		i++;
+	}
+	result[i] = '\0';
+
+	return result;
+}
+
+char *dec_to_oct(int num)
+{
+	char *result = calloc(13, sizeof(char));
+	struct Stack *s = create_stack(NULL);
+	int mod;
+	int i = 0;
+
+	if(num < 0)
+	{
+		result[0] = '-';
+		i = 1;
+		num = -num;
+	}
+
+	result[i] = 'o';
+	i++;
+
+	while(num > 0)
+	{
+		mod = num % 8;
+		push(s, create_node((char)(((int)'0')+mod)));
+		num /= 8;
+	}
+
+	while(s->size > 0)
+	{
+		result[i] = pop(s)->data;
+		i++;
+	}
+	result[i] = '\0';
+	
+	return result;
+}
