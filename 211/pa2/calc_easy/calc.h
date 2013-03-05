@@ -22,18 +22,19 @@ typedef struct Stack
 } Stack;
 
 /*Conversion Functions*/
-char *hex_to_bin(char *num);
-char *dec_to_bin(char *num);
-char *oct_to_bin(char *num);
-char *bin_to_oct(char *num);
-char *bin_to_hex(char *num);
-char *bin_to_dec(char *num);
+int bin_to_dec(char *num);
+int oct_to_doc(char *num);
+int hex_to_dec(char *num);
+int str_to_dec(char *num);
+char *dec_to_bin(int num);
+char *dec_to_oct(int num);
+char *dec_to_hex(int num);
+char *dec_to_str(int num);
 
 /*Arithmetic functions*/
-char *add_sub(char *num1, char *num2, int sub);
-char *add(char *num1, char *num2);
-char *subtract(char *num1, char *num2);
-char *mult(char *num1, char *num2);
+int add(int num1, int num2);
+int subtract(int num2, int num2);
+int multiply(int num1, int num2);
 
 /*Stack functions*/
 struct Stack *create_stack(struct Node *n);
