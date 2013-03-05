@@ -23,7 +23,7 @@ typedef struct Stack
 
 /*Conversion Functions*/
 int bin_to_dec(char *num);
-int oct_to_doc(char *num);
+int oct_to_dec(char *num);
 int hex_to_dec(char *num);
 int str_to_dec(char *num);
 char *dec_to_bin(int num);
