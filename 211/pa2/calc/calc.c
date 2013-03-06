@@ -244,6 +244,20 @@ char *subtract(char *num1, char *num2)
 	int bigger;
 
 	bigger = is_bigger(num1, num2);
+	if(bigger == 1)
+	{
+		return subtract(num2, num1);
+	}
+
+	/*Convert second term to twos complement and add*/
+	num2 = to_twos_comp(num2);
+	result = add(num1, num2);
+
+	/*Remove MSB*/
+	result[0] = '0';
+
+	printf("Sub res = %s\n", result);
+	return result;
 }
 
 char *multiply(char *num1, char *num2)
@@ -302,6 +316,44 @@ char *multiply(char *num1, char *num2)
 	free(conv_num2);
 
 	return result;
+}
+
+char *to_twos_comp(char *num)
+{
+	char *result = calloc(strlen(num)+1, sizeof(char));
+	int one_ind;
+	int i;
+
+	/*Fin index of first 1*/
+	for(one_ind = strlen(num) - 1; one_ind >= 0; one_ind --)
+	{
+		if(num[one_ind] == '1')
+		{
+			break;
+		}
+	}
+
+	/*Flip bits*/
+	for(i = 0; i < one_ind; i++)
+	{
+		if(num[i] == '0')
+		{
+			result[i] = '1';
+		}
+		else
+		{
+			result[i] = '0';
+		}
+	}
+
+	/*Copy bits after first one*/
+	for(i; i <= strlen(num); i++)
+	{
+		result[i] = num[i];
+	}
+
+	return result;
+
 }
 
 int is_bigger(char *num1, char *num2)
