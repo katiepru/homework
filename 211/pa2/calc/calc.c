@@ -631,12 +631,18 @@ char *dec_to_bin(long int num)
 /-----------------------------------------------------------------------------*/
 char *oct_to_bin(char *num)
 {
-	char *result = calloc((strlen(num)*3)+1, sizeof(char));
+	char *result = calloc(((strlen(num)-1)*3)+1, sizeof(char));
 	int oct_ind = strlen(num)-1;
 	int bin_ind;
 
-	for(bin_ind = strlen(num)*3; bin_ind >= 0; bin_ind -= 3)
+	for(bin_ind = (strlen(num)-1)*3; bin_ind >= 2; bin_ind -= 3)
 	{
+		if(num[oct_ind] == 'o')
+		{
+			oct_ind--;
+		}
+		printf("num is %c\n", num[oct_ind]);
+		printf("bin ind = %d\n", bin_ind);
 		switch(num[oct_ind])
 		{
 			case '0':
@@ -686,6 +692,11 @@ char *oct_to_bin(char *num)
 				fprintf(stderr, "ERROR: Bad octal char.\n");
 		}
 		oct_ind--;
+	}
+
+	if(oct_ind == 0)
+	{
+		result[0] = '0';
 	}
 
 	result = strip_zeroes(result);
