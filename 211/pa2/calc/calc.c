@@ -4,7 +4,6 @@ int main(int argc, char *argv[])
 {
 	char *nums[2];
 	char *result;
-	int is_neg = 0;
 	char c;
 	int i;
 	int j = 0;
@@ -74,10 +73,11 @@ int main(int argc, char *argv[])
 	}
 	else if(argv[1][0] == '*')
 	{
-		multiply(nums[0], nums[1]);
+		result = multiply(nums[0], nums[1]);
 	}
 
-	c = argv[5][0];
+
+	c = argv[4][0];
 	switch (c)
 	{
 		case 'b':
@@ -326,7 +326,7 @@ char *multiply(char *num1, char *num2)
 
 	result = strdup(num1);
 	subtract(num2, "1");
-	while(num2 != "0")
+	while(strcmp(num2, "0") != 0)
 	{
 		result = add(result, num1);
 		num2 = subtract(num2, "1");
@@ -370,7 +370,7 @@ char *to_twos_comp(char *num)
 	}
 
 	/*Copy bits after first one*/
-	for(i; i <= strlen(num); i++)
+	for(i = i; i <= strlen(num); i++)
 	{
 		result[i] = num[i];
 	}
@@ -412,6 +412,8 @@ int is_bigger(char *num1, char *num2)
 			}
 		}
 	}
+	/*They are the same*/
+	return 0;
 }
 
 /*End arithmetic functions*/
@@ -976,7 +978,7 @@ void push(struct Stack *s, struct Node *node)
 /*-----------------------------------------------------------------------------/
 / -Implementation of strdup, ANSI does not allow inclusion. -------------------/
 /-----------------------------------------------------------------------------*/
-char *strdup(const char *str)
+char *strdup(char *str)
 {
     int n = strlen(str) + 1;
     char *dup = malloc(n);
