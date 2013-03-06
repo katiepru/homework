@@ -714,7 +714,7 @@ char *bin_to_hex(char *num)
 	int bin_ind = strlen(num) - 1;
 	int res_ind = strlen(num)/4;
 
-	while(bin_ind >= 4)
+	while(bin_ind >= 3)
 	{
 		quad[0] = num[bin_ind-3];
 		quad[1] = num[bin_ind-2];
@@ -789,9 +789,101 @@ char *bin_to_hex(char *num)
 		{
 			fprintf(stderr, "Unrecognized quad %s\n.", quad);
 		}
+		res_ind--;
+		bin_ind -= 4;
 	}
 
 	free(quad);
+
+	if(bin_ind == 2)
+	{
+		if(result[0] == '-')
+		{
+			if(num[bin_ind] == '0' && num[bin_ind-1] == '0')
+			{
+				result[res_ind] = '0';
+			}
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0')
+			{
+				result[res_ind] = '2';
+			}
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1')
+			{
+				result[res_ind] = '1';
+			}
+			else
+			{
+				result[res_ind] = '3';
+			}
+		}
+		else
+		{
+			if(num[bin_ind] == '0' && num[bin_ind-1] == '0' && 
+				num[bin_ind-2] == '0')
+			{
+				result[res_ind] = '0';
+			}
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '1')
+			{
+				result[res_ind] = '1';
+			}
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
+				&& num[bin_ind-2] == '0')
+			{
+				result[res_ind] = '2';
+			}
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
+				&& num[bin_ind-2] == '1')
+			{
+				result[res_ind] = '3'
+			}
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '0')
+			{
+				result[res_ind] = '4';
+			}
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
+			&& num[bin_ind-2] == '1')
+			{
+				result[res_ind] = '5';
+			}
+(
+
+
+
+		}
+	}
+	else if(bin == 1)
+	{
+		if(result[0] == '-')
+		{
+			result[res_ind] = num[bin_ind];
+		}
+		else
+		{
+			if(num[bin_ind] == '0' && num[bin_ind-1] == '0')
+			{
+				result[res_ind] = '0';
+			}
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0')
+			{
+				result[res_ind] = '2';
+			}
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1')
+			{
+				result[res_ind] = '1';
+			}
+			else
+			{
+				result[res_ind] = '3';
+			}
+		}
+	}
+	else if(bin_ind == '0')
+	{
+		result[res_ind] = num[bin_ind];
+	}
 
 	result = strip_zeroes(result);
 
