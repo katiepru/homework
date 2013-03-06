@@ -152,6 +152,28 @@ void print_float(char *num)
 	{
 		dec = -dec;
 	}
+
+	if(exp == 255-127)
+	{
+		if(dec == 0)
+		{
+			if(is_neg)
+			{
+				printf("ninf\n");
+			}
+			else
+			{
+				printf("pinf\n");
+			}
+		}
+		else
+		{
+			printf("NaN\n");
+		}
+		return;
+	}
+
+
 	print_sci(dec);
 }
 
