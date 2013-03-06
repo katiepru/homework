@@ -89,7 +89,14 @@ int main(int argc, char *argv[])
 			result = bin_to_hex(result);
 			break;
 		case 'd':
-			result = bin_to_dec(result);
+			if(result[0] == '-')
+			{
+				result = int_to_ascii(bin_to_dec(result), 1);
+			}
+			else
+			{
+				result = int_to_ascii(bin_to_dec(result), 0);
+			}
 			break;
 		default:
 			fprintf(stderr, "Invalid output base.\n");
@@ -808,6 +815,42 @@ long int ascii_to_int(char* num)
 	}
 	return result;
 }
+
+char *int_to_ascii(long int num, int is_neg)
+{
+	char *result = calloc(12, sizeof(char));
+	int digit;
+	struct Stack *s = create_stack(NULL);
+	struct Node *tmp;
+	
+	if(is_neg == 1)
+	{
+		result[0] = '-';
+	}
+
+	while(num > 0)
+	{
+		digit = num%10;
+		push(s, create_node((char)(((int)'0')+digit)));
+		num -= digit;
+		num /= 10;
+	}
+
+	while(peek(s) != NULL)
+	{
+		tmp = pop(s);
+		result[is_neg] = tmp->data;
+		is_neg++;
+		free(tmp);
+	}
+
+	if((strlen(result) == 0) || (strlen(result) == 1 && result[0] == '-'))
+	{
+		result[0] = '0';
+	}
+	return result;
+}
+
 
 /*End conversion functions*/
 
