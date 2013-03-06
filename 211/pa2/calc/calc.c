@@ -397,9 +397,40 @@ char *hex_to_bin(char *num)
 	return "hex_to_bin";
 }
 
-char *dec_to_bin(char *num)
+char *dec_to_bin(long int num)
 {
-	return "dec_to_bin";
+	char *result = calloc(34, sizeof(char));
+	struct Stack *s = create_stack(NULL);
+	int i = 0;
+	int mod;
+
+	if(num < 0)
+	{
+		result[0] = '-';
+		i = 1;
+		num = -num;
+	}
+
+	if(num == 0)
+	{
+		result[i] = '0';
+	}
+
+	while(num > 0)
+	{
+		mod = num % 2;
+		push(s, create_node((char)(((int)'0')+mod)));
+		num /= 2;
+	}
+
+	while(s->size > 0)
+	{
+		result[i] = pop(s)->data;
+		i++;
+	}
+	result[i] = '\0';
+
+	return result;
 }
 
 char *oct_to_bin(char *num)
@@ -557,8 +588,28 @@ char *bin_to_oct(char *num)
 	return result;
 }
 
-char *bin_to_dec(char *num)
+long int bin_to_dec(char *num)
 {
+	long int result = 0;
+	long int two_pow = 1;
+	int i;
+
+	/*Iterate through num and add to result*/
+	for(i = strlen(num) - 1; i >= 1; i--)
+	{
+		if(num[i] == '1')
+		{
+			result += two_pow;
+		}
+		two_pow *= 2;
+	}
+
+	if(num[0] == '-')
+	{
+		result = -result;
+	}
+
+	return result;
 
 }
 

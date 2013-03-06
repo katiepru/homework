@@ -23,11 +23,11 @@ typedef struct Stack
 
 /*Conversion Functions*/
 char *hex_to_bin(char *num);
-char *dec_to_bin(char *num);
+char *dec_to_bin(long int num);
 char *oct_to_bin(char *num);
 char *bin_to_oct(char *num);
 char *bin_to_hex(char *num);
-char *bin_to_dec(char *num);
+long int bin_to_dec(char *num);
 
 /*Arithmetic functions*/
 char *add_sub(char *num1, char *num2, int sub);
