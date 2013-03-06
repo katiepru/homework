@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
 		result = multiply(nums[0], nums[1]);
 	}
 
+	printf("result is %s\n", result);
+
 
 	c = argv[4][0];
 	switch (c)
@@ -254,9 +256,6 @@ char *add(char *num1, char *num2)
 		res_ind--;
 	}
 
-
-	printf("sum is %s\n", res);
-
 	return res;
 }
 
@@ -267,18 +266,25 @@ char *subtract(char *num1, char *num2)
 {
 	/*Find out which number is bigger*/
 	char *result;
+	char *neg;
 	int bigger;
 	int i;
 
 	bigger = is_bigger(num1, num2);
 	if(bigger == 1)
 	{
-		return subtract(num2, num1);
+		neg = subtract(num2, num1);
+		result = calloc(strlen(neg)+2, sizeof(char));
+		result[0] = '-';
+		for(i = 0; i < strlen(neg); i++)
+		{
+			result[i+1] = neg[i];
+		}
+		return result;
 	}
 
 	/*Convert second term to twos complement and add*/
 	num2 = to_twos_comp(num2, strlen(num1));
-	printf("twos is %s\n", num2);
 	result = add(num1, num2);
 
 	/*Remove MSB*/
@@ -291,8 +297,6 @@ char *subtract(char *num1, char *num2)
 		}
 	}
 
-
-	printf("Sub res = %s\n", result);
 	return result;
 }
 
@@ -377,7 +381,7 @@ char *to_twos_comp(char *num, int len)
 	}
 
 	num_ind = strlen(num) - 1;
-	for(res_ind = len -1; res_ind >= (int)(strlen(num)-one_ind-1); res_ind--)
+	for(res_ind = len -1; res_ind >= len-one_ind-1; res_ind--)
 	{
 		result[res_ind] = num[num_ind];
 		num_ind--;
