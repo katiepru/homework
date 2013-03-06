@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
 
 /*Start arithmetic functions*/
 
+/*-----------------------------------------------------------------------------/
+/ -Wrapper function to call add or subtract depending on negativity of params -/
+/ ----------------------------------------------------------------------------*/
 char *add_sub(char *num1, char *num2, int sub)
 {
 	char *result;
@@ -138,6 +141,9 @@ char *add_sub(char *num1, char *num2, int sub)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Adds two binary numbers. Must have same signs. -----------------------------/
+/ ----------------------------------------------------------------------------*/
 char *add(char *num1, char *num2)
 {
 	char *res = calloc(MAX(strlen(num1), strlen(num2))+1,
@@ -245,6 +251,9 @@ char *add(char *num1, char *num2)
 	return res;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Subtracts num2 from num1. Both are positive. -------------------------------/
+/-----------------------------------------------------------------------------*/
 char *subtract(char *num1, char *num2)
 {
 	/*Find out which number is bigger*/
@@ -268,6 +277,9 @@ char *subtract(char *num1, char *num2)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Multiplies two binary numbers of any sign. ---------------------------------/
+/-----------------------------------------------------------------------------*/
 char *multiply(char *num1, char *num2)
 {
 	char *result = calloc(strlen(num1)+strlen(num2)+1, sizeof(char));
@@ -326,6 +338,9 @@ char *multiply(char *num1, char *num2)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a binary number to its twos complement representation -------------/
+/-----------------------------------------------------------------------------*/
 char *to_twos_comp(char *num)
 {
 	char *result = calloc(strlen(num)+1, sizeof(char));
@@ -364,6 +379,10 @@ char *to_twos_comp(char *num)
 
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Determines which binary number is larger. Returns 0 if the first is larger -/
+/ -and 1 if the second is larger. ---------------------------------------------/
+/-----------------------------------------------------------------------------*/
 int is_bigger(char *num1, char *num2)
 {
 	int i;
@@ -400,6 +419,9 @@ int is_bigger(char *num1, char *num2)
 
 /*Start conversion functions*/
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a hex string to a binary string -----------------------------------/
+/-----------------------------------------------------------------------------*/
 char *hex_to_bin(char *num)
 {
 	char *result = calloc((strlen(num)*4)+1, sizeof(char));
@@ -516,6 +538,9 @@ char *hex_to_bin(char *num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a long int to a binary string. ------------------------------------/
+/-----------------------------------------------------------------------------*/
 char *dec_to_bin(long int num)
 {
 	char *result = calloc(34, sizeof(char));
@@ -552,6 +577,9 @@ char *dec_to_bin(long int num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts an octal string to a binary string. -------------------------------/
+/-----------------------------------------------------------------------------*/
 char *oct_to_bin(char *num)
 {
 	char *result = calloc((strlen(num)*3)+1, sizeof(char));
@@ -614,6 +642,9 @@ char *oct_to_bin(char *num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a binary string to a hex string. ----------------------------------/
+/-----------------------------------------------------------------------------*/
 char *bin_to_hex(char *num)
 {
 	char *result = calloc((strlen(num)/4)+1, sizeof(char));
@@ -703,6 +734,9 @@ char *bin_to_hex(char *num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a binary string to an octal string. -------------------------------/
+/-----------------------------------------------------------------------------*/
 char *bin_to_oct(char *num)
 {
 	char *result = calloc((strlen(num)/3)+1, sizeof(char));
@@ -764,6 +798,9 @@ char *bin_to_oct(char *num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a binary string to a long int. ------------------------------------/
+/-----------------------------------------------------------------------------*/
 long int bin_to_dec(char *num)
 {
 	long int result = 0;
@@ -789,6 +826,9 @@ long int bin_to_dec(char *num)
 
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a decimal string to its long int respresentation. -----------------/
+/-----------------------------------------------------------------------------*/
 long int ascii_to_int(char* num)
 {
 	long int result = 0;
@@ -816,6 +856,9 @@ long int ascii_to_int(char* num)
 	return result;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Converts a long int to its string representation. --------------------------/
+/-----------------------------------------------------------------------------*/
 char *int_to_ascii(long int num, int is_neg)
 {
 	char *result = calloc(12, sizeof(char));
@@ -857,6 +900,9 @@ char *int_to_ascii(long int num, int is_neg)
 
 /*Start Stack Functions*/
 
+/*----------------------------------------------------------------------------/
+/ -Creates a character node. -------------------------------------------------/
+/----------------------------------------------------------------------------*/
 struct Node *create_node(char data)
 {
 	struct Node *n = malloc(sizeof(struct Node));
@@ -865,6 +911,9 @@ struct Node *create_node(char data)
 	return n;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Creates a stack of nodes. --------------------------------------------------/
+/-----------------------------------------------------------------------------*/
 struct Stack *create_stack(struct Node *n)
 {
 	struct Stack *s = malloc(sizeof(struct Stack));
@@ -880,6 +929,9 @@ struct Stack *create_stack(struct Node *n)
 	return s;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Frees a stack and all its nodes. -------------------------------------------/
+/-----------------------------------------------------------------------------*/
 void destroy_stack(struct Stack *s)
 {
 	while(peek(s) != NULL)
@@ -889,6 +941,9 @@ void destroy_stack(struct Stack *s)
 	free(s);
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Pops a node off of a stack. ------------------------------------------------/
+/-----------------------------------------------------------------------------*/
 struct Node *pop(struct Stack *s)
 {
 	struct Node *res;
@@ -898,11 +953,17 @@ struct Node *pop(struct Stack *s)
 	return res;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Looks at top of stack without popping. -------------------------------------/
+/-----------------------------------------------------------------------------*/
 struct Node *peek(struct Stack *s)
 {
 	return s->head;
 }
 
+/*-----------------------------------------------------------------------------/
+/ -Pushes a node onto the stack. ----------------------------------------------/
+/-----------------------------------------------------------------------------*/
 void push(struct Stack *s, struct Node *node)
 {
 	node->next = s->head;
@@ -912,8 +973,9 @@ void push(struct Stack *s, struct Node *node)
 
 /*End Stack Functions*/
 
-
-/*Implementation of strdup, ANSI does not allow inclusion*/
+/*-----------------------------------------------------------------------------/
+/ -Implementation of strdup, ANSI does not allow inclusion. -------------------/
+/-----------------------------------------------------------------------------*/
 char *strdup(const char *str)
 {
     int n = strlen(str) + 1;
