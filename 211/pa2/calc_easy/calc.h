@@ -23,14 +23,14 @@ typedef struct Stack
 } Stack;
 
 /*Conversion Functions*/
-int bin_to_dec(char *num);
-int oct_to_dec(char *num);
-int hex_to_dec(char *num);
-int str_to_dec(char *num);
-char *dec_to_bin(int num);
-char *dec_to_oct(int num);
-char *dec_to_hex(int num);
-char *dec_to_str(int num);
+long int bin_to_dec(char *num);
+long int oct_to_dec(char *num);
+long int hex_to_dec(char *num);
+long int str_to_dec(char *num);
+char *dec_to_bin(long int num);
+char *dec_to_oct(long int num);
+char *dec_to_hex(long int num);
+char *dec_to_str(long int num);
 
 /*Arithmetic functions*/
 int add(int num1, int num2);

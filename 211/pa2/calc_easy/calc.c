@@ -3,10 +3,10 @@
 int main(int argc, char *argv[])
 {
 	char *result;
-	int res;
+	long int res;
 	char c;
 	int i;
-	int nums[2];
+	long int nums[2];
 	
 	/*Check for correct number of args*/
 	if(argc != 5)
@@ -90,10 +90,10 @@ int main(int argc, char *argv[])
 }
 
 /*Converts string representation of binary number to decimal int*/
-int bin_to_dec(char *num)
+long int bin_to_dec(char *num)
 {
-	int result = 0;
-	int two_pow = 1;
+	long int result = 0;
+	long int two_pow = 1;
 	int i;
 
 	/*Iterate through num and add to result*/
@@ -115,10 +115,10 @@ int bin_to_dec(char *num)
 
 }
 
-int oct_to_dec(char *num)
+long int oct_to_dec(char *num)
 {
-	int result = 0;
-	int eight_pow = 1;
+	long int result = 0;
+	long int eight_pow = 1;
 	int dig;
 	int i;
 
@@ -140,7 +140,7 @@ int oct_to_dec(char *num)
 }
 
 /*Converts a decimal int to binary string*/
-char *dec_to_bin(int num)
+char *dec_to_bin(long int num)
 {
 	char *result = calloc(35, sizeof(char));
 	struct Stack *s = create_stack(NULL);
@@ -179,7 +179,7 @@ char *dec_to_bin(int num)
 	return result;
 }
 
-char *dec_to_oct(int num)
+char *dec_to_oct(long int num)
 {
 	char *result = calloc(13, sizeof(char));
 	struct Stack *s = create_stack(NULL);
@@ -195,6 +195,12 @@ char *dec_to_oct(int num)
 
 	result[i] = 'o';
 	i++;
+
+	if(num == 0)
+	{
+		result[i] = '0';
+		i++;
+	}
 
 	while(num > 0)
 	{
@@ -212,3 +218,52 @@ char *dec_to_oct(int num)
 	
 	return result;
 }
+
+char *dec_to_hex(long int num)
+{
+	char *result = calloc(10, sizeof(char));
+	struct Stack *s = create_stack(NULL);
+	int mod;
+	int i = 0;
+
+	if(num < 0)
+	{
+		result[0] = '-';
+		i = 1;
+		num = -num;
+	}
+
+	result[i] = 'x';
+	i++;
+
+	if(num == 0)
+	{
+		result[i] = '0';
+		i++;
+	}
+
+	while(num > 0)
+	{
+		mod = num % 16;
+		if(mod > 9)
+		{
+			push(s, create_node(get_hex_value(mod)));
+		}
+		else
+		{
+			push(s, create_node((char)(((int)'0'+mod))));
+		}
+		num /= 16;
+	}
+
+	while(s->size > 0)
+	{
+		result[i] = pop(s)->data;
+		i++;
+	}
+	result[i] = '\0';
+
+	return result;
+}
+
+
