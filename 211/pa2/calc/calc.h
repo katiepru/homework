@@ -36,7 +36,7 @@ char *add_sub(char *num1, char *num2, int sub);
 char *add(char *num1, char *num2);
 char *subtract(char *num1, char *num2);
 char *multiply(char *num1, char *num2);
-char *to_twos_comp(char *num);
+char *to_twos_comp(char *num, int len);
 int is_bigger(char *num1, char *num2);
 
 /*Stack functions*/

@@ -156,13 +156,22 @@ char *add(char *num1, char *num2)
 	int max_ind;
 	int min_ind;
 	int res_ind = MAX(strlen(num1), strlen(num2))+1;
+	int i;
 
 	if(num1[0] == '-')
 	{
-		ind = 1;
 		res[0] = '-';
+		for(i = 0; i <= strlen(num1); i++)
+		{
+			num1[i] = num1[i + 1];
+		}
+		for(i = 0; i <= strlen(num2); i++)
+		{
+			num2[i] = num2[i + 1];
+		}
 	}
 
+		printf("new 1 = %s, new 2 = %s\n", num1, num2);
 	/*Find longer number*/
 	if(strlen(num1) >= strlen(num2))
 	{
@@ -259,6 +268,7 @@ char *subtract(char *num1, char *num2)
 	/*Find out which number is bigger*/
 	char *result;
 	int bigger;
+	int i;
 
 	bigger = is_bigger(num1, num2);
 	if(bigger == 1)
@@ -267,11 +277,20 @@ char *subtract(char *num1, char *num2)
 	}
 
 	/*Convert second term to twos complement and add*/
-	num2 = to_twos_comp(num2);
+	num2 = to_twos_comp(num2, strlen(num1));
+	printf("twos is %s\n", num2);
 	result = add(num1, num2);
 
 	/*Remove MSB*/
-	result[0] = '0';
+	for(i = 0; i < strlen(result); i++)
+	{
+		if(result[i] == '1')
+		{
+			result[i] = '0';
+			break;
+		}
+	}
+
 
 	printf("Sub res = %s\n", result);
 	return result;
@@ -341,13 +360,14 @@ char *multiply(char *num1, char *num2)
 /*-----------------------------------------------------------------------------/
 / -Converts a binary number to its twos complement representation -------------/
 /-----------------------------------------------------------------------------*/
-char *to_twos_comp(char *num)
+char *to_twos_comp(char *num, int len)
 {
-	char *result = calloc(strlen(num)+1, sizeof(char));
+	char *result = calloc(len+1, sizeof(char));
 	int one_ind;
-	int i;
+	int res_ind;
+	int num_ind;
 
-	/*Fin index of first 1*/
+	/*Find index of first 1*/
 	for(one_ind = strlen(num) - 1; one_ind >= 0; one_ind --)
 	{
 		if(num[one_ind] == '1')
@@ -356,24 +376,33 @@ char *to_twos_comp(char *num)
 		}
 	}
 
-	/*Flip bits*/
-	for(i = 0; i < one_ind; i++)
+	num_ind = strlen(num) - 1;
+	for(res_ind = len -1; res_ind >= (int)(strlen(num)-one_ind-1); res_ind--)
 	{
-		if(num[i] == '0')
+		result[res_ind] = num[num_ind];
+		num_ind--;
+	}
+
+	while(num_ind >= 0)
+	{
+		if(num[num_ind] == '1')
 		{
-			result[i] = '1';
+			result[res_ind] = '0';
 		}
 		else
 		{
-			result[i] = '0';
+			result[res_ind] = '1';
 		}
+		res_ind--;
+		num_ind--;
 	}
 
-	/*Copy bits after first one*/
-	for(i = i; i <= strlen(num); i++)
+	while(res_ind >= 0)
 	{
-		result[i] = num[i];
+		result[res_ind] = '1';
+		res_ind--;
 	}
+
 
 	return result;
 
