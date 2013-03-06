@@ -256,6 +256,8 @@ char *add(char *num1, char *num2)
 		res_ind--;
 	}
 
+	res = strip_zeroes(res);
+
 	return res;
 }
 
@@ -297,6 +299,8 @@ char *subtract(char *num1, char *num2)
 		}
 	}
 
+	result = strip_zeroes(result);
+
 	return result;
 }
 
@@ -305,7 +309,7 @@ char *subtract(char *num1, char *num2)
 /-----------------------------------------------------------------------------*/
 char *multiply(char *num1, char *num2)
 {
-	char *result = calloc(strlen(num1)+strlen(num2)+1, sizeof(char));
+	char *result;
 	char *conv_num1;
 	char *conv_num2;
 	int is_neg = 0;
@@ -318,7 +322,7 @@ char *multiply(char *num1, char *num2)
 
 	if(is_neg)
 	{
-		result[0] = '-';
+		/*result[0] = '-';*/
 	}
 
 	if(num1[0] == '-')
@@ -348,15 +352,22 @@ char *multiply(char *num1, char *num2)
 	}
 
 	result = strdup(num1);
-	subtract(num2, "1");
-	while(strcmp(num2, "0") != 0)
+	conv_num2 = subtract(conv_num2, "1");
+	while(bin_to_dec(conv_num2) > 0)
 	{
-		result = add(result, num1);
-		num2 = subtract(num2, "1");
+		result = add(result, conv_num1);
+		conv_num2 = subtract(conv_num2, "1");
 	}
-
-	free(conv_num1);
-	free(conv_num2);
+	
+	if(strcmp(conv_num1, num1) != 0)
+	{
+		free(conv_num1);
+	}
+	if(strcmp(conv_num2, num2) != 0)
+	{
+		free(conv_num2);
+	}
+	result = strip_zeroes(result);
 
 	return result;
 }
@@ -406,7 +417,6 @@ char *to_twos_comp(char *num, int len)
 		result[res_ind] = '1';
 		res_ind--;
 	}
-
 
 	return result;
 
@@ -570,6 +580,8 @@ char *hex_to_bin(char *num)
 		hex_ind--;
 	}
 
+	result = strip_zeroes(result);
+
 	return result;
 }
 
@@ -608,6 +620,8 @@ char *dec_to_bin(long int num)
 		i++;
 	}
 	result[i] = '\0';
+
+	result = strip_zeroes(result);
 
 	return result;
 }
@@ -673,6 +687,8 @@ char *oct_to_bin(char *num)
 		}
 		oct_ind--;
 	}
+
+	result = strip_zeroes(result);
 
 	return result;
 }
@@ -765,6 +781,8 @@ char *bin_to_hex(char *num)
 	}
 
 	free(quad);
+
+	result = strip_zeroes(result);
 
 	return result;
 }
@@ -869,6 +887,8 @@ char *bin_to_oct(char *num)
 
 	free(triplet);
 
+	result = strip_zeroes(result);
+
 	return result;
 }
 
@@ -966,6 +986,41 @@ char *int_to_ascii(long int num, int is_neg)
 		result[0] = '0';
 	}
 	return result;
+}
+
+/*-----------------------------------------------------------------------------/
+/ -Strips leading zeroes from number. -----------------------------------------/
+/-----------------------------------------------------------------------------*/
+char *strip_zeroes(char *num)
+{
+	char *res;
+	int i;
+	int res_ind = 0;
+	int num_zeroes = 0;
+
+	for(i = 0; i < strlen(num); i++)
+	{
+		if(num[i] != '0')
+			break;
+		num_zeroes++;
+	}
+
+	if(num_zeroes == 0)
+	{
+		return num;
+	}
+
+	if(num_zeroes == strlen(num))
+	{
+		return "0";
+	}
+	res = calloc(strlen(num)+1-num_zeroes, sizeof(char));
+	for(i = num_zeroes-1; i<strlen(num); i++)
+	{
+		res[res_ind] = num[i];
+		res_ind++;
+	}
+	return res;
 }
 
 
