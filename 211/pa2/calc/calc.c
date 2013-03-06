@@ -435,7 +435,63 @@ char *dec_to_bin(long int num)
 
 char *oct_to_bin(char *num)
 {
-	return "oct_to_bin";
+	char *result = calloc((strlen(num)*3)+1, sizeof(char));
+	int oct_ind = strlen(num)-1;
+	int bin_ind;
+
+	for(bin_ind = strlen(num)*3; bin_ind >= 0; bin_ind -= 3)
+	{
+		switch(num[oct_ind])
+		{
+			case '0':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				break;
+			case '1':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				break;
+			case '2':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				break;
+			case '3':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				break;
+			case '4':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				break;
+			case '5':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				break;
+			case '6':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				break;
+			case '7':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				break;
+			case '-':
+				result[bin_ind] = '-';
+				break;
+			default:
+				fprintf(stderr, "ERROR: Bad octal char.\n");
+		}
+	}
+
+	return result;
 }
 
 char *bin_to_hex(char *num)
