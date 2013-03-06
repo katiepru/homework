@@ -31,7 +31,7 @@ void print_int(char *num)
 	int i;
 	int is_neg=0;
 	int pow = 1;
-	int result = 0;
+	long int result = 0;
 	if(num[0]=='1')
 	{
 		is_neg=1;
@@ -72,7 +72,7 @@ void print_int(char *num)
 	return;
 }
 
-char *int_to_ascii(int num, int is_neg)
+char *int_to_ascii(long int num, int is_neg)
 {
 	char *result = calloc(12, sizeof(char));
 	int digit;

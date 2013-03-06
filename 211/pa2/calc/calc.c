@@ -73,8 +73,7 @@ int main(int argc, char *argv[])
 	}
 	else if(argv[1][0] == '*')
 	{
-		/*multiply(nums[0], nums[1]);*/
-		puts("maybe later...\n");
+		multiply(nums[0], nums[1]);
 	}
 
 	c = argv[5][0];
@@ -240,7 +239,11 @@ char *add(char *num1, char *num2)
 
 char *subtract(char *num1, char *num2)
 {
-	return "foo";
+	/*Find out which number is bigger*/
+	char *result;
+	int bigger;
+
+	bigger = is_bigger(num1, num2);
 }
 
 char *multiply(char *num1, char *num2)
@@ -299,6 +302,37 @@ char *multiply(char *num1, char *num2)
 	free(conv_num2);
 
 	return result;
+}
+
+int is_bigger(char *num1, char *num2)
+{
+	int i;
+
+	if(strlen(num1) > strlen(num2))
+	{
+		return 0;
+	}
+	else if(strlen(num2) > strlen(num1))
+	{
+		return 1;
+	}
+	else
+	{
+		for(i = 0; i < strlen(num1); i++)
+		{
+			if(num1[i] != num2[i])
+			{
+				if(num1[i] == '1')
+				{
+					return 0;
+				}
+				else
+				{
+					return 1;
+				}
+			}
+		}
+	}
 }
 
 /*End arithmetic functions*/
@@ -473,7 +507,7 @@ char *bin_to_oct(char *num)
 
 char *bin_to_dec(char *num)
 {
-	return "bin_to_dec";
+
 }
 
 /*End conversion functions*/

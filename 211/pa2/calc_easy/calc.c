@@ -139,6 +139,22 @@ long int oct_to_dec(char *num)
 	return result;
 }
 
+long int hex_to_dec(char *num)
+{
+	long int result = 0;
+	long int sixteen_pow = 1;
+	int dig;
+	int i;
+
+	for(i = strlen(num) -1 ; i >= 1; i--)
+	{
+		if(num[i] != 'x')
+		{
+
+		}
+	}
+}
+
 /*Converts a decimal int to binary string*/
 char *dec_to_bin(long int num)
 {
@@ -266,4 +282,24 @@ char *dec_to_hex(long int num)
 	return result;
 }
 
-
+char get_hex_value(int mod)
+{
+	switch(mod)
+	{
+		case 10:
+			return 'a';
+		case 11:
+			return 'b';
+		case 12:
+			return 'c';
+		case 13:
+			return 'd';
+		case 14:
+			return 'e';
+		case 15:
+			return 'f';
+		default:
+			fprintf(stderr, "ERROR: Bad hex value\n");
+			return '\0';
+	}
+}

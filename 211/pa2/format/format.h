@@ -10,7 +10,7 @@
 void print_int(char *num);
 void print_float(char *num);
 void print_sci(float num);
-char *int_to_ascii(int num, int is_neg);
+char *int_to_ascii(long int num, int is_neg);
 char *float_to_ascii(float num);
 char *float_to_ascii(float num);
 float power(float base, int exp);

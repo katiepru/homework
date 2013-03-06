@@ -33,7 +33,8 @@ char *bin_to_dec(char *num);
 char *add_sub(char *num1, char *num2, int sub);
 char *add(char *num1, char *num2);
 char *subtract(char *num1, char *num2);
-char *mult(char *num1, char *num2);
+char *multiply(char *num1, char *num2);
+int is_bigger(char *num1, char *num2);
 
 /*Stack functions*/
 struct Stack *create_stack(struct Node *n);

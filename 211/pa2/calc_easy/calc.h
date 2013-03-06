@@ -31,6 +31,7 @@ char *dec_to_bin(long int num);
 char *dec_to_oct(long int num);
 char *dec_to_hex(long int num);
 char *dec_to_str(long int num);
+char get_hex_value(int mod);
 
 /*Arithmetic functions*/
 int add(int num1, int num2);
