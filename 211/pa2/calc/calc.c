@@ -746,7 +746,7 @@ char *bin_to_oct(char *num)
 	int bin_ind = strlen(num)-1;
 	int res_ind = strlen(num)/3;
 
-	while(bin_ind >= 3)
+	while(bin_ind >= 2)
 	{
 		triplet[0] = num[bin_ind-2];
 		triplet[1] = num[bin_ind-1];
@@ -787,6 +787,45 @@ char *bin_to_oct(char *num)
 		res_ind--;
 		bin_ind -= 3;
 		memset(triplet, 0, sizeof(triplet));
+	}
+	if(bin_ind == 1)
+	{
+		if(num[0] == '-')
+		{
+			if(num[1] == '0')
+			{
+				result[res_ind] = '0';
+			}
+			else
+			{
+				result[res_ind] = '1';
+			}
+		}
+		else
+		{
+			if(num[0] == '0' && num[1] == '0')
+			{
+				result[res_ind] = '0';
+			}
+			else if(num[0] == '0' && num[1] == '1')
+			{
+				result[res_ind] = '1';
+			}
+			else if(num[0] == '1' && num[1] == '0')
+			{
+				result[res_ind] = '2';
+			}
+			else
+			{
+				result[res_ind] = '3';
+			}
+			res_ind--;
+		}
+	}
+
+	if(bin_ind == 0)
+	{
+		result[res_ind] = num[0];
 	}
 
 	while(res_ind >= 0)
