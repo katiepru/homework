@@ -4,6 +4,7 @@ int main(int argc, char *argv[])
 {
 	char *nums[2];
 	char *result;
+	int is_neg = 0;
 	char c;
 	int i;
 	int j = 0;
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
 		}
 		else if(c == 'd')
 		{
-			nums[k] = dec_to_bin(argv[k+2]);
+			nums[k] = dec_to_bin(ascii_to_int(argv[k+2]));
 		}
 		else
 		{
@@ -394,7 +395,118 @@ int is_bigger(char *num1, char *num2)
 
 char *hex_to_bin(char *num)
 {
-	return "hex_to_bin";
+	char *result = calloc((strlen(num)*4)+1, sizeof(char));
+	int hex_ind = strlen(num)-1;
+	int bin_ind;
+
+	for(bin_ind = strlen(num)*4; bin_ind >= 0; bin_ind -= 4)
+	{
+		switch(num[hex_ind])
+		{
+			case '0':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '0';
+				break;
+			case '1':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '0';
+				break;
+			case '2':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '0';
+				break;
+			case '3':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '0';
+				break;
+			case '4':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '0';
+				break;
+			case '5':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '0';
+				break;
+			case '6':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '0';
+				break;
+			case '7':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '0';
+				break;
+			case '8':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '1';
+				break;
+			case '9':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '1';
+				break;
+			case 'a':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '1';
+				break;
+			case 'b':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '0';
+				result[bin_ind-3] = '1';
+				break;
+			case 'c':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '1';
+				break;
+			case 'd':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '0';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '1';
+				break;
+			case 'e':
+				result[bin_ind] = '0';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '1';
+				break;
+			case 'f':
+				result[bin_ind] = '1';
+				result[bin_ind-1] = '1';
+				result[bin_ind-2] = '1';
+				result[bin_ind-3] = '1';
+				break;
+			case '-':
+				result[bin_ind] = '-';
+				break;
+		}
+		hex_ind--;
+	}
+
+	return result;
 }
 
 char *dec_to_bin(long int num)
@@ -489,6 +601,7 @@ char *oct_to_bin(char *num)
 			default:
 				fprintf(stderr, "ERROR: Bad octal char.\n");
 		}
+		oct_ind--;
 	}
 
 	return result;
@@ -667,6 +780,33 @@ long int bin_to_dec(char *num)
 
 	return result;
 
+}
+
+long int ascii_to_int(char* num)
+{
+	long int result = 0;
+	int pow = 1;
+	int is_neg = 0;
+	int i;
+	
+	if(num[0] == '-')
+	{
+		is_neg = 1;
+	}
+
+	for(i = strlen(num)-1; i > 0; i--)
+	{
+		if(num[i] == '1')
+		{
+			result += pow;
+		}
+		pow *= 2;
+	}
+	if(is_neg)
+	{
+		result = -result;
+	}
+	return result;
 }
 
 /*End conversion functions*/

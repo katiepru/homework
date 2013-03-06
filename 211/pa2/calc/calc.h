@@ -22,6 +22,7 @@ typedef struct Stack
 } Stack;
 
 /*Conversion Functions*/
+long int ascii_to_int(char *num);
 char *hex_to_bin(char *num);
 char *dec_to_bin(long int num);
 char *oct_to_bin(char *num);
