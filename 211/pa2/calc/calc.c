@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 		case 'd':
 			if(result[0] == '-')
 			{
-				result = int_to_ascii(bin_to_dec(result), 1);
+				result = int_to_ascii(-bin_to_dec(result), 1);
 			}
 			else
 			{
@@ -1038,6 +1038,7 @@ long int bin_to_dec(char *num)
 	long int result = 0;
 	long int two_pow = 1;
 	int i;
+
 
 	/*Iterate through num and add to result*/
 	for(i = strlen(num) - 1; i >= 0; i--)
