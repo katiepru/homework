@@ -60,7 +60,20 @@ void PrintInstruction(FILE * outfile, Instruction * instr)
 
 void PrintInstructionList(FILE * outfile, Instruction * instr)
 {
-	/* YOUR CODE GOES HERE */
+	Instruction *ptr = instr;
+	if (!outfile) {
+		ERROR("File error\n");
+		exit(EXIT_FAILURE);
+	}
+	if(instr)
+	{
+
+		while(ptr->next != NULL)
+		{
+			PrintInstruction(outfile, ptr);
+			ptr = ptr->next;
+		}
+	}
 }
 
 Instruction *ReadInstruction(FILE * infile)
