@@ -25,7 +25,35 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/* YOUR CODE GOES HERE */
+	instr1 = head;
+	while(instr1 != NULL)
+	{
+		if(instr1->opcode == LOADI)
+		{
+			instr2 = instr1->next;
+			if(instr2 != NULL && instr2->opcode == LOADI)
+			{
+				instr3 = instr2->next;
+				if(instr3->opcode == ADD)
+				{
+					opt_calc = instr1->field1 + instr2->field1;
+				}
+				else if(instr3->opcode == SUB)
+				{
+					opt_calc = instr1->field1 - instr2->field1;
+				}
+				else if(instr3->opcode == MUL)
+				{
+					opt_calc = instr1->field1 * instr2->field1;
+				}
+				else
+				{
+					continue;
+				}
+				printf("opt calc is %d\n", opt_calc);
+			}
+		}
+	}
 
 	PrintInstructionList(stdout, head);
 	DestroyInstructionList(head);
