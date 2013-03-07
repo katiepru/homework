@@ -619,7 +619,6 @@ char *dec_to_bin(long int num)
 		result[i] = pop(s)->data;
 		i++;
 	}
-	result[i] = '\0';
 
 	result = strip_zeroes(result);
 
@@ -1037,10 +1036,11 @@ long int bin_to_dec(char *num)
 long int ascii_to_int(char* num)
 {
 	long int result = 0;
-	int pow = 1;
 	int is_neg = 0;
+	int ten_pow = 1;
 	int i;
-	
+	int dig;
+
 	if(num[0] == '-')
 	{
 		is_neg = 1;
@@ -1048,12 +1048,15 @@ long int ascii_to_int(char* num)
 
 	for(i = strlen(num)-1; i > 0; i--)
 	{
-		if(num[i] == '1')
+		if(num[i] == 'd')
 		{
-			result += pow;
+			break;
 		}
-		pow *= 2;
+		dig = num[i] - '0';
+		result += (ten_pow * dig);
+		ten_pow *= 10;
 	}
+
 	if(is_neg)
 	{
 		result = -result;
@@ -1190,6 +1193,7 @@ struct Node *pop(struct Stack *s)
 	if(peek(s) == NULL) return NULL;
 	res = s->head;
 	s->head = s->head->next;
+	s->size--;
 	return res;
 }
 
@@ -1208,6 +1212,7 @@ void push(struct Stack *s, struct Node *node)
 {
 	node->next = s->head;
 	s->head = node;
+	s->size++;
 	return;
 }
 
