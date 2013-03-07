@@ -712,8 +712,9 @@ char *bin_to_hex(char *num)
 	char *result = calloc((strlen(num)/4)+1, sizeof(char));
 	char *quad = calloc(4, sizeof(char));
 	int bin_ind = strlen(num) - 1;
-	int res_ind = strlen(num)/4;
+	int res_ind = (strlen(num)/4)-1;
 
+	printf("num is %s\n", num);
 	while(bin_ind >= 3)
 	{
 		quad[0] = num[bin_ind-3];
@@ -795,6 +796,8 @@ char *bin_to_hex(char *num)
 
 	free(quad);
 
+	printf("bin ind = %d\n", bin_ind);
+
 	if(bin_ind == 2)
 	{
 		if(result[0] == '-')
@@ -836,7 +839,7 @@ char *bin_to_hex(char *num)
 			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
 				&& num[bin_ind-2] == '1')
 			{
-				result[res_ind] = '3'
+				result[res_ind] = '3';
 			}
 			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
 				&& num[bin_ind-2] == '0')
@@ -848,13 +851,18 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '5';
 			}
-(
-
-
-
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '1'
+			&& num[bin_ind-2] == '0')
+			{
+				result[res_ind] = '6';
+			}
+			else
+			{
+				result[res_ind] = '7';
+			}
 		}
 	}
-	else if(bin == 1)
+	else if(bin_ind == 1)
 	{
 		if(result[0] == '-')
 		{
