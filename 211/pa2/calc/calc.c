@@ -316,6 +316,8 @@ char *multiply(char *num1, char *num2)
 	char *conv_num2;
 	int is_neg = 0;
 	int i;
+	int free_1 = 0;
+	int free_2 = 0;
 
 	if((num1[0] == '-' && num2[0] != '-') || (num1[0] != '-' && num2[0] == '-'))
 	{
@@ -332,7 +334,7 @@ char *multiply(char *num1, char *num2)
 	}
 	else
 	{
-		conv_num1 = strdup(num1);
+		conv_num1 = num1;
 	}
 
 	if(num2[0] == '-')
@@ -345,7 +347,7 @@ char *multiply(char *num1, char *num2)
 	}
 	else
 	{
-		conv_num2 = strdup(num2);
+		conv_num2 = num2;
 	}
 
 	result = strdup(num1);
@@ -356,8 +358,14 @@ char *multiply(char *num1, char *num2)
 		conv_num2 = subtract(conv_num2, "1");
 	}
 	
-	free(conv_num1);
-	free(conv_num2);
+	if(free_1)
+	{
+		free(conv_num1);
+	}
+	if(free_2)
+	{
+		free(conv_num2);
+	}
 	result = strip_zeroes(result);
 
 	if(is_neg)
@@ -368,13 +376,12 @@ char *multiply(char *num1, char *num2)
 		{
 			res[i+1] = result[i];
 		}
+		free(result);
 	}
 	else
 	{
-		res = strdup(result);
+		res = result;
 	}
-	free(result);
-
 	return res;
 }
 
@@ -1236,6 +1243,5 @@ char *strdup(char *str)
     {
         strcpy(dup, str);
     }
-	free(str);
     return dup;
 }
