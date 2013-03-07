@@ -4,6 +4,7 @@ int main(int argc, char *argv[])
 {
 	char *nums[2];
 	char *result;
+	char *res;
 	char c;
 	int i;
 	int j = 0;
@@ -79,21 +80,71 @@ int main(int argc, char *argv[])
 	{
 		case 'b':
 			result = strip_zeroes(result);
+			if(result[0] == '-')
+			{
+				res = calloc(strlen(result), sizeof(char));
+				for(i = 1; i<strlen(result); i++)
+				{
+					res[i-1] = result[i];
+				}
+				printf("%s%s\n", "-b", res);
+				free(res);
+			}
+			else
+			{
+				printf("%s%s\n", "b", result);
+			}
 			break;
 		case 'o':
 			result = bin_to_oct(result);
+			if(result[0] == '-')
+			{
+				res = calloc(strlen(result), sizeof(char));
+				for(i = 1; i<strlen(result); i++)
+				{
+					res[i-1] = result[i];
+				}
+				printf("%s%s\n", "-o", res);
+				free(res);
+			}
+			else
+			{
+				printf("%s%s\n", "o", result);
+			}
 			break;
 		case 'x':
 			result = bin_to_hex(result);
+			if(result[0] == '-')
+			{
+				res = calloc(strlen(result), sizeof(char));
+				for(i = 1; i<strlen(result); i++)
+				{
+					res[i-1] = result[i];
+				}
+				printf("%s%s\n", "-x", res);
+				free(res);
+			}
+			else
+			{
+				printf("%s%s\n", "x", result);
+			}
 			break;
 		case 'd':
 			if(result[0] == '-')
 			{
 				result = int_to_ascii(-bin_to_dec(result), 1);
+				res = calloc(strlen(result), sizeof(char));
+				for(i = 1; i<strlen(result); i++)
+				{
+					res[i-1] = result[i];
+				}
+				printf("%s%s\n", "-d", res);
+				free(res);
 			}
 			else
 			{
 				result = int_to_ascii(bin_to_dec(result), 0);
+				printf("%s%s\n", "d", result);
 			}
 			break;
 		default:
@@ -101,7 +152,6 @@ int main(int argc, char *argv[])
 			return 3;
 	}
 
-	printf("%s\n", result);
 	free(result);
 
 	return 0;
