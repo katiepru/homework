@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("%s\n", result);
+	free(result);
 
 	return 0;
 }
@@ -310,6 +311,7 @@ char *subtract(char *num1, char *num2)
 char *multiply(char *num1, char *num2)
 {
 	char *result;
+	char *res;
 	char *conv_num1;
 	char *conv_num2;
 	int is_neg = 0;
@@ -318,11 +320,6 @@ char *multiply(char *num1, char *num2)
 	if((num1[0] == '-' && num2[0] != '-') || (num1[0] != '-' && num2[0] == '-'))
 	{
 		is_neg = 1;
-	}
-
-	if(is_neg)
-	{
-		/*result[0] = '-';*/
 	}
 
 	if(num1[0] == '-')
@@ -335,7 +332,7 @@ char *multiply(char *num1, char *num2)
 	}
 	else
 	{
-		conv_num1 = num1;
+		conv_num1 = strdup(num1);
 	}
 
 	if(num2[0] == '-')
@@ -348,7 +345,7 @@ char *multiply(char *num1, char *num2)
 	}
 	else
 	{
-		conv_num2 = num2;
+		conv_num2 = strdup(num2);
 	}
 
 	result = strdup(num1);
@@ -359,17 +356,26 @@ char *multiply(char *num1, char *num2)
 		conv_num2 = subtract(conv_num2, "1");
 	}
 	
-	if(strcmp(conv_num1, num1) != 0)
-	{
-		free(conv_num1);
-	}
-	if(strcmp(conv_num2, num2) != 0)
-	{
-		free(conv_num2);
-	}
+	free(conv_num1);
+	free(conv_num2);
 	result = strip_zeroes(result);
 
-	return result;
+	if(is_neg)
+	{
+		res = calloc(strlen(result)+2, sizeof(char));
+		res[0] = '-';
+		for(i = 0; i < strlen(result); i++)
+		{
+			res[i+1] = result[i];
+		}
+	}
+	else
+	{
+		res = strdup(result);
+	}
+	free(result);
+
+	return res;
 }
 
 /*-----------------------------------------------------------------------------/
@@ -1134,6 +1140,7 @@ char *strip_zeroes(char *num)
 		res[res_ind] = num[i];
 		res_ind++;
 	}
+	free(num);
 	return res;
 }
 
@@ -1229,5 +1236,6 @@ char *strdup(char *str)
     {
         strcpy(dup, str);
     }
+	free(str);
     return dup;
 }
