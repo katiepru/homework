@@ -74,12 +74,11 @@ int main(int argc, char *argv[])
 		result = multiply(nums[0], nums[1]);
 	}
 
-	printf("result is %s\n", result);
-
 	c = argv[4][0];
 	switch (c)
 	{
 		case 'b':
+			result = strip_zeroes(result);
 			break;
 		case 'o':
 			result = bin_to_oct(result);
@@ -148,6 +147,7 @@ char *add(char *num1, char *num2)
 {
 	char *res = calloc(MAX(strlen(num1), strlen(num2))+1,
 		sizeof(char));
+	char *result;
 	int ind = 0;
 	int curr_carry = 0;
 	int prev_carry = 0;
@@ -157,10 +157,11 @@ char *add(char *num1, char *num2)
 	int min_ind;
 	int res_ind = MAX(strlen(num1), strlen(num2))+1;
 	int i;
+	int is_neg = 0;
 
 	if(num1[0] == '-')
 	{
-		res[0] = '-';
+		is_neg = 1;
 		for(i = 0; i <= strlen(num1); i++)
 		{
 			num1[i] = num1[i + 1];
@@ -255,7 +256,21 @@ char *add(char *num1, char *num2)
 
 	res = strip_zeroes(res);
 
-	return res;
+	if(is_neg)
+	{
+		result = calloc(strlen(res)+2, sizeof(char));
+		result[0] = '-';
+		for(i = 0; i < strlen(res); i++)
+		{
+			result[i+1] = res[i];
+		}
+		free(res);
+	}
+	else
+	{
+		result = res;
+	}
+	return result;
 }
 
 /*-----------------------------------------------------------------------------/
@@ -1025,7 +1040,7 @@ long int bin_to_dec(char *num)
 	int i;
 
 	/*Iterate through num and add to result*/
-	for(i = strlen(num) - 1; i >= 1; i--)
+	for(i = strlen(num) - 1; i >= 0; i--)
 	{
 		if(num[i] == '1')
 		{
