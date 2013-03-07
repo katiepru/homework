@@ -36,23 +36,40 @@ int main()
 				instr3 = instr2->next;
 				if(instr3->opcode == ADD)
 				{
-					opt_calc = instr1->field1 + instr2->field1;
+					opt_calc = instr1->field2 + instr2->field2;
 				}
 				else if(instr3->opcode == SUB)
 				{
-					opt_calc = instr1->field1 - instr2->field1;
+					opt_calc = instr1->field2 - instr2->field2;
 				}
 				else if(instr3->opcode == MUL)
 				{
-					opt_calc = instr1->field1 * instr2->field1;
+					opt_calc = instr1->field2 * instr2->field2;
 				}
 				else
 				{
 					continue;
 				}
-				printf("opt calc is %d\n", opt_calc);
+
+				/*Get Register*/
+				opt_flag = instr3->field3;
+
+				/*Modify instr3 to contain new instr*/
+				instr3->opcode = LOADI;
+				instr3->field1 = opt_flag;
+				instr3->field2 = opt_calc;
+				instr3->field3 = 0xFFFFF;
+
+				/*Fix pointers*/
+				instr3->prev = instr1->prev;
+				instr1->prev->next = instr3;
+
+				/*Delete instr1 and instr2*/
+				free(instr1);
+				free(instr2);
 			}
 		}
+		instr1 = instr1->next;
 	}
 
 	PrintInstructionList(stdout, head);
