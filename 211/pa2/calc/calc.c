@@ -61,8 +61,6 @@ int main(int argc, char *argv[])
 	}
 
 
-	printf("num1= %s; num2=%s\n", nums[0], nums[1]);
-
 	if(argv[1][0] == '+')
 	{
 		result = add_sub(nums[0], nums[1], 0);
@@ -77,7 +75,6 @@ int main(int argc, char *argv[])
 	}
 
 	printf("result is %s\n", result);
-
 
 	c = argv[4][0];
 	switch (c)
@@ -174,7 +171,6 @@ char *add(char *num1, char *num2)
 		}
 	}
 
-		printf("new 1 = %s, new 2 = %s\n", num1, num2);
 	/*Find longer number*/
 	if(strlen(num1) >= strlen(num2))
 	{
@@ -350,7 +346,9 @@ char *multiply(char *num1, char *num2)
 		conv_num2 = num2;
 	}
 
-	result = strdup(num1);
+	printf("num1 = %s, num2 = %s\n", conv_num1, conv_num2);
+
+	result = strdup(conv_num1);
 	conv_num2 = subtract(conv_num2, "1");
 	while(bin_to_dec(conv_num2) > 0)
 	{
@@ -367,6 +365,8 @@ char *multiply(char *num1, char *num2)
 		free(conv_num2);
 	}
 	result = strip_zeroes(result);
+
+	printf("zeroes = %s\n", result);
 
 	if(is_neg)
 	{
@@ -1142,12 +1142,13 @@ char *strip_zeroes(char *num)
 		return "0";
 	}
 	res = calloc(strlen(num)+1-num_zeroes, sizeof(char));
-	for(i = num_zeroes-1; i<strlen(num); i++)
+	for(i = num_zeroes; i<strlen(num); i++)
 	{
 		res[res_ind] = num[i];
 		res_ind++;
 	}
 	free(num);
+
 	return res;
 }
 
