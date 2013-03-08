@@ -98,11 +98,22 @@ char *oct_to_bin(char *num)
 
 char *bin_to_oct(char *num)
 {
-	char *result = calloc((strlen(num)/3)+1, sizeof(char));
+	char *result;
 	char *triplet = calloc(3, sizeof(char));
 	int bin_ind = strlen(num)-1;
-	int res_ind = strlen(num)/3;
+	int res_ind;
 
+	if(num[0] == '-')
+	{
+		result = calloc((strlen(num)-1)/3, sizeof(char));
+		res_ind = (strlen(num)/3)+1;
+	}
+	else
+	{
+		result = calloc((strlen(num)/3), sizeof(char));
+		res_ind = (strlen(num)/3)+2;
+	}
+	
 	while(bin_ind >= 2)
 	{
 		triplet[0] = num[bin_ind-2];
@@ -147,7 +158,6 @@ char *bin_to_oct(char *num)
 	}
 	if(bin_ind == 1)
 	{
-		printf("res ind is %d\n", res_ind);
 		if(num[0] == '-')
 		{
 			if(num[1] == '0')
@@ -158,6 +168,8 @@ char *bin_to_oct(char *num)
 			{
 				result[res_ind] = '1';
 			}
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -181,7 +193,7 @@ char *bin_to_oct(char *num)
 		}
 	}
 
-	if(bin_ind == 0)
+	else if(bin_ind == 0)
 	{
 		result[res_ind] = num[0];
 		res_ind--;
