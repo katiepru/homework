@@ -209,6 +209,8 @@ char *bin_to_oct(char *num)
 
 	result = strip_zeroes(result);
 
+	free(num);
+
 	return result;
 }
 
@@ -233,6 +235,7 @@ char *strip_zeroes(char *num)
 
 	if(num_zeroes == strlen(num))
 	{
+		free(num);
 		return "0";
 	}
 	res = calloc(strlen(num)+1-num_zeroes, sizeof(char));
