@@ -68,7 +68,7 @@ void PrintInstructionList(FILE * outfile, Instruction * instr)
 	}
 	if(instr)
 	{
-		while(ptr->next != NULL)
+		while(ptr != NULL)
 		{
 			PrintInstruction(outfile, ptr);
 			ptr = ptr->next;
