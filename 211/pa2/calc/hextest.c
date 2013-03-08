@@ -162,7 +162,7 @@ char *bin_to_hex(char *num)
 
 	if(num[0] == '-')
 	{
-		result = calloc((strlen(num)-1)/4, sizeof(char));
+		result = calloc((strlen(num)/4), sizeof(char));
 		res_ind = (strlen(num)/4)+1;
 	}
 	else
@@ -272,6 +272,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '3';
 			}
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -280,8 +282,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '0';
 			}
-			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
-				&& num[bin_ind-2] == '1')
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '0')
 			{
 				result[res_ind] = '1';
 			}
@@ -290,14 +292,15 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '2';
 			}
-			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
-				&& num[bin_ind-2] == '1')
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '1'
+				&& num[bin_ind-2] == '0')
 			{
 				result[res_ind] = '3';
 			}
-			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
-				&& num[bin_ind-2] == '0')
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '1')
 			{
+				printf("whoops ind is %d\n", res_ind);
 				result[res_ind] = '4';
 			}
 			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
@@ -305,8 +308,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '5';
 			}
-			else if(num[bin_ind] == '1' && num[bin_ind-1] == '1'
-			&& num[bin_ind-2] == '0')
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
+			&& num[bin_ind-2] == '1')
 			{
 				result[res_ind] = '6';
 			}
@@ -314,6 +317,7 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '7';
 			}
+			res_ind--;
 		}
 	}
 	else if(bin_ind == 1)
@@ -321,6 +325,8 @@ char *bin_to_hex(char *num)
 		if(result[0] == '-')
 		{
 			result[res_ind] = num[bin_ind];
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -340,11 +346,13 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '3';
 			}
+			res_ind--;
 		}
 	}
 	else if(bin_ind == '0')
 	{
 		result[res_ind] = num[bin_ind];
+		res_ind--;
 	}
 
 	while(res_ind >= 0)
