@@ -78,6 +78,10 @@ int main()
 					free(instr1);
 					free(instr2);
 					instr1 = instr3;
+					if(instr1->prev != NULL)
+					{
+						instr1 = instr1->prev;
+					}
 					continue;
 				}
 			}
