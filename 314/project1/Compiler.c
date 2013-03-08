@@ -163,7 +163,9 @@ static int expr()
 
 static void assign()
 {
-	int var = variable();
+	char var = token;
+	next_token();
+
 	if(token != '=')
 	{
 		ERROR("Expected =, got %c\n", token);
@@ -178,14 +180,14 @@ static void assign()
 
 static void read()
 {
-	int var = variable();
-	CodeGen(READ, var, EMPTY_FIELD, EMPTY_FIELD);
+	CodeGen(READ, token, EMPTY_FIELD, EMPTY_FIELD);
+	next_token();
 }
 
 static void print()
 {
-	int var = variable();
-	CodeGen(WRITE, var, EMPTY_FIELD, EMPTY_FIELD);
+	CodeGen(WRITE, token, EMPTY_FIELD, EMPTY_FIELD);
+	next_token();
 }
 
 static void stmt()
