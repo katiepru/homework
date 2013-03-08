@@ -155,10 +155,21 @@ char *hex_to_bin(char *num)
 
 char *bin_to_hex(char *num)
 {
-	char *result = calloc((strlen(num)/4)+1, sizeof(char));
+	char *result;
 	char *quad = calloc(4, sizeof(char));
 	int bin_ind = strlen(num) - 1;
-	int res_ind = (strlen(num)/4)-1;
+	int res_ind;
+
+	if(num[0] == '-')
+	{
+		result = calloc((strlen(num)-1)/4, sizeof(char));
+		res_ind = (strlen(num)/4)+1;
+	}
+	else
+	{
+		result = calloc((strlen(num)-1)/4, sizeof(char));
+		res_ind = (strlen(num)/4)+2;
+	}
 
 	while(bin_ind >= 3)
 	{
@@ -334,6 +345,12 @@ char *bin_to_hex(char *num)
 	else if(bin_ind == '0')
 	{
 		result[res_ind] = num[bin_ind];
+	}
+
+	while(res_ind >= 0)
+	{
+		result[res_ind] = '0';
+		res_ind--;
 	}
 
 	result = strip_zeroes(result);
