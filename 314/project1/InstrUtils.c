@@ -61,13 +61,13 @@ void PrintInstruction(FILE * outfile, Instruction * instr)
 void PrintInstructionList(FILE * outfile, Instruction * instr)
 {
 	Instruction *ptr = instr;
-	if (!outfile) {
+	if (!outfile) 
+	{
 		ERROR("File error\n");
 		exit(EXIT_FAILURE);
 	}
 	if(instr)
 	{
-
 		while(ptr->next != NULL)
 		{
 			PrintInstruction(outfile, ptr);
