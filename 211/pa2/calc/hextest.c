@@ -139,9 +139,17 @@ char *hex_to_bin(char *num)
 
 	if(num[0] == '-')
 	{
-		result[bin_ind] = '-';
-		bin_ind--;
+		if(result[bin_ind+1] == '0')
+		{
+			result[bin_ind+1] = '-';
+		}
+		else
+		{
+			result[bin_ind] = '-';
+			bin_ind--;
+		}
 	}
+
 	while(bin_ind >= 0)
 	{
 		result[bin_ind] = '0';
@@ -177,6 +185,7 @@ char *bin_to_hex(char *num)
 		quad[1] = num[bin_ind-2];
 		quad[2] = num[bin_ind-1];
 		quad[3] = num[bin_ind];
+		printf("bin_ind is %d, quad is %s\n", bin_ind, quad);
 
 		if(strcmp(quad, "0000") == 0)
 		{
@@ -251,10 +260,12 @@ char *bin_to_hex(char *num)
 	}
 
 	free(quad);
+	printf("bin_ind is %d\n", bin_ind);
 
+		printf("res_ind is %d\n", res_ind);
 	if(bin_ind == 2)
 	{
-		if(result[0] == '-')
+		if(num[0] == '-')
 		{
 			if(num[bin_ind] == '0' && num[bin_ind-1] == '0')
 			{
@@ -322,7 +333,7 @@ char *bin_to_hex(char *num)
 	}
 	else if(bin_ind == 1)
 	{
-		if(result[0] == '-')
+		if(num[0] == '-')
 		{
 			result[res_ind] = num[bin_ind];
 			result[res_ind-1] = '-';
