@@ -152,8 +152,6 @@ int main(int argc, char *argv[])
 			return 3;
 	}
 
-	free(result);
-
 	return 0;
 }
 
@@ -352,12 +350,15 @@ char *subtract(char *num1, char *num2)
 	result = add(num1, num2);
 
 	/*Remove MSB*/
-	for(i = 0; i < strlen(result); i++)
+	if(strlen(result) > strlen(num1))
 	{
-		if(result[i] == '1')
+		for(i = 0; i < strlen(result); i++)
 		{
-			result[i] = '0';
-			break;
+			if(result[i] == '1')
+			{
+				result[i] = '0';
+				break;
+			}
 		}
 	}
 
@@ -467,6 +468,10 @@ char *to_twos_comp(char *num, int len)
 		{
 			break;
 		}
+	}
+	if(one_ind < 0)
+	{
+		return num;
 	}
 
 	num_ind = strlen(num) - 1;
@@ -1213,6 +1218,7 @@ char *strip_zeroes(char *num)
 		res[res_ind] = num[i];
 		res_ind++;
 	}
+
 	free(num);
 
 	return res;
