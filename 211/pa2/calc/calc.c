@@ -350,7 +350,7 @@ char *subtract(char *num1, char *num2)
 	result = add(num1, num2);
 
 	/*Remove MSB*/
-	if(strlen(result) > strlen(num1))
+	if(strlen(result) > strlen(num2))
 	{
 		for(i = 0; i < strlen(result); i++)
 		{
@@ -469,7 +469,7 @@ char *to_twos_comp(char *num, int len)
 			break;
 		}
 	}
-	if(one_ind < 0)
+	if(one_ind <= 0)
 	{
 		return num;
 	}
