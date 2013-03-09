@@ -139,7 +139,7 @@ char *hex_to_bin(char *num)
 
 	if(num[0] == '-')
 	{
-		if(result[bin_ind+1] == '0')
+		if(result[bin_ind]+1 == 0)
 		{
 			result[bin_ind+1] = '-';
 		}
@@ -167,6 +167,7 @@ char *bin_to_hex(char *num)
 	char *quad = calloc(4, sizeof(char));
 	int bin_ind = strlen(num) - 1;
 	int res_ind;
+	int brk = 0;
 
 	if(num[0] == '-')
 	{
@@ -185,7 +186,6 @@ char *bin_to_hex(char *num)
 		quad[1] = num[bin_ind-2];
 		quad[2] = num[bin_ind-1];
 		quad[3] = num[bin_ind];
-		printf("bin_ind is %d, quad is %s\n", bin_ind, quad);
 
 		if(strcmp(quad, "0000") == 0)
 		{
@@ -251,6 +251,11 @@ char *bin_to_hex(char *num)
 		{
 			result[res_ind] = 'f';
 		}
+		else if(quad[0] == '-')
+		{
+			brk = 1;
+			break;
+		}
 		else
 		{
 			fprintf(stderr, "Unrecognized quad %s\n.", quad);
@@ -260,12 +265,10 @@ char *bin_to_hex(char *num)
 	}
 
 	free(quad);
-	printf("bin_ind is %d\n", bin_ind);
 
-		printf("res_ind is %d\n", res_ind);
-	if(bin_ind == 2)
+	if(bin_ind == 2 || brk)
 	{
-		if(num[0] == '-')
+		if(num[0] == '-' && !brk)
 		{
 			if(num[bin_ind] == '0' && num[bin_ind-1] == '0')
 			{
@@ -311,7 +314,6 @@ char *bin_to_hex(char *num)
 			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
 				&& num[bin_ind-2] == '1')
 			{
-				printf("whoops ind is %d\n", res_ind);
 				result[res_ind] = '4';
 			}
 			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
@@ -329,6 +331,11 @@ char *bin_to_hex(char *num)
 				result[res_ind] = '7';
 			}
 			res_ind--;
+			if(brk)
+			{
+				result[res_ind] = '-';
+				res_ind--;
+			}
 		}
 	}
 	else if(bin_ind == 1)
@@ -360,7 +367,7 @@ char *bin_to_hex(char *num)
 			res_ind--;
 		}
 	}
-	else if(bin_ind == '0')
+	else if(bin_ind == 0)
 	{
 		result[res_ind] = num[bin_ind];
 		res_ind--;
