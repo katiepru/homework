@@ -8,6 +8,12 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	if(strlen(argv[1]) != 32)
+	{
+		fprintf(stderr, "ERROR: Not 32 bits.\n");
+		return 3;
+	}
+
 	if(strcmp(argv[2], "int") == 0)
 	{
 		print_int(argv[1]);
@@ -72,6 +78,7 @@ void print_int(char *num)
 	return;
 }
 
+/*Converts a long int to its ascii representation*/
 char *int_to_ascii(long int num, int is_neg)
 {
 	char *result = calloc(12, sizeof(char));
@@ -107,7 +114,7 @@ char *int_to_ascii(long int num, int is_neg)
 	return result;
 }
 
-
+/*Converts ieee notation to a float and prints it*/
 void print_float(char *num)
 {
 	int is_neg = 0;
@@ -177,6 +184,7 @@ void print_float(char *num)
 	print_sci(dec);
 }
 
+/*Prints a float in scientific notation*/
 void print_sci(float num)
 {
 	int is_neg = 0;
@@ -214,6 +222,7 @@ void print_sci(float num)
 	return;
 }
 
+/*Convert float to ascii*/
 char *float_to_ascii(float num)
 {
 	int tmp_num;
@@ -298,6 +307,7 @@ void push(struct Stack *s, struct Node *n)
 {
 	n->next = s->head;
 	s->head = n;
+	s->size++;
 	return;
 }
 
