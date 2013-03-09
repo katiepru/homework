@@ -53,17 +53,17 @@ int main(int argc, char *argv[])
 			res = nums[0] + nums[1];
 			break;
 		case '-':
-			res = nums[0] + nums[1];
+			res = nums[0] - nums[1];
 			break;
 		case '*':
-			res = nums[0] + nums[1];
+			res = nums[0] * nums[1];
 			break;
 		default:
 			fprintf(stderr, "ERROR: Unrecognized operation.\n");
 			return 4;
 	}
 
-	c = argv[5][0];
+	c = argv[4][0];
 
 	/*Check output format and convert to string*/
 	switch(c)
@@ -89,6 +89,31 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+/*Converts decimal string to long int*/
+long int str_to_dec(char *str)
+{
+	long int result = 0;
+	int ten_pow = 1;
+	int dig;
+	int i;
+
+	for(i = strlen(str)-1; i >= 1; i--)
+	{
+		if(str[i] != 'd')
+		{
+			dig = str[i] - '0';
+			result += ten_pow * dig;
+		}
+		ten_pow += 10;
+	}
+
+	if(str[0] == '-')
+	{
+		result = -result;
+	}
+	return result;
+}
+
 /*Converts string representation of binary number to decimal int*/
 long int bin_to_dec(char *num)
 {
@@ -110,6 +135,7 @@ long int bin_to_dec(char *num)
 	{
 		result = -result;
 	}
+	printf("result is %ld\n", result);
 
 	return result;
 
@@ -126,9 +152,10 @@ long int oct_to_dec(char *num)
 	{
 		if(num[i] != 'o')
 		{
-			dig = (char)(((int)'0')+num[i]);
+			dig = num[i] - '0';
 			result += dig * eight_pow;
 		}
+		eight_pow *= 8;
 	}
 
 	if(num[0] == '-')
@@ -150,9 +177,56 @@ long int hex_to_dec(char *num)
 	{
 		if(num[i] != 'x')
 		{
-
+			dig = num[i] - '0';
+			if(dig > 9 || dig < 0)
+			{
+				dig = get_dig_value(num[i]);
+			}
+			result += dig * sixteen_pow;
 		}
 	}
+	if(num[0] == '-')
+	{
+		result = -result;
+	}
+	return result;
+}
+
+char *dec_to_str(long int num)
+{
+	char *result = calloc(35, sizeof(char));
+	struct Stack *s = create_stack(NULL);
+	int mod;
+	int i = 0;
+
+	if(num < 0)
+	{
+		result[0] = '-';
+		i = 1;
+		num = -num;
+	}
+	result[i] = 'd';
+	i++;
+
+	if(num == 0)
+	{
+		result[i] = '0';
+	}
+
+	while(num > 0)
+	{
+		mod = num % 10;
+		push(s, create_node((char)(((int)'0')+mod)));
+		num /= 10;
+	}
+
+	while(s->size > 0)
+	{
+		result[i] = pop(s)->data;
+		i++;
+	}
+
+	return result;
 }
 
 /*Converts a decimal int to binary string*/
@@ -190,7 +264,6 @@ char *dec_to_bin(long int num)
 		result[i] = pop(s)->data;
 		i++;
 	}
-	result[i] = '\0';
 
 	return result;
 }
@@ -303,3 +376,85 @@ char get_hex_value(int mod)
 			return '\0';
 	}
 }
+
+int get_dig_value(char hex)
+{
+	switch(hex)
+	{
+		case 'a':
+			return 10;
+		case 'b':
+			return 11;
+		case 'c':
+			return 12;
+		case 'd':
+			return 13;
+		case 'e':
+			return 14;
+		case 'f':
+			return 15;
+		default:
+			return -1;
+	}
+}
+
+
+
+/*Begin Stack Functions*/
+
+struct Node *create_node(char data)
+{
+	struct Node *n = malloc(sizeof(struct Node));
+	n->data = data;
+	n->next = NULL;
+	return n;
+}
+
+struct Stack *create_stack(struct Node *head)
+{
+	struct Stack *s = malloc(sizeof(struct Stack));
+	s->head = head;
+	if(head != NULL)
+	{
+		s->size = 1;
+	}
+	else
+	{
+		s->size = 0;
+	}
+	return s;
+}
+
+void destroy_stack(struct Stack *s)
+{
+	struct Node *tmp;
+	while(peek(s) != NULL)
+	{
+		tmp = pop(s);
+		free(tmp);
+	}
+	free(s);
+}
+
+void push(struct Stack *s, struct Node *n)
+{
+	n->next = s->head;
+	s->head = n;
+	s->size++;
+	return;
+}
+
+struct Node *pop(struct Stack *s)
+{
+	struct Node *res = s->head;
+	s->head = s->head->next;
+	s->size--;
+	return res;
+}
+
+struct Node *peek(struct Stack *s)
+{
+	return s->head;
+}
+
+/*End Stack functions*/

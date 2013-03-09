@@ -552,11 +552,22 @@ int is_bigger(char *num1, char *num2)
 /-----------------------------------------------------------------------------*/
 char *hex_to_bin(char *num)
 {
-	char *result = calloc((strlen(num)*4)+1, sizeof(char));
+	char *result; 
 	int hex_ind = strlen(num)-1;
 	int bin_ind;
 
-	for(bin_ind = strlen(num)*4; bin_ind >= 0; bin_ind -= 4)
+	if(num[0] == '-')
+	{
+		result = calloc(((strlen(num)-2)*4)+1, sizeof(char));
+		bin_ind = ((strlen(num)-2)*4);
+	}
+	else
+	{
+		result = calloc(((strlen(num)-1)*4)+1, sizeof(char));
+		bin_ind = ((strlen(num)-1)*4)-1;
+	}
+
+	for(bin_ind = bin_ind; bin_ind >= 3; bin_ind -= 4)
 	{
 		switch(num[hex_ind])
 		{
@@ -656,11 +667,30 @@ char *hex_to_bin(char *num)
 				result[bin_ind-2] = '1';
 				result[bin_ind-3] = '1';
 				break;
-			case '-':
-				result[bin_ind] = '-';
+			default:
+				fprintf(stderr, "ERROR: Bad hex character.");
 				break;
 		}
 		hex_ind--;
+	}
+
+	if(num[0] == '-')
+	{
+		if(result[bin_ind]+1 == 0)
+		{
+			result[bin_ind+1] = '-';
+		}
+		else
+		{
+			result[bin_ind] = '-';
+			bin_ind--;
+		}
+	}
+
+	while(bin_ind >= 0)
+	{
+		result[bin_ind] = '0';
+		bin_ind--;
 	}
 
 	result = strip_zeroes(result);
@@ -713,18 +743,23 @@ char *dec_to_bin(long int num)
 /-----------------------------------------------------------------------------*/
 char *oct_to_bin(char *num)
 {
-	char *result = calloc(((strlen(num)-1)*3)+1, sizeof(char));
+	char *result;
 	int oct_ind = strlen(num)-1;
 	int bin_ind;
 
-	for(bin_ind = (strlen(num)-1)*3; bin_ind >= 2; bin_ind -= 3)
+	if(num[0] == '-')
 	{
-		if(num[oct_ind] == 'o')
-		{
-			oct_ind--;
-		}
-		printf("num is %c\n", num[oct_ind]);
-		printf("bin ind = %d\n", bin_ind);
+		result = calloc(((strlen(num)-2)*3)+1, sizeof(char));
+		bin_ind = (strlen(num)-2)*3;
+	}
+	else
+	{
+		result = calloc(((strlen(num)-1)*3)+1, sizeof(char));
+		bin_ind = (strlen(num)-1)*3;
+	}
+
+	for(bin_ind = bin_ind; bin_ind >= 2; bin_ind -= 3)
+	{
 		switch(num[oct_ind])
 		{
 			case '0':
@@ -767,18 +802,23 @@ char *oct_to_bin(char *num)
 				result[bin_ind-1] = '1';
 				result[bin_ind-2] = '1';
 				break;
-			case '-':
-				result[bin_ind] = '-';
-				break;
 			default:
 				fprintf(stderr, "ERROR: Bad octal char.\n");
 		}
 		oct_ind--;
 	}
 
-	if(oct_ind == 0)
+
+	if(num[0] == '-')
 	{
-		result[0] = '0';
+		result[bin_ind] = '-';
+		bin_ind--;
+	}
+
+	while(bin_ind >= 0)
+	{
+		result[bin_ind] = '0';
+		bin_ind--;
 	}
 
 	result = strip_zeroes(result);
@@ -791,12 +831,23 @@ char *oct_to_bin(char *num)
 /-----------------------------------------------------------------------------*/
 char *bin_to_hex(char *num)
 {
-	char *result = calloc((strlen(num)/4)+1, sizeof(char));
+	char *result;
 	char *quad = calloc(4, sizeof(char));
 	int bin_ind = strlen(num) - 1;
-	int res_ind = (strlen(num)/4)-1;
+	int res_ind;
+	int brk = 0;
 
-	printf("num is %s\n", num);
+	if(num[0] == '-')
+	{
+		result = calloc((strlen(num)/4), sizeof(char));
+		res_ind = (strlen(num)/4)+1;
+	}
+	else
+	{
+		result = calloc((strlen(num)-1)/4, sizeof(char));
+		res_ind = (strlen(num)/4)+2;
+	}
+
 	while(bin_ind >= 3)
 	{
 		quad[0] = num[bin_ind-3];
@@ -868,6 +919,11 @@ char *bin_to_hex(char *num)
 		{
 			result[res_ind] = 'f';
 		}
+		else if(quad[0] == '-')
+		{
+			brk = 1;
+			break;
+		}
 		else
 		{
 			fprintf(stderr, "Unrecognized quad %s\n.", quad);
@@ -878,11 +934,9 @@ char *bin_to_hex(char *num)
 
 	free(quad);
 
-	printf("bin ind = %d\n", bin_ind);
-
-	if(bin_ind == 2)
+	if(bin_ind == 2 || brk)
 	{
-		if(result[0] == '-')
+		if(num[0] == '-' && !brk)
 		{
 			if(num[bin_ind] == '0' && num[bin_ind-1] == '0')
 			{
@@ -900,6 +954,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '3';
 			}
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -908,8 +964,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '0';
 			}
-			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
-				&& num[bin_ind-2] == '1')
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '0')
 			{
 				result[res_ind] = '1';
 			}
@@ -918,13 +974,13 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '2';
 			}
-			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
-				&& num[bin_ind-2] == '1')
+			else if(num[bin_ind] == '1' && num[bin_ind-1] == '1'
+				&& num[bin_ind-2] == '0')
 			{
 				result[res_ind] = '3';
 			}
-			else if(num[bin_ind] == '1' && num[bin_ind-1] == '0'
-				&& num[bin_ind-2] == '0')
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '0'
+				&& num[bin_ind-2] == '1')
 			{
 				result[res_ind] = '4';
 			}
@@ -933,8 +989,8 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '5';
 			}
-			else if(num[bin_ind] == '1' && num[bin_ind-1] == '1'
-			&& num[bin_ind-2] == '0')
+			else if(num[bin_ind] == '0' && num[bin_ind-1] == '1'
+			&& num[bin_ind-2] == '1')
 			{
 				result[res_ind] = '6';
 			}
@@ -942,13 +998,21 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '7';
 			}
+			res_ind--;
+			if(brk)
+			{
+				result[res_ind] = '-';
+				res_ind--;
+			}
 		}
 	}
 	else if(bin_ind == 1)
 	{
-		if(result[0] == '-')
+		if(num[0] == '-')
 		{
 			result[res_ind] = num[bin_ind];
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -968,12 +1032,22 @@ char *bin_to_hex(char *num)
 			{
 				result[res_ind] = '3';
 			}
+			res_ind--;
 		}
 	}
-	else if(bin_ind == '0')
+	else if(bin_ind == 0)
 	{
 		result[res_ind] = num[bin_ind];
+		res_ind--;
 	}
+
+	while(res_ind >= 0)
+	{
+		result[res_ind] = '0';
+		res_ind--;
+	}
+
+	/*free(num);*/
 
 	result = strip_zeroes(result);
 
@@ -985,11 +1059,23 @@ char *bin_to_hex(char *num)
 /-----------------------------------------------------------------------------*/
 char *bin_to_oct(char *num)
 {
-	char *result = calloc((strlen(num)/3)+1, sizeof(char));
+	char *result;
 	char *triplet = calloc(3, sizeof(char));
 	int bin_ind = strlen(num)-1;
-	int res_ind = strlen(num)/3;
+	int res_ind;
+	int brk = 0;
 
+	if(num[0] == '-')
+	{
+		result = calloc((strlen(num)-1)/3, sizeof(char));
+		res_ind = (strlen(num)/3)+1;
+	}
+	else
+	{
+		result = calloc((strlen(num)/3), sizeof(char));
+		res_ind = (strlen(num)/3)+2;
+	}
+	
 	while(bin_ind >= 2)
 	{
 		triplet[0] = num[bin_ind-2];
@@ -1024,15 +1110,24 @@ char *bin_to_oct(char *num)
 		{
 			result[res_ind] = '6';
 		}
-		else
+		else if(strcmp(triplet, "111") == 0)
 		{
 			result[res_ind] = '7';
+		}
+		else if(triplet[0] == '-')
+		{
+			brk = 1;
+			break;
+		}
+		else
+		{
+			fprintf(stderr, "Bad octal triplet\n");
 		}
 		res_ind--;
 		bin_ind -= 3;
 		memset(triplet, 0, sizeof(triplet));
 	}
-	if(bin_ind == 1)
+	if(bin_ind == 1 || brk)
 	{
 		if(num[0] == '-')
 		{
@@ -1044,6 +1139,8 @@ char *bin_to_oct(char *num)
 			{
 				result[res_ind] = '1';
 			}
+			result[res_ind-1] = '-';
+			res_ind -= 2;
 		}
 		else
 		{
@@ -1067,9 +1164,10 @@ char *bin_to_oct(char *num)
 		}
 	}
 
-	if(bin_ind == 0)
+	else if(bin_ind == 0)
 	{
 		result[res_ind] = num[0];
+		res_ind--;
 	}
 
 	while(res_ind >= 0)
@@ -1081,6 +1179,8 @@ char *bin_to_oct(char *num)
 	free(triplet);
 
 	result = strip_zeroes(result);
+
+	/*free(num);*/
 
 	return result;
 }
@@ -1205,6 +1305,7 @@ char *strip_zeroes(char *num)
 
 	if(num_zeroes == 0)
 	{
+		free(num);
 		return num;
 	}
 
