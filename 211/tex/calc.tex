@@ -1,0 +1,46 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{indentfirst}
+\usepackage{sectsty}
+\sectionfont{\large}
+
+\title{\bf Assignment 1 - Wordstat}
+\author{Kaitlin Poskaitis}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Algorithm}
+
+This project works only for integers up to 32 bits. It works by converting all 
+of the inputs into long ints through their appropriate conversions. It then does
+the arithmetic on those long ints, and procedes to convert them into their 
+specified output format through the appropriate conversion. 
+
+\section*{Big O Analysis}
+
+Time complexity: O(n)
+
+The time complexity of this algorith is O(n). The algorithm can be split into 
+three main parts: converting to a long int, doing the operation, and converting 
+to the output format. The first part is O(n) as we have to loop over the string
+to do the conversion. The second part is O(1), as it is a simple arithmetic 
+operation. Lastly, the last part is at worst O(n) because the int must be 
+converted to a string.
+
+Space complexity: O(n)
+
+The space complexity is also O(n) because 
+
+\section*{Difficulties}
+
+The biggest challenge of this assignment was coming up with an efficient
+algorithm, as linear time was not possible with the basic structures we learned
+in Data Structures. Once i was able to come up with this algorithm, the 
+implementation was pretty straightforward. The most difficult concept for me to
+get used to was how C handles strings as they are so different from Java. Once
+I got this worked out, it was not terribly difficult.
+
+\end{document}
