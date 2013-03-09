@@ -80,15 +80,17 @@ char *oct_to_bin(char *num)
 		oct_ind--;
 	}
 
+
 	if(num[0] == '-')
 	{
-		result[oct_ind+1] = '-';
+		result[bin_ind] = '-';
+		bin_ind--;
 	}
 
-	while(oct_ind >= 0)
+	while(bin_ind >= 0)
 	{
-		result[oct_ind] = '0';
-		oct_ind--;
+		result[bin_ind] = '0';
+		bin_ind--;
 	}
 
 	result = strip_zeroes(result);
@@ -102,6 +104,7 @@ char *bin_to_oct(char *num)
 	char *triplet = calloc(3, sizeof(char));
 	int bin_ind = strlen(num)-1;
 	int res_ind;
+	int brk = 0;
 
 	if(num[0] == '-')
 	{
@@ -148,15 +151,24 @@ char *bin_to_oct(char *num)
 		{
 			result[res_ind] = '6';
 		}
-		else
+		else if(strcmp(triplet, "111") == 0)
 		{
 			result[res_ind] = '7';
+		}
+		else if(triplet[0] == '-')
+		{
+			brk = 1;
+			break;
+		}
+		else
+		{
+			fprintf(stderr, "Bad octal triplet\n");
 		}
 		res_ind--;
 		bin_ind -= 3;
 		memset(triplet, 0, sizeof(triplet));
 	}
-	if(bin_ind == 1)
+	if(bin_ind == 1 || brk)
 	{
 		if(num[0] == '-')
 		{
