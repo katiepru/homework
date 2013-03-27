@@ -23,9 +23,9 @@
 %\maketitle
 \sloppy
 
-\noindent Rutgers University\\
-CS206: Introduction to Discrete Structures II, Spring 2013\\
-Professor David Cash\\
+\noindent Kaitlin Poskaitis \\
+Section 1\\
+Homework 5\\
 
 \begin{center}
 \LARGE{\textbf{Homework 5}}\\
@@ -184,6 +184,17 @@ prizes we will collect? \begin{small}\textsf{Hint: Consider the indicator
 random variables $I_{E_i}$ for the event $E_i =$ ``the $i$-th price was
 in some box''.}\end{small}
 
+\begin{itemize}
+	\item Let $R_{1}...R_{6}$ be the indication random variables which are equal
+	to 1 if the prize has been obtained at least once and 0 otherwise.
+	\item For each box, we have a $\frac{1}{6}$ chance of getting a particular
+	prize. This can also be written as $1 - \frac{5}{6}$
+	\item As the number of boxes increases, the probability of getting a 
+	specific toy at least once increases like so: $1 - (\frac{5}{6})^{N}$
+	\item Because we have 6 indicator variables, we mulitply this number by
+	6 to get the expected number of unique prizes: $6(1-(\frac{5}{6})^{N})$
+\end{itemize}
+
 %Q4
 \item (4 points) A group of $m$ men and $w$ randomly sit in a single row at a
 theater.  If a man and woman are seated next to each other we say they form a
@@ -194,7 +205,21 @@ random variables for each possible couple forming.
 }\end{small}
 
 \begin{itemize}
-	\item $\frac{m}{m+w}*\frac{w}{m+w}*(m+w-1)$
+	\item We will induct on a specific woman. If she is sitting on the end of a 
+	row, there are $m(m+w-1)!$ permutations of the other people where she is
+	part of a couple.
+	\item Next, if she is in the middle of the row, she can be part of 1 or 2 
+	couples. There are $2m(w-1)(m+w-3)!$ permutations of the other people where 
+	she will be part of one couple. There are another $m(m-1)(m+w-3)!$ 
+	permutations where she is part of 2 couples.
+	\item Since we are inducting on a specific woman, we need to take into 
+	account her possible permutations, and there are $(m+w-1)!$ of those.
+	\item We can express this as the following:
+	$\frac{2}{m+w} * \frac{m(m+w-1)!}{(m+w-1)!} + \frac{m+w-2}{m+w} * 
+	\frac{2m(m+w-3)!(m+w-2)}{(m+w-1)!}$
+	\item This is equal to $\frac{2m(m+w-1)}{(m+w)(m+w-1)} = \frac{2m}{m+w}$
+	\item Because we inducted on one woman, we need to multiply this by $w$
+	to account for all women, resulting in $\frac{2mw}{m+w}$
 \end{itemize}
 
 %Q5
@@ -216,6 +241,11 @@ are to be placed randomly into $n$ boxes. Let $N_1$ count the number of boxes
 with exactly one ball, and let $N_2$ count the number of boxes with exactly two
 balls. Find the probability of the events ``$N_1 = n$" and ``$N_1 = n - 1$".
 Use the indicator technique to find $E(N_1)$ and $E(N_2)$.
+
+\begin{itemize}
+	\item Probability $N_1 = n$: $\frac{1}{{2n-1\choose n-1}}$
+	\item Probability $N_1 = n-1$ is $0$
+\end{itemize}
 
 
 \end{enumerate}
