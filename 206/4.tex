@@ -15,6 +15,7 @@
 \newcommand{\bits}{\{0,1\}}
 \newcommand{\Range}{{\mathrm{Range}}}
 \newcommand{\A}{{\mathcal{A}}}
+\renewcommand{\arraystretch}{1.5}
 
 % --- -----------------------------------------------------------------
 % --- The document starts here.
@@ -23,9 +24,9 @@
 %\maketitle
 \sloppy
 
-\noindent Rutgers University\\
+\noindent Kaitlin Poskaitis\\
 CS206: Introduction to Discrete Structures II, Spring 2013\\
-Professor David Cash\\
+Section 1\\
 
 \begin{center}
 \LARGE{\textbf{Homework 4}}\\
@@ -64,17 +65,17 @@ intuition for why one should be larger.
 	P(B) = $\frac{n}{n+m}$ \\
 	P(A$|$B) = $\frac{n-1}{n+m-1}$ \\
 	Need $P(A \cap B)$ \\
-	$P(A \cap B)$ = P(A|B) * P(B) \\
+	$P(A \cap B)$ = P(A$|$B) * P(B) \\
 	$P(A \cap B)$ = $\frac{n}{n+m} * \frac{n-1}{n+m-1}$ \\
 	Let C be the event that the second ball is black. \\
 	Let D be the event that the first ball is black. \\
 	P(D) = $\frac{m}{n+m}$ \\
 	P(C$|$D) = $\frac{m-1}{n+m-1}$ \\
 	Need $P(C \cap D)$ \\
-	$P(C \cap D)$ = P(C|D) * P(D) \\
+	$P(C \cap D)$ = P(C$|$D) * P(D) \\
 	$P(C \cap D)$ = $\frac{m}{n+m} * \frac{m-1}{n+m-1}$ \\
 	Probability that both balls drawn are the same color is: \\
-	$P(A \cup B) + P(C \cup D)$
+	$P(A \cap B) + P(C \cap D)$
 	$(\frac{n}{n+m} * \frac{n-1}{n+m-1}) + 
 	(\frac{m}{n+m} * \frac{m-1}{n+m-1})$
 
@@ -95,7 +96,7 @@ intuition for why one should be larger.
 balls.  Suppose we draw $r\geq 1$ balls from the urn without replacement.  What
 is the probability that we draw exactly $k$ white balls?
 
-Assuming r >= n and r >= m, number of different combinations is r+1. \\
+Assuming $r\geq n$ and $r\geq m$, number of different combinations is r+1. \\
 Number of ways to get eactly k whites: 1. \\
 Probability og getting exactly k whites: $\frac{1}{r+1}$
 
@@ -108,10 +109,10 @@ If $A$ and $B$ are independent, what is $x$?
 
 	Let A be the event that a cube was drawn. \\
 	Let B be the event that a black object was drawn. \\
-	If these events are independent, then $P(A \cup B) = P(A) * P(B)$ \\
+	If these events are independent, then $P(A \cap B) = P(A) * P(B)$ \\
 	$P(A) = \frac{10}{16+x}$ \\
 	$P(B) = \frac{10}{16+x}$ \\
-	$P(A \cup B) = \frac{4}{16+x}$ \\
+	$P(A \cap B) = \frac{4}{16+x}$ \\
 	$\frac{4}{16+x} = \frac{10}{16+x} * \frac{10}{16+x}$ \\
 	$\frac{4}{16+x} = \frac{100}{(16+x)^{2}}$ \\
 	$\frac{4}{16+x} = 100$ \\
@@ -135,6 +136,25 @@ and $W = XY$ (i.e., the product of $X$ and $Y$).
 \begin{enumerate}
 	\item $\Range(X)$ = [2, 12], $\Range(Y)$ = [1, 6], $\Range(Z)$ = [0, 5]
 	$\Range(W)$ = [2, 72]
+	\item $\A_X = \{\{(1,1)\}, \{(2,1),(1,2)\}, \{(2,2),(3,1),(1,3)\}, 
+	\{(3,2),(2,3),(4,1),(1,4)\}, $\\$\{(5,1),(1,5),(2,4),(4,2),(3,3)\}, 
+	$\\$\{(6,1),(1,6),(2,5),(5,2)(3,4),(4,3)\}, $\\$
+	\{(4,4),(3,5),(5,3),(6,2),(2,6)\}, $\\$
+	\{(6,3),(3,6),(4,5),(5,4)\}, \{(6,4),(4,6),(5,5)\}, \{(5,6),(6,5)\}, $\\$
+	\{(6,6)\}\}$; \\
+	$\A_Z = \{\{(6,6),(5,5),(4,4),(3,3),(2,2),(1,1)\}, $\\$
+	\{(6,5),(5,6),(5,4)(4,5),(3,4)(4,3),(2,3),(3,2),(2,1),(1,2)\}, $\\$
+	\{(6,4),(4,6),(5,3),(3,5),(4,2),(2,4),(3,1),(1.3)\}, $\\$
+	\{(6,3),(3,6),(5,2),(2,5),(4,1),(1,4)\},$\\$
+	\{(6,2),(2,6),(5,1),(1,5)\},$\\$
+	\{(6,1),(1,6)\}\}$
+	\item See attached
+	\item If they are independent, then $P(X \cap Z) = P(X) * P(Z)$ \\ 
+	$P(X \cap Z) = \frac{2}{36}$ \\
+	$P(X) = \frac{6}{36}$ \\
+	$P(Z) = \frac{10}{36}$ \\
+	$P(A)*P(B) = \frac{5}{108}$ \\
+	Because these are not equal, the events are not independent
 \end{enumerate}
 
 \item (6 points total) Consider the experiment of randomly shuffling
@@ -150,6 +170,18 @@ $\Range(X), \A_X, f_X$.
 \item (2 points) Are $X$ and $Y$ independent?  Explain.
 \end{itemize}
 
+\begin{itemize}
+\item The sample space contains every possible way to arrange the n students in 
+the n desks: \{(1, 2, \dots n), (2, 1, 3 \dots n) \dots\dots (n, n-1, \dots 1)\}
+It as a cardinality of n!.
+\item $\Range(X) = [0, 1]$, $\A_X$ 
+\item They should not be independent because the number of students not that 
+their original desks will influence the probability that students 1 and 2 are 
+not at their original desks. For example, if only one student is not at his 
+original desk, then the probability that student 1 and 2 are not at their desks 
+is 0, showing that the outcome of X affects that of Y.
+\end{itemize}
+
 \item \textbf{Extra credit (4 points)} A true-false question has been
 posed to a husband-and-wife team on a quiz show.  Each of the husband
 and wife will independently give the correct answer with probability $p>0$
@@ -162,6 +194,53 @@ correctly?  (Explain your answer.)
 then use their answer.  Otherwise guess true of false at random.
 \end{itemize}
 \end{enumerate}
+
+\clearpage
+5c. 
+
+$f_X$ 
+	\begin{tabular}{|r | l|}
+	\hline
+	Partition & Probability \\ \hline
+	2 & $\frac{1}{36}$ \\ \hline
+	3 & $\frac{2}{36}$ \\ \hline
+	4 & $\frac{3}{36}$ \\ \hline
+	5 & $\frac{4}{36}$ \\ \hline
+	6 & $\frac{5}{36}$ \\ \hline
+	7 & $\frac{6}{36}$ \\ \hline
+	8 & $\frac{5}{36}$ \\ \hline
+	9 & $\frac{4}{36}$ \\ \hline
+	10 & $\frac{3}{36}$ \\ \hline
+	11 & $\frac{2}{36}$ \\ \hline
+	12 & $\frac{1}{36}$ \\ \hline
+	\end{tabular}
+
+$f_Y$
+	\begin{tabular}{|r | l|}
+	\hline
+	Partition & Probability \\ \hline
+	1 & $\frac{1}{36}$ \\ \hline
+	2 & $\frac{3}{36}$ \\ \hline
+	3 & $\frac{5}{36}$ \\ \hline
+	4 & $\frac{7}{36}$ \\ \hline
+	5 & $\frac{9}{36}$ \\ \hline
+	6 & $\frac{11}{36}$ \\ \hline
+	\end{tabular}
+
+$f_Z$
+	\begin{tabular}{|r | l|}
+	\hline
+	Partition & Probability \\ \hline
+	0 & $\frac{6}{36}$ \\ \hline
+	1 & $\frac{10}{36}$ \\ \hline
+	2 & $\frac{8}{36}$ \\ \hline
+	3 & $\frac{6}{36}$ \\ \hline
+	4 & $\frac{4}{36}$ \\ \hline
+	5 & $\frac{2}{36}$ \\ \hline
+	\end{tabular}
+
+$f_W$
+
 
 
 \end{document}
