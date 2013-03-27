@@ -72,9 +72,33 @@ at most five game have been played?
 $y$ wins four games?  (i.e., What is the probability that $x$ wins
 the Series?)
 
+\begin{itemize}
+	\item In order to find this, we need to add the probabilites that $x$ will
+	win in 4, 5, 6, and 7 games.
+	\item Let $A$ be the event that $x$ wins the first 4 games.
+	\item $P(A) = p^{4}$
+	\item Let $B$ be the event that $x$ wins in 5 games.
+	\item $P(B) = 4(1-p)p^{4}$
+	\item Let $C$ be the event that $x$ wins in 6 games, meaning $x$ wins 3 of 
+	the first 5 games, and the 6th game.
+	\item $P(C) = p(\frac{5!}{3!2!}*p^{3}(1-p)^2)$
+	\item Let $D$ be the event that $x$ wins in 7 games, meaning $x$ wins 5 of
+	the first 6 games, and the 7th game.
+	\item $P(D) = p(\frac{6!}{3!3!}*p^{3}(1-p)^{3})$
+	\item This sum can be written as a summation: 
+	$\displaystyle\sum\limits_{i=4}^7 \frac{(i-1)!}{3!(i-4)!}p^{4}(1-p)^{i-4}$
+\end{itemize}
+
 %Q1d
 \item (0.5 points) Calculate and simplify your answer in part (c) when $p=1/2$
 and when $p=2/3$.
+
+\begin{itemize}
+	\item The probability that $x$ will win the series when $p=1/2$ is 
+	$\frac{1}{2}$
+	\item The probability that $x$ will win the series when $p=2/3$ is
+	$\frac{1808}{2187}$
+\end{itemize}
 
 %Q1d
 \item (1 point) Let $X$ be the random variable that counts the number of games
@@ -118,10 +142,6 @@ that are played.  What is $\Range(X)$?
 	\item $P(D) = (1-p)(\frac{5!}{3!2!}*p^{2}(1-p)^{3})$
 	\item Therefore, $P(X\geq 6) = (1-p)(\frac{5!}{3!2!}*p^{2}(1-p)^{3}) + 
 	p(\frac{5!}{3!2!}*p^{3}(1-p)^{2}) + 2(\frac{6!}{3!3!} * p^{3}(1-p)^{3})$
-
-
-
-
 \end{itemize}
 \end{enumerate}
 
@@ -129,6 +149,32 @@ that are played.  What is $\Range(X)$?
 \item (4 points) Suppose we roll two fair dice.  Let the random variable $X=$
 ``the minimum of the two dice'' and $Y =$ ``the absolute value of the
 difference of the two dice''.  Find $E(X)$ and $E(Y)$.
+
+\begin{itemize}
+	\item $E(X)$
+	\begin{itemize}
+		\item Range = $[1, 6]$
+		\item Total combinations of dice rolls: 36
+		\item $P(X=1) = \frac{11}{36}$
+		\item $P(X=2) = \frac{9}{36}$
+		\item $P(X=3) = \frac{7}{36}$
+		\item $P(X=4) = \frac{5}{36}$
+		\item $P(X=5) = \frac{3}{36}$
+		\item $P(X=6) = \frac{1}{36}$
+		\item $E(X) = \displaystyle\sum\limits_{i=1}^6 i*P(X=i) = \frac{91}{36}$
+	\end{itemize}
+	\item $E(Y)$
+	\begin{itemize}
+		\item Range = $[0, 5]$
+		\item $P(X=0) = \frac{6}{36}$
+		\item $P(X=1) = \frac{10}{36}$
+		\item $P(X=2) = \frac{8}{36}$
+		\item $P(X=3) = \frac{6}{36}$
+		\item $P(X=4) = \frac{4}{36}$
+		\item $P(X=5) = \frac{2}{36}$
+		\item $E(Y) = \displaystyle\sum\limits_{i=0}^5 i*P(Y=i) = \frac{70}{36}$
+	\end{itemize}
+\end{itemize}
 
 %Q3
 \item (4 points) Suppose boxes of cereal are filled with a random prize,
@@ -146,6 +192,10 @@ couples.)  What is the expected number of couples?
 \begin{small}\textsf{Hint: Use indicator
 random variables for each possible couple forming.
 }\end{small}
+
+\begin{itemize}
+	\item $\frac{m}{m+w}*\frac{w}{m+w}*(m+w-1)$
+\end{itemize}
 
 %Q5
 \item (3 points) Suppose an experiment tosses a fair coin twice;  the experiment
