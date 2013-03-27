@@ -62,7 +62,8 @@ at most five game have been played?
 	\item Let $A$ be the event that $x$ wins the first four games.
 	\item $P(A) = p^{4}$
 	\item Let $B$ be the event that $x$ plays five games and wins four
-	\item $P(B) = 4(1-p)p^{4}$ (4 different ways for $x$ to win 4 out of 5 games)
+	\item $P(B) = 4(1-p)p^{4}$ (4 different ways for $x$ to win 4 out of 5 
+	games)
 	\item $P(A) + P(B) = p^{4}(1 + 4(1-p))$
 \end{itemize}
 
@@ -79,11 +80,49 @@ and when $p=2/3$.
 \item (1 point) Let $X$ be the random variable that counts the number of games
 that are played.  What is $\Range(X)$?
 
+\begin{itemize}
+	\item $[4, 7]$
+\end{itemize}
+
 %Q1e
 \item (2 points) What is $P(X=7)$?
 
+\begin{itemize}
+	\item In order for this to be true, $x$ must win 3 out of the first 6 games,
+	and lose 3 out of the first 6 games. The outcome of the 7th game does not 
+	matter.
+	\item Number of ways $x$ can win 3 out of 6: $\frac{6!}{3!3!}$
+	\item Therefore, the probability that $x$ wins 3 out of the first 6 games is
+	$\frac{6!}{3!3!} * p^{3}(1-p)^{3}$
+	\item Because the outcome of the last game does not matter,$P(X=7) = 
+	2(\frac{6!}{3!3!} * p^{3}(1-p)^{3})$
+\end{itemize}
+
 %Q1f
 \item (2 points) What is $P(X\geq 6)$?
+
+\begin{itemize}
+	\item In order for this to occur, $X=7$ or $X=6$
+	\item Let $A$ be the event that $X=7$
+	\item $P(A) = 2(\frac{6!}{3!3!} * p^{3}(1-p)^{3})$
+	\item Let $B$ be the event that $X=6$
+	\item In order for $B$ to occur, $x$ must win 3 of the first 5 games and the
+	last game, or $x$ must lose 3 of the first 5 games and the last game.
+	\item The number of ways a team could win 3 of the fist 5 games is 
+	$\frac{5!}{3!2!}$
+	\item Let $C$ be the event that $x$ wins 3 out of the first 5 games and the
+	last game
+	\item $P(C) = p(\frac{5!}{3!2!}*p^{3}(1-p)^{2})$
+	\item Let $D$ be the event that $x$ loses 3 out of the first 5 games and the
+	last game.
+	\item $P(D) = (1-p)(\frac{5!}{3!2!}*p^{2}(1-p)^{3})$
+	\item Therefore, $P(X\geq 6) = (1-p)(\frac{5!}{3!2!}*p^{2}(1-p)^{3}) + 
+	p(\frac{5!}{3!2!}*p^{3}(1-p)^{2}) + 2(\frac{6!}{3!3!} * p^{3}(1-p)^{3})$
+
+
+
+
+\end{itemize}
 \end{enumerate}
 
 %Q2
