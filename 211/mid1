@@ -1,0 +1,47 @@
+Number conversions with radix points
+	Decimal things
+		- 3.4 = 3*10^1 + 4*10^-1
+		- Same logic applies for all bases
+	grey code
+		- mirroring things
+		- Each number differs by only 1 bit
+Endianness
+	- change order of bytes, not bits
+	- big - most sig first
+	- little - least sig first
+Fix shit
+2 Assembler (32 bit) - reading 
+	- x86 = little endian
+call stack
+	-%ebp stores FP
+	- Grows into lower addresses
+de morgan's laws (easy)
+draw a circuit (easy)
+computer internals
+	- Immediate
+		- $0x1F
+		- $-17
+		- $012
+	Register
+		- %eax
+		- %ebp
+	Absolute Addr
+		-0x8800
+	Indirect
+		- (%ecx) - paren means get val in memory from addr in reg
+	Indirect with fixed displacement
+		- -8(%ebp)
+	Indirect with index register
+		- (%eax,%ebx)
+		- Add contents on registers, get addr
+	Indirect with index register and fixed displacement
+		- 42(%ebp,%eax)
+	Scaled indirect (multiply)
+		- (,%eax,4) - num must be 1, 2, 4, or 8
+	Scaled Indirect with fixed displacement
+		- 8(,%eax,4)
+	Scaled indirect with index registers
+		- (%eax,%ebx,2) - do product of %ebx and 4 then add to %eax
+	Scaled indirect with index register and fixed displacement
+		- 96(%ebp,%eax,8)
+	- SOURCE AND DESTINATION CANNOT BOTH BE MEMORY
