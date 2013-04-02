@@ -74,17 +74,31 @@
 
 \begin{enumerate}
 	\item
-	(define flatten
-	 (lambda (l)
-	  (cond 
-	   ((null? l)
-		empty)
-	   ((list? (car l))
-		(cons (flatten (car l)) (flatten (cdr l))))
-	   (else
-		(cons (car l) (flatten (cdr l)))))))
-	\item 
+    (define flatten
+      (lambda (l)
+        (if (null? l)
+	      '()
+	      (if (list? l)
+		    (cons (flatten (car l)) (flatten (cdr l)))
+		    l
+	      )
+	    )
+      )
+    )
+	\item
+	\item
 
+(define double
+  (lambda (l)
+    (if(null? l) 
+	  '()
+	  (if (list? l)
+	    (cons (double (car l))  (double (cdr l)))
+	  (cons l (cons l '()))
+	  )
+    )
+  )
+)
 
 \end{enumerate}
 
