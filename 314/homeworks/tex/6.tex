@@ -13,6 +13,16 @@
 \maketitle
 
 \section{Parameter Passing}
+\begin{enumerate}
+	\item RISC Machine Instructions \\
+	LOADI r1 5\\
+	STORE z r1
+	\item What values for a and b does that program print?\\
+	a = 1\\
+	b = 1
+
+
+\end{enumerate}
 
 \section{Scheme}
 
@@ -35,9 +45,26 @@
 			(cons (cons 'e (cons 'f '())) '())	
 		))
 	(cons 'g '()))
+	\item
+	(cons 'a (cons + (cons 'b '())))
 
 \end{enumerate}
 
 \section{Scheme}
+
+\begin{enumerate}
+	\item
+	(define flatten
+	 (lambda (1)
+	  (cond 
+	   ((null? list)
+		empty)
+	   ((list? (car lst))
+		(append (flatten (car lst)) (flatten (cdr lst))))
+	   (else
+		(cons (car lst) (flatten (cdr lst)))))))
+
+
+\end{enumerate}
 
 \end{document}
