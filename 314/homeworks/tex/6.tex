@@ -15,11 +15,31 @@
 \section{Parameter Passing}
 \begin{enumerate}
 	\item RISC Machine Instructions \\
-	LOADI r1 5\\
-	STORE z r1
+	LOADI r1 \#4\\
+	ADD r2 r1 r0\\
+	LOADI r3 \#5\\
+	STORE r2 r3\\
+
+	LOADI r4 \#-12\\
+	ADD r5 r4 r0\\
+	LOAD r6 r5\\
+	LOAD r7 r6\\
+	
+	LOADI r8 \#-8\\
+	ADD r9 r8 r0\\
+	LOAD r10 r9\\
+
+	ADD r11 r7 r10\\
+	LOAD r12 r2\\
+	ADD r13 r11 r12\\
+	STORE r6 r13\\
+
+	LOADI r14 \#1\\
+	STORE r9 r14
+
 	\item What values for a and b does that program print?\\
-	a = 1\\
-	b = 1
+	a = 8\\
+	b = 2
 
 
 \end{enumerate}
@@ -55,14 +75,15 @@
 \begin{enumerate}
 	\item
 	(define flatten
-	 (lambda (1)
+	 (lambda (l)
 	  (cond 
-	   ((null? list)
+	   ((null? l)
 		empty)
-	   ((list? (car lst))
-		(append (flatten (car lst)) (flatten (cdr lst))))
+	   ((list? (car l))
+		(cons (flatten (car l)) (flatten (cdr l))))
 	   (else
-		(cons (car lst) (flatten (cdr lst)))))))
+		(cons (car l) (flatten (cdr l)))))))
+	\item 
 
 
 \end{enumerate}
