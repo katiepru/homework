@@ -1,5 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "mystery.h"
+
+int add(int a, int b)
+{
+	return a+b;
+}
 
 int compute_fib(int n, int *cache)
 {
@@ -26,7 +30,7 @@ int compute_fib(int n, int *cache)
 
 	num1 = compute_fib(n-1, cache);
 	num2 = compute_fib(n-2, cache);
-	sum = num1 + num2;
+	sum = add(num1, num2);
 
 	cache[n] = sum;
 
