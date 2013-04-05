@@ -1,0 +1,34 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{indentfirst}
+\usepackage{sectsty}
+\sectionfont{\large}
+
+\title{\bf Assignment 3 - Formula}
+\author{Kaitlin Poskaitis}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+Note that I used 64 bit assembly for this project (mystery\_new.s).
+
+\section*{Figuring it Out}
+
+I figured out this program by tracing the assembly line by line and keeping 
+track of what was in each register and memory location. I first noted that it
+was fibonacci because of the pattern in the output as well as the function name
+in the file. I then deduced that it was recursive by noting that compute\_fib 
+was called from within itself.  I then was able to figure out that the 
+optimization was caching values in an array by tracing the main function and 
+seeing that it allocated an array of size 47. This was also the cut off int
+for the input, so caching made sense.
+
+\section*{Optimization}
+
+It seemed the compiler optimization removed unnecessary register and memory 
+movement and storage. It seemed to condense the generated assembly considerably
+by cutting out unnecessary steps with values between registers.
+
+\end{document}

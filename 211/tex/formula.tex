@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{indentfirst}
+\usepackage{sectsty}
+\sectionfont{\large}
+
+\title{\bf Assignment 3 - Formula}
+\author{Kaitlin Poskaitis}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+Note that I used 64 bit assembly for this project.
+
+\section*{Algorithm}
+
+The implementation of this program was pretty straightforward. I implemented
+factorial and nCr in assembly, checking for overflow in both functions.  I then 
+used these functions in formula.c to compute the coefficient of each term of the
+expanded binomial. I print each term as I go, checking for overflow.
+
+\section*{Big O Analysis}
+
+This program is $O(1)$ space complexity because nothing get stored.
+
+This program is $O(n^{2})$ time complexity because factorial is $n$ and you have
+to do factorial on $n$ terms, making the overall time complexity $O(n^{2})$.
+
+\end{document}
