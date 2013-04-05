@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int compute_fib(int n);
+int compute_fib(int n, int *cache);
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		cache[i] = -1;
 	}
 
-	num = compute_fib(num);
+	num = compute_fib(num, cache);
 
 	printf("Value: %d\n", num);
 
@@ -51,7 +51,27 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-int compute_fib(int n)
+int compute_fib(int n, int *cache)
 {
+	int result;
+
+	if(cache[n] != -1)
+	{
+		return cache[n];
+	}
+
+	if(n == 0)
+	{
+		cache[0] = 0;
+		return 0;
+	}
+
+	if(n == 1)
+	{
+		cache[1] = 1;
+		return 1;
+	}
+
+
 
 }
