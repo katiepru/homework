@@ -3,6 +3,11 @@
 int main(int argc, char *argv[])
 {
 	int num;
+	struct timeval *start, *end;
+	start = malloc(sizeof(struct timeval));
+	end = malloc(sizeof(struct timeval));
+
+	gettimeofday(start, NULL);
 
 	if(argc < 2)
 	{
@@ -31,6 +36,10 @@ int main(int argc, char *argv[])
 	}
 
 	binomial(num);
+
+	gettimeofday(end, NULL);
+
+	printf("Time required: %d microseconds.\n", (int)end->tv_usec - (int)start->tv_usec);
 
 	return 0;
 }
