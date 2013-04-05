@@ -1,8 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int compute_fib(int n, int *cache);
+int compute_fib(int n, int *cache)
+{
+	int num1;
+	int num2;
+	int sum;
 
+	if(cache[n] != -1)
+	{
+		return cache[n];
+	}
+
+	if(n == 0)
+	{
+		cache[0] = 0;
+		return 0;
+	}
+
+	if(n == 1)
+	{
+		cache[1] = 1;
+		return 1;
+	}
+
+	num1 = compute_fib(n-1, cache);
+	num2 = compute_fib(n-2, cache);
+	sum = num1 + num2;
+
+	cache[n] = sum;
+
+	return sum;
+
+
+}
 int main(int argc, char *argv[])
 {
 	int cache[47];
@@ -54,36 +85,4 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-int compute_fib(int n, int *cache)
-{
-	int num1;
-	int num2;
-	int sum;
 
-	if(cache[n] != -1)
-	{
-		return cache[n];
-	}
-
-	if(n == 0)
-	{
-		cache[0] = 0;
-		return 0;
-	}
-
-	if(n == 1)
-	{
-		cache[1] = 1;
-		return 1;
-	}
-
-	num1 = compute_fib(n-1, cache);
-	num2 = compute_fib(n-2, cache);
-	sum = num1 + num2;
-
-	cache[n] = sum;
-
-	return sum;
-
-
-}
