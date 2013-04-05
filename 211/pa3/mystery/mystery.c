@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	num = atoi(argv[1]);
+
 	if(!num)
 	{
 		fprintf(stderr, 
@@ -36,6 +38,7 @@ int main(int argc, char *argv[])
 	{
 		fprintf(stderr,
 			"ERROR. Integer too large! Syntax: ./mystery <pos_int>\n");
+		return 0;
 	}
 
 	for(i = 0; i < 47; i++)
@@ -53,7 +56,9 @@ int main(int argc, char *argv[])
 
 int compute_fib(int n, int *cache)
 {
-	int result;
+	int num1;
+	int num2;
+	int sum;
 
 	if(cache[n] != -1)
 	{
@@ -72,6 +77,13 @@ int compute_fib(int n, int *cache)
 		return 1;
 	}
 
+	num1 = compute_fib(n-1, cache);
+	num2 = compute_fib(n-2, cache);
+	sum = num1 + num2;
+
+	cache[n] = sum;
+
+	return sum;
 
 
 }
