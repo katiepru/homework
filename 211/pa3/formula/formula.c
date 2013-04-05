@@ -37,59 +37,35 @@ int main(int argc, char *argv[])
 
 void binomial(int num)
 {
-	char **terms = calloc(num+1, sizeof(char *));
-	char pow[11];
-	char str[25];
-	char *ptr;
 	int ncr;
 	int i;
 
-	terms[0] = "1";
+	printf("1 + ");
 
-	for(i = 1; i < num+1; i++)
+	for(i = 1; i < num + 1; i++)
 	{
 		ncr = nCr(num, i);
-		sprintf(str, "%d", nCr);
-		sprintf(pow, "%d", i);
-		if(i == 1)
+		if(ncr == 0)
 		{
-			strcat(str, "*x");
+			fprintf(stderr, "ERROR: Overflow.\n");
+			break;
+		}
+		if(i == num)
+		{
+			printf("%dx^%d\n", ncr, i);
+		}
+		else if(i == 1)
+		{
+			printf("%dx + ", ncr);
 		}
 		else
 		{
-			strcat(str, "*x^");
-			strcat(str, pow);
+			printf("%dx^%d + ", ncr, i);
 		}
-		
-		/*Insert into array*/
-		*ptr = str;
-		terms[i] = strdup(ptr);
-
-		/*Reset strings*/
-		memset(pow, 0, strlen(pow));
-		memset(str, 0, strlen(str));
 	}
-
-	for(i = 0; i < num; i++)
-	{
-		printf("%s + ", terms[i]); 
-	}
-	printf("%s\n", terms[i]);
-	free(terms);
 }
 
 void print_help()
 {
 	printf("Usage: formula <positive integer>\n");
-}
-
-char *strdup(const char *str)
-{
-    int n = strlen(str) + 1;
-    char *dup = malloc(n);
-    if(dup)
-    {
-        strcpy(dup, str);
-    }
-    return dup;
 }

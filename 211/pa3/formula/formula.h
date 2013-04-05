@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-char *strdup(char *num);
 void binomial(int num);
 void print_help();
 
