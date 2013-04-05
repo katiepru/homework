@@ -40,7 +40,12 @@ void binomial(int num)
 	int ncr;
 	int i;
 
-	printf("1 + ");
+	if(num == 0)
+	{
+		printf("1\n");
+		return;
+	}
+
 
 	for(i = 1; i < num + 1; i++)
 	{
@@ -48,14 +53,23 @@ void binomial(int num)
 		if(ncr == 0)
 		{
 			fprintf(stderr, "ERROR: Overflow.\n");
-			break;
+			return;
 		}
 		if(i == num)
 		{
-			printf("%dx^%d\n", ncr, i);
+			if(num != 1)
+			{
+				printf("%dx^%d\n", ncr, i);
+			}
+			else
+			{
+				printf("1 + ");
+				printf("%dx\n", ncr);
+			}
 		}
 		else if(i == 1)
 		{
+			printf("1 + ");
 			printf("%dx + ", ncr);
 		}
 		else
