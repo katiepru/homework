@@ -36,9 +36,85 @@ int main(int argc, char *argv[])
 
 void run_program(FILE *file)
 {
+	int c;
+	int i = 0;
+	char *word;
+
+	word = calloc(1000, sizeof(char));
+
+	c = fgetc(file);
+
+	while(c != EOF)
+	{
+		if(i > 999)
+		{
+			fprintf(stderr, "Fuck you\n");
+			return;
+		}
+
+		if(c == '\n')
+		{
+			parse_line(word);
+		}
+		else
+		{
+			word[i] = i;
+		}
+		i++;
+		c = fgetc(file);
+	}
 
 }
 
+void parse_line(char *line)
+{
+	char instr[8];
+	int c = line[0];
+	int i = 0;
+
+	while(c != ' ' && c != '\t')
+	{
+		instr[i] = line[i];
+		i++;
+	}
+
+	line[i] = '\0';
+
+	/*get to rest of shit*/
+	while(line[i] == ' ' || line[i] == '\t')
+	{
+		i++;
+	}
+
+	if(strcmp(instr, ".size") == 0)
+	{
+		size_instr(line, i);
+	}
+	else if(strcmp(instr, ".string") == 0)
+	{
+		string_instr(line, i);
+	}
+	else if(strcmp(instr, ".long") == 0)
+	{
+		long_instr(line, i);
+	}
+	else if(strcmp(instr, ".byte") == 0)
+	{
+		byte_instr(line, i);
+	}
+	else if(strcmp(instr, ".text") == 0)
+	{
+		text_instr(line, i);
+	}
+	else if(strcmp(instr, ".bss") == 0)
+	{
+		bss_instr(line, i);	
+	}
+	else
+	{
+		fprintf(stderr, "Bad instr %s\n", instr);
+	}
+}
 void print_help()
 {
 	printf("Usage: ./y86emul [-h] <y86 input file>\n");
