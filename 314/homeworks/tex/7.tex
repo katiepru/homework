@@ -15,34 +15,55 @@
 \section{Parameter Passing}
 
 1. RISC Machine Code\\
-\indent LOADI r1 -12 %x val in r1
-\indent ADD r2 r1 r0 %get memory addr of x val
-\indent LOADI r3 3 %load 3 into r3
-\indent STORE r2 r3 %set x = 3
-\indent LOADI r4 -4 %Load 4 into r4
-\indent ADD r5 r4 r0 %Get to access link
-\indent LOAD r6 r5 %Follow link
-\indent LOADI r7 4 %load 4 into r7
-\indent ADD r8 r7 r6 %Get to a
-\indent LOAD r9 r8 %get val of a
-\indent LOADI r10 2 %load 2 into r10
-\indent ADD r11 r10 r9 %add 2 to val of a
-\indent STORE r9 r11 %modify a
-\indent LOADI r12 -8 %Load -8 into r12
-\indent ADD r13 r12 r0 %get to x addr
-\indent LOAD r14 r13 %follow x addr
-\indent LOAD r14 r2 %get val of x
-\indent STORE r15 r14 %Copy back into x ref
+\indent LOADI r1 -12\\ %x val in r1
+\indent ADD r2 r1 r0\\ %get memory addr of x val
+\indent LOADI r3 3\\ %load 3 into r3
+\indent STORE r2 r3\\ %set x = 3
+\indent LOADI r4 -4\\ %Load 4 into r4
+\indent ADD r5 r4 r0\\ %Get to access link
+\indent LOAD r6 r5\\ %Follow link
+\indent LOADI r7 4\\ %load 4 into r7
+\indent ADD r8 r7 r6\\ %Get to a
+\indent LOAD r9 r8\\ %get val of a
+\indent LOADI r10 2\\ %load 2 into r10
+\indent ADD r11 r10 r9\\ %add 2 to val of a
+\indent STORE r9 r11\\ %modify a
+\indent LOADI r12 -8\\ %Load -8 into r12
+\indent ADD r13 r12 r0\\ %get to x addr
+\indent LOAD r14 r13\\ %follow x addr
+\indent LOAD r14 r2\\ %get val of x
+\indent STORE r15 r14\\ %Copy back into x ref
 
-2. Output of Program 
+2. Output of Program \\
 % Begin a=0 b=1
 % After loop1: a=3 b=1
-\indent First print: a=3, b=1
+\indent First print: a=3, b=1\\
 %After loop2: a=5, b=3
-\indent Second print: a=5, b=3
+\indent Second print: a=5, b=3\\
 
 \section{Scheme}
 
-\section{Scheme}
+\begin{enumerate}
+	\item Let* rewritten:\\
+((lambda (x)
+   ((lambda (y)
+      ((lambda (z)
+         e)
+       v3))
+    v2))
+ v1)
+
+\item Map\_reduce:\\
+(define maxSquareValue
+  (lambda (list)
+    (reduce (lambda (head body)
+      (if ($>$ head body) head body))
+      (map (lambda (x) (* x x)) list)
+      0
+    )
+  )
+)
+
+\end{enumerate}  
 
 \end{document}
