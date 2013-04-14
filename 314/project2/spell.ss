@@ -37,7 +37,7 @@
 ;; value of parameter "size" should be a prime number
 (define gen-hash-division-method
   (lambda (size) ;; range of values: 0..size-1
-     'SOME_CODE_GOES_HERE ;; *** FUNCTION BODY IS MISSING ***
+	(lambda (k) (modulo k size))
 ))
 
 ;; value of parameter "size" is not critical
@@ -46,7 +46,7 @@
 
 (define gen-hash-multiplication-method
   (lambda (size) ;; range of values: 0..size-1
-     'SOME_CODE_GOES_HERE ;; *** FUNCTION BODY IS MISSING ***
+	(lambda (k) (floor (* size (- (* k A) (floor (* k A))))))
 ))
 
 
