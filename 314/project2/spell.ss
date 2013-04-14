@@ -22,7 +22,10 @@
 
 (define key
   (lambda (w)
-     'SOME_CODE_GOES_HERE ;; *** FUNCTION BODY IS MISSING ***
+	(if (pair? w)
+	  (+ (* 33 (ctv (car w))) (key (cdr w)))
+	  0
+	)
 ))
 
 
