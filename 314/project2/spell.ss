@@ -14,18 +14,20 @@
 ;; -----------------------------------------------------
 ;; HELPER FUNCTIONS
 
-;; *** CODE FOR ANY HELPER FUNCTION GOES HERE ***
-
+(define key_help
+  (lambda (key_val word)
+	(if (null? word)
+	  key_val
+	  (key_help (+ (* 33 key_val) (ctv (car word))) (cdr word))
+	  )
+  ))
 
 ;; -----------------------------------------------------
 ;; KEY FUNCTION
 
 (define key
   (lambda (w)
-	(if (pair? w)
-	  (+ (* 33 (ctv (car w))) (key (cdr w)))
-	  0
-	)
+	(key_help 5381 w)
 ))
 
 
