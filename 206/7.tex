@@ -95,9 +95,27 @@ $(x^2 + x^3 + x^4 + x^5 +x^6)(x + x^3 + x^4 + x^5 + x^6)
 \begin{enumerate}
 \item The coefficient of $x^{10}$ in the series expansion of 
 $(x^5+x^6 + x^7+ \cdots)^8$.\\
-$8$
+$0$
 \item The coefficient of $x^{20}$ in the series expansion of 
 $(x+x^2 + x^3+x^4+x^5) (x+x^2 + x^3+x^4+\cdots)^5 $.
+
+Let $f(x) = (x + x^2 + x^3 + x^4 + x^5)$\\
+Let $g(x) = (x + x^2 + \cdots)^5$\\
+$f(x) = x(1 + x + x^2 + x^3 + x^4)$\\
+$f(x) = x \frac{1-x^3}{1-x}$\\
+$g(x) = [x(1 + x + x^2 + \cdots)]^5$\\
+$g(x) = x^5(1 + x + x^2+ \cdots)^5$\\
+$g(x) = x^5 \frac{1}{(1-x)^5}$\\
+$f(x)g(x) = x^6 \frac{1}{(1-x)^6} (1 - x^3)$\\
+Let $a(x) = x^6 \frac{1}{(1-x)^6}$\\
+Let $b(x) = 1 - x^3$\\
+In order to get $x^{20}$, need $a_{20}b_{0} + a_{17}b_{3}$\\
+$a_{20} = {(14 + 6 - 1) \choose 14} = {19 \choose 14}$\\
+$b_{0} = 1$
+$a_{17} = {(11 + 6 -1) \choose 11} = {16 \choose 11}$\\
+$b_{3} = -1$\\
+Coefficient is ${19 \choose 14} - {16 \choose 11}$
+
 \item The coefficient of $x^{12}$ in the series expansion of
 $x^2/(1+x)^8$.
 \item The coefficient of $x^{12}$ in the series expansion of
