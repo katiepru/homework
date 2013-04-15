@@ -68,12 +68,27 @@ x^{\infty})^2$
 which does not need to be in closed form:  
 \begin{enumerate}
 \item Count the number of outcomes of
-rolling $6$ dice that sum to $r$.
+rolling $6$ dice that sum to $r$.\\
+$e_1 + e_2 + e_3 + e_4 + e_5 + e_6 = r$\\
+$1 \leq e_i \leq 6$\\
+$(x + x^2 + x^3 + x^4 + x^5 + x^6)^6$
 \item Count the number of outcomes of rolling $6$ dice that sum to $r$,
 where the first three dice are odd and the last three are even.
+$e_1 + e_2 + e_3 + e_4 + e_5 + e_6 = r$\\
+$1 \leq e_i \leq 6$\\
+$e_1$ $e_2$ $e_3$ odd\\
+$e_4$ $e_5$ $e_6$ even\\
+$(x + x^3 + x^5)^3(x^2 + x^4 + x^6)^3$
 \item Count the number of outcomes of rolling $6$ dice that sum to $r$,
 where for each $i$ the $i$-th dice is not equal to $i$ (so
 the first die is not $1$, the second is not $2$, and so on).
+$e_1 + e_2 + e_3 + e_4 + e_5 + e_6 = r$\\
+$1 \leq e_i \leq 6$\\
+$e_i \neq i$\\
+$(x^2 + x^3 + x^4 + x^5 +x^6)(x + x^3 + x^4 + x^5 + x^6)
+(x + x^2 + x^4 + x^5 + x^6)(x + x^2 + x^3 + x^5 + x^6)
+(x + x^2 + x^3 + x^4 + x^6)(x + x^2 + x^3 + x^4 + x^5)$
+
 \end{enumerate}
 
 \item (1.5 points each) Find the following coefficients.  Show your work.
