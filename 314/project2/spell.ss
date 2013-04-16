@@ -22,6 +22,28 @@
 	  )
   ))
 
+;; Generate single bitvector
+(define gen_one_bitvector
+  (lambda (hashfunction dict)
+	(if (?pair dict)
+	  (cons (hashfunction (car dict)) (gen_one_bitvector hashfunction 
+		(cdr dict)))
+	  '()
+	)
+  )
+)
+
+;; Generate list of bitvectors
+(define gen_full_bitvector
+  (lambda (hashfunctions dict)
+    (if (?pair hashfunctions)
+	  (cons (gen_one_bitvector (car hashfunctions) dict) (gen_full_bitvector 
+		(cdr hashfunctions) dict))
+	  '()
+	)
+  )
+)
+ 
 
 ;; -----------------------------------------------------
 ;; KEY FUNCTION
@@ -90,6 +112,7 @@
 (define gen-checker
   (lambda (hashfunctionlist dict)
 	;;Generate bitvector
+	(gen_full_bitvector hashfunctionlist dict)
 ))
 
 
