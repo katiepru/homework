@@ -14,31 +14,14 @@
 ;; -----------------------------------------------------
 ;; HELPER FUNCTIONS
 
-(define key_help
-  (lambda (key_val word)
-	(if (null? word)
-	  key_val
-	  (key_help (+ (* 33 key_val) (ctv (car word))) (cdr word))
-	  )
-  ))
-
-;; Generate single bitvector
-(define gen_one_bitvector
-  (lambda (hashfunction dict)
-	(if (?pair dict)
-	  (cons (hashfunction (car dict)) (gen_one_bitvector hashfunction 
-		(cdr dict)))
-	  '()
-	)
-  )
-)
-
-;; Generate list of bitvectors
-(define gen_full_bitvector
+;; Generate master bitvector as a list of bitvectors
+(define gen_master_bitvector
   (lambda (hashfunctions dict)
     (if (?pair hashfunctions)
-	  (cons (gen_one_bitvector (car hashfunctions) dict) (gen_full_bitvector 
-		(cdr hashfunctions) dict))
+	  (cons 
+		(map (lambda (x) ((car hashfunctions) x)) dict) 
+		(gen_master_bitvector (cdr hashfunctions) dict)
+      )
 	  '()
 	)
   )
@@ -50,7 +33,13 @@
 
 (define key
   (lambda (w)
-	(key_help 5381 w)
+	(reduce 
+	  (lambda (char int)
+		(+ (* 33 int) (ctv char))
+	  ) 
+	  (reverse w) 
+	  5381
+	)
 ))
 
 
@@ -112,7 +101,12 @@
 (define gen-checker
   (lambda (hashfunctionlist dict)
 	;;Generate bitvector
-	(gen_full_bitvector hashfunctionlist dict)
+	(
+	  (lambda (bitvector)
+		
+	  )
+	  (gen_full_bitvector hashfunctionlist dict)
+	)
 ))
 
 
