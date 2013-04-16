@@ -22,6 +22,7 @@
 	  )
   ))
 
+
 ;; -----------------------------------------------------
 ;; KEY FUNCTION
 
@@ -37,7 +38,7 @@
 ;; value of parameter "size" should be a prime number
 (define gen-hash-division-method
   (lambda (size) ;; range of values: 0..size-1
-	(lambda (k) (modulo k size))
+	(lambda (k) (modulo (key k) size))
 ))
 
 ;; value of parameter "size" is not critical
@@ -46,7 +47,7 @@
 
 (define gen-hash-multiplication-method
   (lambda (size) ;; range of values: 0..size-1
-	(lambda (k) (floor (* size (- (* k A) (floor (* k A))))))
+	(lambda (k) (floor (* size (- (* (key k) A) (floor (* (key k) A))))))
 ))
 
 
@@ -88,7 +89,7 @@
 
 (define gen-checker
   (lambda (hashfunctionlist dict)
-     'SOME_CODE_GOES_HERE ;; *** FUNCTION BODY IS MISSING ***
+	;;Generate bitvector
 ))
 
 
