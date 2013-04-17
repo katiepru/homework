@@ -60,11 +60,11 @@
 
 (define key
   (lambda (w)
-	(reduce 
+	(foldl
 	  (lambda (char int)
 		(+ (* 33 int) (ctv char))
 	  ) 
-	  (reverse w) 
+	  w
 	  5381
 	)
 ))
