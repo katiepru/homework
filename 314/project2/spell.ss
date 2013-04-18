@@ -27,18 +27,24 @@
   )
 )
 
-;; Returns 1 if x is an element in y
 (define ismemof
   (lambda (x y)
-	(if (pair? y)
-	  (if (= x (car y))
-		#t
-		(ismemof x (cdr y))
-	  )
-	  #f
-	)
+    (ormap (lambda (a) (if (= x a) #t #f)) y)
   )
 )
+
+;; Returns 1 if x is an element in y
+;(define ismemof
+;  (lambda (x y)
+;	(if (pair? y)
+;	  (if (= x (car y))
+;		#t
+;		(ismemof x (cdr y))
+;	  )
+;	  #f
+;	)
+;  )
+;)
 
 ;; Check word hashes against each set of hashes in bitvector
 ;; Assert size of wordhashes = size of bitvector
