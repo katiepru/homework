@@ -19,13 +19,9 @@
   (lambda (hashfunctions dict)
     (if (pair? hashfunctions)
 	  (cons 
-		(map (lambda (x) ((car hashfunctions) x)) dict) 
-		(gen_master_bitvector (cdr hashfunctions) dict)
-      )
-	  '()
-	)
-  )
-)
+		(map (car hashfunctions) dict) 
+		(gen_master_bitvector (cdr hashfunctions) dict))
+	  '())))
  
 
 ;; -----------------------------------------------------
@@ -35,12 +31,9 @@
   (lambda (w)
 	(foldl
 	  (lambda (char int)
-		(+ (* 33 int) (ctv char))
-	  ) 
+		(+ (* 33 int) (ctv char))) 
 	  5381
-	  w
-	)
-))
+	  w)))
 
 
 ;; -----------------------------------------------------
@@ -49,8 +42,7 @@
 ;; value of parameter "size" should be a prime number
 (define gen-hash-division-method
   (lambda (size) ;; range of values: 0..size-1
-	(lambda (k) (modulo (key k) size))
-))
+	(lambda (k) (modulo (key k) size))))
 
 ;; value of parameter "size" is not critical
 ;; Note: hash functions may return integer values in "real"
@@ -58,17 +50,16 @@
 
 (define gen-hash-multiplication-method
   (lambda (size) ;; range of values: 0..size-1
-	(lambda (k) (floor (* size (- (* (key k) A) (floor (* (key k) A))))))
-))
+	(lambda (k) (floor (* size (- (* (key k) A) (floor (* (key k) A))))))))
 
 
 ;; -----------------------------------------------------
 ;; EXAMPLE HASH FUNCTIONS AND HASH FUNCTION LISTS
 
-(define hash-1 (gen-hash-division-method 701))
-(define hash-2 (gen-hash-division-method 899))
-(define hash-3 (gen-hash-multiplication-method 700))
-(define hash-4 (gen-hash-multiplication-method 900))
+(define hash-1 (gen-hash-division-method 100003))
+(define hash-2 (gen-hash-division-method 100003))
+(define hash-3 (gen-hash-multiplication-method 70000))
+(define hash-4 (gen-hash-multiplication-method 90000))
 
 (define hashfl-1 (list hash-1 hash-2 hash-3 hash-4))
 (define hashfl-2 (list hash-1 hash-3))
