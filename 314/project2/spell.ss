@@ -26,13 +26,6 @@
 	)
   )
 )
-
-
-(define ismemof
-  (lambda (x y)
-    (ormap (lambda (a) (if (= x a) #t #f)) y)
-  )
-)
  
 
 ;; -----------------------------------------------------
@@ -107,21 +100,16 @@
 
 (define gen-checker
   (lambda (hashfunctionlist dict)
-	;;Generate bitvector
-	(
-	  (lambda (bitvector)
-		(lambda (word)
-          ((lambda (wordhashes bitvector)
-	        (andmap ismemof wordhashes bitvector)
-          )
-		    (map (lambda (hashfunction) (hashfunction word)) hashfunctionlist)
-			bitvector)
-        )
-      )
-	  (gen_master_bitvector hashfunctionlist dict)
-	)
-  )
-)
+	;Pass in bitvector so it is only calculated once
+	((lambda (bitvector)
+	  ;Function to return
+	  (lambda (word)
+        ((lambda (wordhashes bitvector)
+	      (andmap (lambda (x y) (ormap (lambda (a) (if (= x a) #t #f)) y))
+		  wordhashes bitvector))
+		  (map (lambda (hashfunction) (hashfunction word)) hashfunctionlist)
+		  bitvector)))
+	(gen_master_bitvector hashfunctionlist dict))))
 
 
 ;; -----------------------------------------------------
