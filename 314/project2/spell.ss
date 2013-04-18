@@ -44,15 +44,23 @@
 ;; Assert size of wordhashes = size of bitvector
 (define check_word
   (lambda (wordhashes bitvector)
-	(if (pair? wordhashes)
-  	  (if (ismemof (car wordhashes) (car bitvector))
-		(check_word(cdr wordhashes) (cdr bitvector))
-		#f
-      )
-      #t
-	)
+	(andmap ismemof wordhashes bitvector)
   )
 )
+
+;; Check word hashes against each set of hashes in bitvector
+;; Assert size of wordhashes = size of bitvector
+;(define check_word
+;  (lambda (wordhashes bitvector)
+;	(if (pair? wordhashes)
+;  	  (if (ismemof (car wordhashes) (car bitvector))
+;		(check_word(cdr wordhashes) (cdr bitvector))
+;		#f
+;      )
+;      #t
+;	)
+;  )
+;)
  
 
 ;; -----------------------------------------------------
@@ -64,8 +72,8 @@
 	  (lambda (char int)
 		(+ (* 33 int) (ctv char))
 	  ) 
-	  w
 	  5381
+	  w
 	)
 ))
 
