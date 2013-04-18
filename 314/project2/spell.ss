@@ -27,46 +27,12 @@
   )
 )
 
+
 (define ismemof
   (lambda (x y)
     (ormap (lambda (a) (if (= x a) #t #f)) y)
   )
 )
-
-;; Returns 1 if x is an element in y
-;(define ismemof
-;  (lambda (x y)
-;	(if (pair? y)
-;	  (if (= x (car y))
-;		#t
-;		(ismemof x (cdr y))
-;	  )
-;	  #f
-;	)
-;  )
-;)
-
-;; Check word hashes against each set of hashes in bitvector
-;; Assert size of wordhashes = size of bitvector
-(define check_word
-  (lambda (wordhashes bitvector)
-	(andmap ismemof wordhashes bitvector)
-  )
-)
-
-;; Check word hashes against each set of hashes in bitvector
-;; Assert size of wordhashes = size of bitvector
-;(define check_word
-;  (lambda (wordhashes bitvector)
-;	(if (pair? wordhashes)
-;  	  (if (ismemof (car wordhashes) (car bitvector))
-;		(check_word(cdr wordhashes) (cdr bitvector))
-;		#f
-;      )
-;      #t
-;	)
-;  )
-;)
  
 
 ;; -----------------------------------------------------
@@ -145,10 +111,11 @@
 	(
 	  (lambda (bitvector)
 		(lambda (word)
-		  (check_word 
-			(map (lambda (hashfunction) (hashfunction word)) hashfunctionlist)
-			bitvector
+          ((lambda (wordhashes bitvector)
+	        (andmap ismemof wordhashes bitvector)
           )
+		    (map (lambda (hashfunction) (hashfunction word)) hashfunctionlist)
+			bitvector)
         )
       )
 	  (gen_master_bitvector hashfunctionlist dict)
