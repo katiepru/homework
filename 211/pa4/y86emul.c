@@ -36,85 +36,50 @@ int main(int argc, char *argv[])
 
 void run_program(FILE *file)
 {
-	int c;
-	int i = 0;
-	char *word;
 
-	word = calloc(1000, sizeof(char));
+	int *base;
+	char line[200];
 
-	c = fgetc(file);
-
-	while(c != EOF)
-	{
-		if(i > 999)
-		{
-			fprintf(stderr, "Fuck you\n");
-			return;
-		}
-
-		if(c == '\n')
-		{
-			parse_line(word);
-		}
-		else
-		{
-			word[i] = i;
-		}
-		i++;
-		c = fgetc(file);
-	}
+	/*Take care of size*/
+	fgets(line, 200, file);
+	base = get_size(line);
 
 }
 
-void parse_line(char *line)
+int *get_size(char line[200])
 {
-	char instr[8];
-	int c = line[0];
 	int i = 0;
+	int j = 0;
+	int c = line[0];
+	int total_size;
+	char size[10];
+	int *base;
 
-	while(c != ' ' && c != '\t')
-	{
-		instr[i] = line[i];
-		i++;
-	}
-
-	line[i] = '\0';
-
-	/*get to rest of shit*/
-	while(line[i] == ' ' || line[i] == '\t')
+	/*Get to char in string where size is defined*/
+	while(c < '0' || c > '9')
 	{
 		i++;
+		c =  line[i];
 	}
 
-	if(strcmp(instr, ".size") == 0)
+	/*Populate size*/
+	while(c != '\n' && c != '\0')
 	{
-		size_instr(line, i);
+		size[j] = line[i];
+		i++;
+		j++;
+		c = line[i];
 	}
-	else if(strcmp(instr, ".string") == 0)
-	{
-		string_instr(line, i);
-	}
-	else if(strcmp(instr, ".long") == 0)
-	{
-		long_instr(line, i);
-	}
-	else if(strcmp(instr, ".byte") == 0)
-	{
-		byte_instr(line, i);
-	}
-	else if(strcmp(instr, ".text") == 0)
-	{
-		text_instr(line, i);
-	}
-	else if(strcmp(instr, ".bss") == 0)
-	{
-		bss_instr(line, i);	
-	}
-	else
-	{
-		fprintf(stderr, "Bad instr %s\n", instr);
-	}
+
+	/*Convert to int*/
+	total_size = (int) strtol(size, NULL, 16);
+
+	base = malloc(total_size);
+
+	return base;
+
 }
+
 void print_help()
 {
 	printf("Usage: ./y86emul [-h] <y86 input file>\n");
