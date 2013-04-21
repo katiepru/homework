@@ -38,18 +38,18 @@ void run_program(FILE *file)
 {
 
 	int *base;
-	char line[200];
+	char line[1000];
 
 	/*Take care of size*/
-	fgets(line, 200, file);
+	fgets(line, 100, file);
 	base = get_size(line);
 
 	/*read lines and place data*/
-	read_lines(FILE *file);
+	read_lines(file, base);
 
 }
 
-int *get_size(char line[200])
+int *get_size(char line[1000])
 {
 	int i = 0;
 	int j = 0;
@@ -83,25 +83,98 @@ int *get_size(char line[200])
 
 }
 
-void read_lines(FILE *file)
+void read_lines(FILE *file, int *base)
 {
-	char line[200];
+	char line[1000];
+	char keyword[10];
+	char *instrs;
 	int c;
+	int i;
+
 
 	c = fgetc(file);
 
 	while(c != EOF)
 	{
+		i = 0;
 		/*Grab the line*/
-		fgets(line, 200, file);
+		fgets(line, 1000, file);
 		c = fgetc(file);
-
-
+		while(line[i] != ' ' && line[i] != '\t')
+		{
+			keyword[i] = line[i];
+			i++;
+		}
+		if(strcmp(keyword, "byte") == 0)
+		{
+			parse_byte(line, base);
+		}
+		else if(strcmp(keyword, "string") == 0)
+		{
+			parse_string(line, base);
+		}
+		else if(strcmp(keyword, "long") == 0)
+		{
+			parse_long(line, base);
+		}
+		else if(strcmp(keyword, "bss") == 0)
+		{
+			parse_bss(line, base);
+		}
+		else if(strcmp(keyword, "text") == 0)
+		{
+			instrs = strdup(line);
+			printf("Current line is %s\n", instrs);
+		}
+		else
+		{
+			break;
+		}
+		memset(line, 0, 100);
+		memset(keyword, 0, 10);
 	}
 
 }
 
+/*BEGIN FILE PARSING FUNCTIONS*/
+
+void parse_byte(char line[1000], int *base)
+{
+	printf("Current line is %s\n", line);
+}
+
+void parse_string(char line[1000], int *base)
+{
+	printf("Current line is %s\n", line);
+}
+
+void parse_long(char line[1000], int *base)
+{
+	printf("Current line is %s\n", line);
+}
+
+void parse_bss(char line[1000], int *base)
+{
+	printf("Current line is %s\n", line);
+}
+
+/*END FILE PARSING FUNCTIONS*/
+
 void print_help()
 {
 	printf("Usage: ./y86emul [-h] <y86 input file>\n");
+}
+
+/*-----------------------------------------------------------------------------/
+/--Duplicate a string and return a pointer to the duplicate--------------------/
+/-----------------------------------------------------------------------------*/
+char *strdup(const char *str)
+{
+    int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup)
+    {
+        strcpy(dup, str);
+    }
+    return dup;
 }
