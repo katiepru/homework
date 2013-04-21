@@ -44,6 +44,9 @@ void run_program(FILE *file)
 	fgets(line, 200, file);
 	base = get_size(line);
 
+	/*read lines and place data*/
+	read_lines(FILE *file);
+
 }
 
 int *get_size(char line[200])
@@ -77,6 +80,24 @@ int *get_size(char line[200])
 	base = malloc(total_size);
 
 	return base;
+
+}
+
+void read_lines(FILE *file)
+{
+	char line[200];
+	int c;
+
+	c = fgetc(file);
+
+	while(c != EOF)
+	{
+		/*Grab the line*/
+		fgets(line, 200, file);
+		c = fgetc(file);
+
+
+	}
 
 }
 
