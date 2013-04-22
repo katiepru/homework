@@ -140,7 +140,53 @@ void read_lines(FILE *file, int *base)
 
 void parse_byte(char line[1000], int *base)
 {
+	int addr_val;
+	int data_val;
+	int i = 0;
+	int j = 0;
+	char addr[10];
+	char data[10];
+
+	/*Get to addr*/
+	while(line[i] > '9' || line[i] < '0')
+	{
+		i++;
+	}
+
+	/*Populate addr*/
+	while(line[i] != ' ' && line[i] != '\t')
+	{
+		addr[j] = line[i];
+		i++;
+		j++;
+	}
+
+	addr[j] = '\0';
+	j = 0;
+
+	/*Get to data*/
+	while(line[i] == ' ' || line[i] == '\t')
+	{
+		i++;
+	}
+
+	/*populate data*/
+	while(line[i] != ' ' && line[i] != '\t' 
+		&& line[i] != '\n' && line[i] != '\0')
+	{
+		printf("char is %c\n", line[i]);
+		data[j] = line[i];
+		i++;
+		j++;
+	}
+	data[j] = '\0';
+
+	addr_val = (int) strtol(addr, NULL, 16);
+	data_val = (int) strtol(data, NULL, 16);
+
+
 	printf("Current line is %s\n", line);
+	
 }
 
 void parse_string(char line[1000], int *base)
