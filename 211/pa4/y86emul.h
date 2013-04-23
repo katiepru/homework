@@ -5,6 +5,21 @@
 #include <stdio.h>
 #include <string.h>
 
+enum
+{
+	eax, ecx, edx, ebx, esp, ebp, esi, edi
+} Reg;
+
+enum
+{
+	OF, ZF, SF
+} ConCode;
+
+enum
+{
+	AOK, HLT, ADR, INS
+} StatCode;
+
 /*Starting functions*/
 void run_program(FILE *file);
 int *get_size(char line[200]);
