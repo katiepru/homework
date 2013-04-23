@@ -138,6 +138,12 @@ void read_lines(FILE *file, int *base)
 
 /*BEGIN FILE PARSING FUNCTIONS*/
 
+/*-----------------------------------------------------------------------------/
+ * - Takes in the line of text from input file and the base address returned --/
+ * - from malloc. Puts the int  specified in the line of text into the       --/
+ * - relative memory address specified in the line of text.                  --/
+ * ---------------------------------------------------------------------------*/
+/*TODO : Make this a boolean function to indicate success or failure*/
 void parse_byte(char line[1000], int *base)
 {
 	int addr_val;
@@ -193,6 +199,12 @@ void parse_byte(char line[1000], int *base)
 	
 }
 
+/*-----------------------------------------------------------------------------/
+ * - Takes in the line of text from input file and the base address returned --/
+ * - from malloc. Puts the string specified in the line of text into the     --/
+ * - relative memory address specified in the line of text.                  --/
+ * ---------------------------------------------------------------------------*/
+/*TODO : Make this a boolean function to indicate success or failure*/
 void parse_string(char line[1000], int *base)
 {
 	int addr_val;
@@ -248,6 +260,12 @@ void parse_string(char line[1000], int *base)
 	printf("Current line is %s\n", line);
 }
 
+/*-----------------------------------------------------------------------------/
+ * - Takes in the line of text from input file and the base address returned --/
+ * - from malloc. Puts the long specified in the line of text into the       --/
+ * - relative memory address specified in the line of text.                  --/
+ * ---------------------------------------------------------------------------*/
+/*TODO : Make this a boolean function to indicate success or failure*/
 void parse_long(char line[1000], int *base)
 {
 	int addr_val;
@@ -302,7 +320,12 @@ void parse_long(char line[1000], int *base)
 	printf("Current line is %s\n", line);
 }
 
-void *parse_bss(char line[1000], int *base)
+/*-----------------------------------------------------------------------------/
+ * - Takes in the line of text from input file and the base address returned --/
+ * - from malloc. Returns an array of pointers of size 2, which contains the --/
+ * - start and end addresses of the bss space.                               --/
+ * ---------------------------------------------------------------------------*/
+int **parse_bss(char line[1000], int *base)
 {
 	int addr_val;
 	size_t data_val;
@@ -310,8 +333,7 @@ void *parse_bss(char line[1000], int *base)
 	int j = 0;
 	char addr[10];
 	char data[100];
-	void *new_addr;
-	void *result;
+	int **addrs = calloc(2, sizeof(void *));
 
 	/*Get to addr*/
 	/*FIXME*/
@@ -347,15 +369,19 @@ void *parse_bss(char line[1000], int *base)
 	}
 	data[j] = '\0';
 
+	/*Convert to longs*/
 	addr_val = strtol(addr, NULL, 16);
-	data_val = (size_t) strtol(data, NULL, 16);
+	data_val = strtol(data, NULL, 10);
 
-	new_addr = (void *)((long) base + addr_val);
+	/*Calculate and populate start and end addrs*/
+	addrs[0] = (int *)((long) base + addr_val);
+	addrs[1] = (int *) ((long) addrs[0] + data_val);
 
-	result = realloc(new_addr, data_val);
 	printf("Current line is %s\n", line);
 
-	return result;
+	/*Retuns addrs*/
+	return addrs;
+
 }
 
 /*END FILE PARSING FUNCTIONS*/
