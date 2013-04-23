@@ -302,9 +302,60 @@ void parse_long(char line[1000], int *base)
 	printf("Current line is %s\n", line);
 }
 
-void parse_bss(char line[1000], int *base)
+void *parse_bss(char line[1000], int *base)
 {
+	int addr_val;
+	size_t data_val;
+	int i = 0;
+	int j = 0;
+	char addr[10];
+	char data[100];
+	void *new_addr;
+	void *result;
+
+	/*Get to addr*/
+	/*FIXME*/
+	while(line[i] > '9' || line[i] < '0')
+	{
+		i++;
+	}
+
+	/*Populate addr*/
+	while(line[i] != ' ' && line[i] != '\t')
+	{
+		addr[j] = line[i];
+		i++;
+		j++;
+	}
+
+	addr[j] = '\0';
+	j = 0;
+
+	/*Get to data*/
+	while(line[i] == ' ' || line[i] == '\t')
+	{
+		i++;
+	}
+
+	/*populate data*/
+	while(line[i] != ' ' && line[i] != '\t' 
+		&& line[i] != '\n' && line[i] != '\0')
+	{
+		data[j] = line[i];
+		i++;
+		j++;
+	}
+	data[j] = '\0';
+
+	addr_val = strtol(addr, NULL, 16);
+	data_val = (size_t) strtol(data, NULL, 16);
+
+	new_addr = (void *)((long) base + addr_val);
+
+	result = realloc(new_addr, data_val);
 	printf("Current line is %s\n", line);
+
+	return result;
 }
 
 /*END FILE PARSING FUNCTIONS*/

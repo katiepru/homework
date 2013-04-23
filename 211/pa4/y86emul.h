@@ -14,7 +14,7 @@ void read_lines(FILE *file, int *base);
 void parse_byte(char line[200], int *base);
 void parse_string(char line[200], int *base);
 void parse_long(char line[200], int *base);
-void parse_bss(char line[200], int *base);
+void *parse_bss(char line[200], int *base);
 
 /*Other shit*/
 char *strdup(const char *str);
