@@ -149,6 +149,7 @@ void parse_byte(char line[1000], int *base)
 	int *new_addr;
 
 	/*Get to addr*/
+	/*FIXME*/
 	while(line[i] > '9' || line[i] < '0')
 	{
 		i++;
@@ -194,6 +195,56 @@ void parse_byte(char line[1000], int *base)
 
 void parse_string(char line[1000], int *base)
 {
+	int addr_val;
+	int i = 0;
+	int j = 0;
+	char addr[10];
+	char data[1000];
+	char *new_addr;
+
+	/*Get to addr*/
+	/*FIXME*/
+	while(line[i] > '9' || line[i] < '0')
+	{
+		i++;
+	}
+
+	/*Populate addr*/
+	while(line[i] != ' ' && line[i] != '\t')
+	{
+		addr[j] = line[i];
+		i++;
+		j++;
+	}
+
+	addr[j] = '\0';
+	j = 0;
+
+	/*Get to data*/
+	while(line[i] != '"')
+	{
+		i++;
+	}
+	i++;
+
+	/*populate data*/
+	while(line[i] != '"')
+	{
+		data[j] = line[i];
+		i++;
+		j++;
+	}
+	data[j] = '\0';
+
+	addr_val = strtol(addr, NULL, 16);
+
+	new_addr = (char *)((long) base + addr_val);
+
+	for(i = 0; i <= strlen(data); i++)
+	{
+		new_addr[i] = data[i];
+	}
+
 	printf("Current line is %s\n", line);
 }
 
@@ -208,6 +259,7 @@ void parse_long(char line[1000], int *base)
 	long *new_addr;
 
 	/*Get to addr*/
+	/*FIXME*/
 	while(line[i] > '9' || line[i] < '0')
 	{
 		i++;
