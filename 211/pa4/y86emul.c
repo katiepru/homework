@@ -8,14 +8,14 @@ int main(int argc, char *argv[])
 	if(argc != 2)
 	{
 		fprintf(stderr, "ERROR: Wrong number of arguments.\n");
-		print_help();
+	//	print_help();
 		return 1;
 	}
 
 	/*Check for help mode*/
 	if(strcmp(argv[1], "-h") == 0)
 	{
-		print_help();
+	//	print_help();
 		return 0;
 	}
 
@@ -34,373 +34,47 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+/*Start parsing the file*/
 void run_program(FILE *file)
 {
-
-	int *base;
-	char line[1000];
+	void *base;
+	char line[100];
 
 	/*Take care of size*/
-	fgets(line, 100, file);
+	fgets(line, 100, file);	
 	base = get_size(line);
 
 	/*read lines and place data*/
-	read_lines(file, base);
+	//read_lines(file, base);
 
 }
 
-int *get_size(char line[1000])
+void *get_size(char line[100])
 {
-	int i = 0;
-	int j = 0;
-	int c = line[0];
-	int total_size;
-	char size[10];
-	int *base;
-
-	/*Get to char in string where size is defined*/
-	while(c < '0' || c > '9')
-	{
-		i++;
-		c =  line[i];
-	}
-
-	/*Populate size*/
-	while(c != '\n' && c != '\0')
-	{
-		size[j] = line[i];
-		i++;
-		j++;
-		c = line[i];
-	}
-
-	/*Convert to int*/
-	total_size = (int) strtol(size, NULL, 16);
-
-	base = malloc(total_size);
-
-	return base;
-
-}
-
-void read_lines(FILE *file, int *base)
-{
-	char line[1000];
-	char keyword[10];
-	char *instrs;
-	int c;
-	int i;
-
-
-	c = fgetc(file);
-
-	while(c != EOF)
-	{
-		i = 0;
-		/*Grab the line*/
-		fgets(line, 1000, file);
-		c = fgetc(file);
-		while(line[i] != ' ' && line[i] != '\t')
-		{
-			keyword[i] = line[i];
-			i++;
-		}
-		if(strcmp(keyword, "byte") == 0)
-		{
-			parse_byte(line, base);
-		}
-		else if(strcmp(keyword, "string") == 0)
-		{
-			parse_string(line, base);
-		}
-		else if(strcmp(keyword, "long") == 0)
-		{
-			parse_long(line, base);
-		}
-		else if(strcmp(keyword, "bss") == 0)
-		{
-			parse_bss(line, base);
-		}
-		else if(strcmp(keyword, "text") == 0)
-		{
-			instrs = strdup(line);
-			printf("Current line is %s\n", instrs);
-		}
-		else
-		{
-			break;
-		}
-		memset(line, 0, 100);
-		memset(keyword, 0, 10);
-	}
-
-}
-
-/*BEGIN FILE PARSING FUNCTIONS*/
-
-/*-----------------------------------------------------------------------------/
- * - Takes in the line of text from input file and the base address returned --/
- * - from malloc. Puts the int  specified in the line of text into the       --/
- * - relative memory address specified in the line of text.                  --/
- * ---------------------------------------------------------------------------*/
-/*TODO : Make this a boolean function to indicate success or failure*/
-void parse_byte(char line[1000], int *base)
-{
-	int addr_val;
-	int data_val;
-	int i = 0;
-	int j = 0;
-	char addr[10];
-	char data[10];
-	int *new_addr;
-
-	/*Get to addr*/
-	/*FIXME*/
-	while(line[i] > '9' || line[i] < '0')
-	{
-		i++;
-	}
-
-	/*Populate addr*/
-	while(line[i] != ' ' && line[i] != '\t')
-	{
-		addr[j] = line[i];
-		i++;
-		j++;
-	}
-
-	addr[j] = '\0';
-	j = 0;
-
-	/*Get to data*/
-	while(line[i] == ' ' || line[i] == '\t')
-	{
-		i++;
-	}
-
-	/*populate data*/
-	while(line[i] != ' ' && line[i] != '\t' 
-		&& line[i] != '\n' && line[i] != '\0')
-	{
-		data[j] = line[i];
-		i++;
-		j++;
-	}
-	data[j] = '\0';
-
-	addr_val = strtol(addr, NULL, 16);
-	data_val = (int) strtol(data, NULL, 16);
-
-	new_addr = (int *)((long) base + addr_val);
-
-	*new_addr = data_val;
-
-	printf("Current line is %s\n", line);
+	int size = 0;
+	void * base;
+	int stat;
 	
-}
+	printf("line is %s\n", line);
+	stat = sscanf(line, "%x", &size);
 
-/*-----------------------------------------------------------------------------/
- * - Takes in the line of text from input file and the base address returned --/
- * - from malloc. Puts the string specified in the line of text into the     --/
- * - relative memory address specified in the line of text.                  --/
- * ---------------------------------------------------------------------------*/
-/*TODO : Make this a boolean function to indicate success or failure*/
-void parse_string(char line[1000], int *base)
-{
-	int addr_val;
-	int i = 0;
-	int j = 0;
-	char addr[10];
-	char data[1000];
-	char *new_addr;
+	printf("stat is %d, size is %x\n", stat, size);
 
-	/*Get to addr*/
-	/*FIXME*/
-	while(line[i] > '9' || line[i] < '0')
-	{
-		i++;
-	}
+	base = malloc(size);
 
-	/*Populate addr*/
-	while(line[i] != ' ' && line[i] != '\t')
-	{
-		addr[j] = line[i];
-		i++;
-		j++;
-	}
-
-	addr[j] = '\0';
-	j = 0;
-
-	/*Get to data*/
-	while(line[i] != '"')
-	{
-		i++;
-	}
-	i++;
-
-	/*populate data*/
-	while(line[i] != '"')
-	{
-		data[j] = line[i];
-		i++;
-		j++;
-	}
-	data[j] = '\0';
-
-	addr_val = strtol(addr, NULL, 16);
-
-	new_addr = (char *)((long) base + addr_val);
-
-	for(i = 0; i <= strlen(data); i++)
-	{
-		new_addr[i] = data[i];
-	}
-
-	printf("Current line is %s\n", line);
-}
-
-/*-----------------------------------------------------------------------------/
- * - Takes in the line of text from input file and the base address returned --/
- * - from malloc. Puts the long specified in the line of text into the       --/
- * - relative memory address specified in the line of text.                  --/
- * ---------------------------------------------------------------------------*/
-/*TODO : Make this a boolean function to indicate success or failure*/
-void parse_long(char line[1000], int *base)
-{
-	int addr_val;
-	long data_val;
-	int i = 0;
-	int j = 0;
-	char addr[10];
-	char data[10];
-	long *new_addr;
-
-	/*Get to addr*/
-	/*FIXME*/
-	while(line[i] > '9' || line[i] < '0')
-	{
-		i++;
-	}
-
-	/*Populate addr*/
-	while(line[i] != ' ' && line[i] != '\t')
-	{
-		addr[j] = line[i];
-		i++;
-		j++;
-	}
-
-	addr[j] = '\0';
-	j = 0;
-
-	/*Get to data*/
-	while(line[i] == ' ' || line[i] == '\t')
-	{
-		i++;
-	}
-
-	/*populate data*/
-	while(line[i] != ' ' && line[i] != '\t' 
-		&& line[i] != '\n' && line[i] != '\0')
-	{
-		data[j] = line[i];
-		i++;
-		j++;
-	}
-	data[j] = '\0';
-
-	addr_val = strtol(addr, NULL, 16);
-	data_val = strtol(data, NULL, 16);
-
-	new_addr = (long *)((long) base + addr_val);
-
-	*new_addr = data_val;
-
-	printf("Current line is %s\n", line);
-}
-
-/*-----------------------------------------------------------------------------/
- * - Takes in the line of text from input file and the base address returned --/
- * - from malloc. Returns an array of pointers of size 2, which contains the --/
- * - start and end addresses of the bss space.                               --/
- * ---------------------------------------------------------------------------*/
-int **parse_bss(char line[1000], int *base)
-{
-	int addr_val;
-	size_t data_val;
-	int i = 0;
-	int j = 0;
-	char addr[10];
-	char data[100];
-	int **addrs = calloc(2, sizeof(void *));
-
-	/*Get to addr*/
-	/*FIXME*/
-	while(line[i] > '9' || line[i] < '0')
-	{
-		i++;
-	}
-
-	/*Populate addr*/
-	while(line[i] != ' ' && line[i] != '\t')
-	{
-		addr[j] = line[i];
-		i++;
-		j++;
-	}
-
-	addr[j] = '\0';
-	j = 0;
-
-	/*Get to data*/
-	while(line[i] == ' ' || line[i] == '\t')
-	{
-		i++;
-	}
-
-	/*populate data*/
-	while(line[i] != ' ' && line[i] != '\t' 
-		&& line[i] != '\n' && line[i] != '\0')
-	{
-		data[j] = line[i];
-		i++;
-		j++;
-	}
-	data[j] = '\0';
-
-	/*Convert to longs*/
-	addr_val = strtol(addr, NULL, 16);
-	data_val = strtol(data, NULL, 10);
-
-	/*Calculate and populate start and end addrs*/
-	addrs[0] = (int *)((long) base + addr_val);
-	addrs[1] = (int *) ((long) addrs[0] + data_val);
-
-	printf("Current line is %s\n", line);
-
-	/*Retuns addrs*/
-	return addrs;
+	return (void *) base;
 
 }
 
-/*END FILE PARSING FUNCTIONS*/
-
-void print_help()
+void put_long(long *addr, long num)
 {
-	printf("Usage: ./y86emul [-h] <y86 input file>\n");
+	memcpy(addr, &num, 4);
 }
 
-/*-----------------------------------------------------------------------------/
-/--Duplicate a string and return a pointer to the duplicate--------------------/
-/-----------------------------------------------------------------------------*/
-char *strdup(const char *str)
+long get_long(long *addr)
 {
-    int n = strlen(str) + 1;
-    char *dup = malloc(n);
-    if(dup)
-    {
-        strcpy(dup, str);
-    }
-    return dup;
+	long num;
+
+	memcpy(&num, addr, 4);
+	return num;
 }

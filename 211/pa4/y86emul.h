@@ -22,7 +22,7 @@ enum
 
 /*Starting functions*/
 void run_program(FILE *file);
-int *get_size(char line[200]);
+void *get_size(char line[100]);
 void read_lines(FILE *file, int *base);
 
 /*Functions for each line of input file*/
