@@ -45,7 +45,7 @@ void run_program(FILE *file)
 	base = get_size(line);
 
 	/*read lines and place data*/
-	//read_lines(file, base);
+	read_lines(file, base);
 
 }
 
@@ -75,4 +75,39 @@ long get_long(long *addr)
 
 	memcpy(&num, addr, 4);
 	return num;
+}
+
+void put_byte(long *addr, char num)
+{
+	memcpy(addr, &num, 1);
+}
+
+long get_byte(long *addr)
+{
+	long num;
+
+	memcpy(&num, addr, 1);
+	return num;
+}
+
+void put_string(char *addr, char *str)
+{
+	int i = 0;
+	while(i <= strlen(str))
+	{
+		addr[i] = str[i];
+		i++;
+	}
+}
+
+char *get_string(char *addr, int len)
+{
+	char *str = calloc(len, sizeof(char));
+	int i = 0;
+
+	while(i <= len)
+	{
+		str[i] = addr[i];
+	}
+	return str;
 }
