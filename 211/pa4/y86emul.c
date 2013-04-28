@@ -72,18 +72,45 @@ void read_lines(FILE *file, void *base)
 	char *bss[2];
 	char byte;
 	char str[1000];
+	char *str_ptr;
 	long num;
 	long addr_offset;
 	void *addr;
+	int i;
 
 	while(fgets(line, 1000, file) != NULL)
 	{
 		sscanf(line, "%s", directive);
-		if(strcmp(line, ".long") == 0)
+		if(strcmp(directive, ".long") == 0)
 		{
-			sscanf(line, "%s %x %d", directive, addr, num);
+			sscanf(line, "%s %lx %d", directive, &addr, &num);
 			addr = (void *)((long) base + addr_offset);
 			put_long((long *) addr, num);
+		}
+		else if(strcmp(directive, ".byte") == 0)
+		{
+			sscanf(line, "%s %lx %x", directive, &addr_offset, &byte);
+			addr = (char *) ((long) base + addr_offset);
+			put_byte(addr, byte);
+		}
+		else if(strcmp(directive, ".string") == 0)
+		{
+			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
+			addr = (char *) ((long) base + addr_offset);
+			str_ptr = calloc(strlen(str), sizeof(char));
+			for(i = 0; i <= strlen(str); i++)
+			{
+				str_ptr[i] = str[i];
+			}
+			put_string(addr, str_ptr);
+		}
+		else if(strcmp(directive, ".bss") == 0)
+		{
+		}
+		else
+		{
+			fprintf(stderr, "ERROR: Invalid directive %s.\n", directive);
+			return;
 		}
 	}
 }
