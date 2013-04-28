@@ -73,6 +73,7 @@ void read_lines(FILE *file, void *base)
 	char byte;
 	char str[1000];
 	char *str_ptr;
+	char byte_chars[3];
 	long num;
 	long addr_offset;
 	void *addr;
@@ -106,6 +107,28 @@ void read_lines(FILE *file, void *base)
 		}
 		else if(strcmp(directive, ".bss") == 0)
 		{
+		}
+		else if(strcmp(directive, ".text") == 0)
+		{
+			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
+			addr = (char *) ((long) base + addr_offset);
+			for(i = 0; i < strlen(str); i++)
+			{
+				if(strlen(byte_chars) == 0)
+				{
+					byte_chars[0] = str[i];
+				}
+				else if(strlen(byte_chars) == 1)
+				{
+					byte_chars[1] = str[i];
+				}
+				if(strlen(byte_chars) == 2)
+				{
+					byte = (char) strtol(byte_chars, NULL, 16);
+					put_byte(addr, byte);
+					addr = (char *)((long) addr + 1);
+				}
+			}
 		}
 		else
 		{
