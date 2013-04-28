@@ -53,12 +53,10 @@ void *get_size(char line[100])
 {
 	int size = 0;
 	void * base;
+	char trash[10];
 	int stat;
 	
-	printf("line is %s\n", line);
-	stat = sscanf(line, "%x", &size);
-
-	printf("stat is %d, size is %x\n", stat, size);
+	stat = sscanf(line, "%s %x", trash, &size);
 
 	base = malloc(size);
 
