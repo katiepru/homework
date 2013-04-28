@@ -66,7 +66,7 @@ void *get_size(char line[100])
 
 void read_lines(FILE *file, void *base)
 {
-	char[1000] line;
+	char line[1000];
 	char directive[10];
 	char *instrs;
 	char *bss[2];
@@ -83,6 +83,7 @@ void read_lines(FILE *file, void *base)
 		{
 			sscanf(line, "%s %x %d", directive, addr, num);
 			addr = (void *)((long) base + addr_offset);
+			put_long((long *) addr, num);
 		}
 	}
 }
@@ -102,14 +103,14 @@ long get_long(long *addr)
 	return num;
 }
 
-void put_byte(long *addr, char num)
+void put_byte(char *addr, char num)
 {
 	memcpy(addr, &num, 1);
 }
 
-long get_byte(long *addr)
+char get_byte(char *addr)
 {
-	long num;
+	char num;
 
 	memcpy(&num, addr, 1);
 	return num;

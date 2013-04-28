@@ -23,13 +23,15 @@ enum
 /*Starting functions*/
 void run_program(FILE *file);
 void *get_size(char line[100]);
-void read_lines(FILE *file, int *base);
+void read_lines(FILE *file, void *base);
 
-/*Functions for each line of input file*/
-void parse_byte(char line[200], int *base);
-void parse_string(char line[200], int *base);
-void parse_long(char line[200], int *base);
-int **parse_bss(char line[200], int *base);
+/*Put and get functions*/
+void put_byte(char *addr, char byte);
+char get_byte(char *addr);
+void put_long(long *addr, long num);
+long get_long(long *addr);
+void put_string(char *addr, char *str);
+char *get_string(char *addr, int len);
 
 /*Other shit*/
 char *strdup(const char *str);
