@@ -64,6 +64,29 @@ void *get_size(char line[100])
 
 }
 
+void read_lines(FILE *file, void *base)
+{
+	char[1000] line;
+	char directive[10];
+	char *instrs;
+	char *bss[2];
+	char byte;
+	char str[1000];
+	long num;
+	long addr;
+
+	while(fgets(line, 1000, file) != NULL)
+	{
+		sscanf(line, "%s", directive);
+		if(strcmp(line, ".long") == 0)
+		{
+			sscanf(line, "%s %x %d", directive, addr, num);
+		}
+	}
+}
+
+/*Helper functions to get and put data to and from memory*/
+
 void put_long(long *addr, long num)
 {
 	memcpy(addr, &num, 4);
