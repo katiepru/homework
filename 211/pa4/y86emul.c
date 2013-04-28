@@ -73,7 +73,8 @@ void read_lines(FILE *file, void *base)
 	char byte;
 	char str[1000];
 	long num;
-	long addr;
+	long addr_offset;
+	void *addr;
 
 	while(fgets(line, 1000, file) != NULL)
 	{
@@ -81,6 +82,7 @@ void read_lines(FILE *file, void *base)
 		if(strcmp(line, ".long") == 0)
 		{
 			sscanf(line, "%s %x %d", directive, addr, num);
+			addr = (void *)((long) base + addr_offset);
 		}
 	}
 }
