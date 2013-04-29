@@ -23,7 +23,7 @@ enum
 /*Starting functions*/
 void run_program(FILE *file);
 void *get_size(char line[100]);
-void read_lines(FILE *file, void *base);
+long read_lines(FILE *file, void *base);
 
 /*Put and get functions*/
 void put_byte(char *addr, char byte);
@@ -36,5 +36,11 @@ char *get_string(char *addr, int len);
 /*Other shit*/
 char *strdup(const char *str);
 void print_help();
+
+typedef struct Node
+{
+	long addr;
+	struct Node *next;
+} Node;
 
 #endif

@@ -39,13 +39,16 @@ void run_program(FILE *file)
 {
 	void *base;
 	char line[100];
+	char *instrs;
+	int i;
 
 	/*Take care of size*/
 	fgets(line, 100, file);	
 	base = get_size(line);
 
 	/*read lines and place data*/
-	read_lines(file, base);
+	instrs = (char *) read_lines(file, base);
+
 
 }
 
@@ -64,11 +67,10 @@ void *get_size(char line[100])
 
 }
 
-void read_lines(FILE *file, void *base)
+long read_lines(FILE *file, void *base)
 {
 	char line[1000];
 	char directive[10];
-	char *instrs;
 	char *bss[2];
 	char byte;
 	char str[1000];
@@ -76,6 +78,7 @@ void read_lines(FILE *file, void *base)
 	char byte_chars[3];
 	long num;
 	long addr_offset;
+	long instr_addr;
 	void *addr;
 	int i;
 
@@ -112,6 +115,7 @@ void read_lines(FILE *file, void *base)
 		{
 			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
 			addr = (char *) ((long) base + addr_offset);
+			instr_addr = (long) addr;
 			for(i = 0; i < strlen(str); i++)
 			{
 				if(strlen(byte_chars) == 0)
@@ -133,9 +137,17 @@ void read_lines(FILE *file, void *base)
 		else
 		{
 			fprintf(stderr, "ERROR: Invalid directive %s.\n", directive);
-			return;
+			return -1;
 		}
 	}
+	return instr_addr;
+}
+
+void pipeline(void *base, char *instrs)
+{
+	char curr[7];
+	int deps[8];
+
 }
 
 /*Helper functions to get and put data to and from memory*/
@@ -187,3 +199,42 @@ char *get_string(char *addr, int len)
 	}
 	return str;
 }
+
+/*End helper functions for getting and putting data*/
+
+/*Begin linked list functions*/
+
+struct Node *create_node(long addr)
+{
+	struct Node *node = malloc(sizeof(struct Node));
+	node->addr = addr;
+	node->next = NULL;
+}
+
+void delete_node(long addr, struct Node *head)
+{
+	struct Node *ptr;
+	struct Node *tmp;
+
+	ptr = head;
+
+	if(head->addr == addr)
+	{
+		head = head->next;
+		free(ptr);
+		return;
+	}
+
+	while(ptr->next != NULL)
+	{
+		if(ptr->next->addr == addr)
+		{
+			tmp = ptr->next;
+			ptr->next = ptr->next->next;
+			free(tmp);
+			return;
+		}
+	}
+}
+
+/*End linked list list functions*/
