@@ -49,7 +49,7 @@ void run_program(FILE *file)
 	/*read lines and place data*/
 	instrs = (char *) read_lines(file, base);
 
-
+	pipeline(base, instrs);
 }
 
 void *get_size(char line[100])
@@ -145,9 +145,44 @@ long read_lines(FILE *file, void *base)
 
 void pipeline(void *base, char *instrs)
 {
-	char curr[7];
-	int deps[8];
+	char curr[2][7];
+	int reg_deps[8];
+	int regs[8];
+	struct Node *mem_deps_head;
+	int pc = 0;
 
+	while(pc < strlen(instrs))
+	{
+		fetch(curr[0], instrs, &pc);
+		decode(curr[1], mem_deps_head, reg_deps);
+		execute(curr[2], base);
+		writeback(base, regs, mem_deps_head, reg_deps);
+	}
+
+}
+
+/*Functions for fetch, decode, exec, and weriteback*/
+
+void fetch(char curr[7], char *instrs, int *pc)
+{
+	int i;
+	/*noop or halt*/
+	if(instrs[*pc] == 0 || instrs[*pc] == 16)
+	{
+		curr[0] = instrs[*pc];
+		for(i = 1; i < 8; i++)
+		{
+			curr[i] = 15;
+		}
+		*pc++;
+	}
+	/*rrmovl*/
+	else if(instrs[*pc] == 32)
+	{
+		for(i = 0; i < 2; i++)
+		{
+		}
+	}
 }
 
 /*Helper functions to get and put data to and from memory*/

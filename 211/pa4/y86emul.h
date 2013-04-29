@@ -24,6 +24,7 @@ enum
 void run_program(FILE *file);
 void *get_size(char line[100]);
 long read_lines(FILE *file, void *base);
+void pipeline(void *base, char *instrs);
 
 /*Put and get functions*/
 void put_byte(char *addr, char byte);
