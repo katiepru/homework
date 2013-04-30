@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#endif
 
 enum
 {
@@ -20,11 +21,24 @@ enum
 	AOK, HLT, ADR, INS
 } StatCode;
 
+typedef struct Node
+{
+	long addr;
+	struct Node *next;
+} Node;
+
 /*Starting functions*/
 void run_program(FILE *file);
 void *get_size(char line[100]);
 long read_lines(FILE *file, void *base);
 void pipeline(void *base, char *instrs);
+
+/*Fetch, decode, exec, and wb*/
+void fetch(char curr[7], char *instrs, int *pc);
+void decode(char curr[7]);
+void execute(char curr[7], int registers[8], struct Node *mem_vals, 
+	int reg_vals[8]);
+void writeback(struct Node *mem_vals, int reg_vals[8], int registers[8]);
 
 /*Put and get functions*/
 void put_byte(char *addr, char byte);
@@ -38,10 +52,3 @@ char *get_string(char *addr, int len);
 char *strdup(const char *str);
 void print_help();
 
-typedef struct Node
-{
-	long addr;
-	struct Node *next;
-} Node;
-
-#endif

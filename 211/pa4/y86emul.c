@@ -81,6 +81,7 @@ long read_lines(FILE *file, void *base)
 	long instr_addr;
 	void *addr;
 	int i;
+	long test;
 
 	while(fgets(line, 1000, file) != NULL)
 	{
@@ -94,7 +95,7 @@ long read_lines(FILE *file, void *base)
 		else if(strcmp(directive, ".byte") == 0)
 		{
 			sscanf(line, "%s %lx %x", directive, &addr_offset, &byte);
-			addr = (char *) ((long) base + addr_offset);
+			addr = (char *) (long) base + addr_offset;
 			put_byte(addr, byte);
 		}
 		else if(strcmp(directive, ".string") == 0)
@@ -145,20 +146,25 @@ long read_lines(FILE *file, void *base)
 
 void pipeline(void *base, char *instrs)
 {
-	char curr[2][7];
-	int reg_deps[8];
-	int regs[8];
-	struct Node *mem_deps_head;
+	char curr[7];
+	int registers[8];
+	int reg_vals[8];
 	int pc = 0;
+	struct Node *mem_vals;
+	char *str;
+	long things = 0 + (long) base;
 
-	while(pc < strlen(instrs))
+	str = get_string((char *) things, 1);
+	printf("str is %s\n", str);
+
+	while(pc < strlen(instrs)-1)
 	{
-		fetch(curr[0], instrs, &pc);
-		decode(curr[1], mem_deps_head, reg_deps);
-		execute(curr[2], base);
-		writeback(base, regs, mem_deps_head, reg_deps);
+		break;
+		fetch(curr, instrs, &pc);
+	/*	decode(curr);
+		execute(curr, registers, mem_vals, reg_vals);
+		writeback(mem_vals, reg_vals, registers);*/
 	}
-
 }
 
 /*Functions for fetch, decode, exec, and weriteback*/
@@ -166,23 +172,57 @@ void pipeline(void *base, char *instrs)
 void fetch(char curr[7], char *instrs, int *pc)
 {
 	int i;
-	/*noop or halt*/
-	if(instrs[*pc] == 0 || instrs[*pc] == 16)
+	/*noop, halt or ret*/
+	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
 	{
 		curr[0] = instrs[*pc];
-		for(i = 1; i < 8; i++)
+		for(i = 1; i < 6; i++)
 		{
 			curr[i] = 15;
 		}
-		*pc++;
+		++*pc;
 	}
-	/*rrmovl*/
-	else if(instrs[*pc] == 32)
+	/*rrmovl, op1, push, and pop*/
+	else if(instrs[*pc] == 32 || (instrs[*pc] >= 96 && instrs[*pc] <= 100) || 
+		instrs[*pc] == 160 || instrs[*pc] == 176)
 	{
 		for(i = 0; i < 2; i++)
 		{
+			curr[i] = instrs[*pc];
+			++*pc;
+		}
+		for(i = 2; i < 6; i++)
+		{
+			curr[i] = 15;
 		}
 	}
+	/*irmolv, rmovl, mrmovl, readX, and writeX*/
+	else if(instrs[*pc] == 48 || instrs[*pc] == 64 || instrs[*pc] == 80 || 
+		instrs[*pc] == 192 || instrs[*pc] == 193 || instrs[*pc] == 208 ||
+		instrs[*pc] == 209)
+	{
+		for(i = 0; i < 6; i++)
+		{
+			curr[i] = instrs[*pc];
+			++*pc;
+		}
+	}
+	/*jmp and call*/
+	else if(instrs[*pc] == 128 || (instrs[*pc] >= 112 && instrs[*pc] <= 117))
+	{
+		for(i = 0; i < 5; i++)
+		{
+			curr[i] = instrs[*pc];
+			++*pc;
+		}
+
+		curr[i] = 15;
+	}
+	else
+	{
+		fprintf(stderr, "You fucked up\n");
+	}
+	printf("%s\n", curr);
 }
 
 /*Helper functions to get and put data to and from memory*/
@@ -227,10 +267,12 @@ char *get_string(char *addr, int len)
 {
 	char *str = calloc(len, sizeof(char));
 	int i = 0;
-
+	
 	while(i <= len)
 	{
 		str[i] = addr[i];
+		printf("addr[i] = %d\n", addr[i]);
+		i++;
 	}
 	return str;
 }
