@@ -117,6 +117,7 @@ long read_lines(FILE *file, void *base)
 			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
 			addr = (char *) ((long) base + addr_offset);
 			instr_addr = (long) addr;
+			memset(byte_chars, 0, 2);
 			for(i = 0; i < strlen(str); i++)
 			{
 				if(strlen(byte_chars) == 0)
@@ -132,8 +133,11 @@ long read_lines(FILE *file, void *base)
 					byte = (char) strtol(byte_chars, NULL, 16);
 					put_byte(addr, byte);
 					addr = (char *)((long) addr + 1);
+					memset(byte_chars, 0, 2);
 				}
 			}
+			put_byte(addr, '\0');
+			addr = (char *)((long) addr + 1);
 		}
 		else
 		{
@@ -152,18 +156,14 @@ void pipeline(void *base, char *instrs)
 	int pc = 0;
 	struct Node *mem_vals;
 	char *str;
-	long things = 0 + (long) base;
-
-	str = get_string((char *) things, 1);
-	printf("str is %s\n", str);
-
-	while(pc < strlen(instrs)-1)
+	int halt = 0;
+	
+	while(!halt)
 	{
-		break;
 		fetch(curr, instrs, &pc);
-	/*	decode(curr);
+		//decode(curr);
 		execute(curr, registers, mem_vals, reg_vals);
-		writeback(mem_vals, reg_vals, registers);*/
+		/*writeback(mem_vals, reg_vals, registers);*/
 	}
 }
 
@@ -222,7 +222,11 @@ void fetch(char curr[7], char *instrs, int *pc)
 	{
 		fprintf(stderr, "You fucked up\n");
 	}
-	printf("%s\n", curr);
+}
+
+int execute(char curr[7], int registers[8], struct Node *memvals, 
+	int reg_vals[8])
+{
 }
 
 /*Helper functions to get and put data to and from memory*/
@@ -242,6 +246,7 @@ long get_long(long *addr)
 
 void put_byte(char *addr, char num)
 {
+	printf("byte is %x\n", num);
 	memcpy(addr, &num, 1);
 }
 

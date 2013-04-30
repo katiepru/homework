@@ -36,7 +36,7 @@ void pipeline(void *base, char *instrs);
 /*Fetch, decode, exec, and wb*/
 void fetch(char curr[7], char *instrs, int *pc);
 void decode(char curr[7]);
-void execute(char curr[7], int registers[8], struct Node *mem_vals, 
+int execute(char curr[7], int registers[8], struct Node *mem_vals, 
 	int reg_vals[8]);
 void writeback(struct Node *mem_vals, int reg_vals[8], int registers[8]);
 
