@@ -151,8 +151,8 @@ long read_lines(FILE *file, void *base)
 void pipeline(void *base, char *instrs)
 {
 	char curr[7];
-	int registers[8];
-	int reg_vals[8];
+	long registers[8];
+	long reg_vals[8];
 	int pc = 0;
 	struct Node *mem_vals;
 	char *str;
@@ -224,9 +224,50 @@ void fetch(char curr[7], char *instrs, int *pc)
 	}
 }
 
-int execute(char curr[7], int registers[8], struct Node *memvals, 
-	int reg_vals[8])
+int execute(char curr[7], long registers[8], struct Node *memvals, 
+	long reg_vals[8])
 {
+	int reg1, reg2;
+	void *mem1, *mem2;
+	long val1;
+	int i;
+
+	switch(curr[0])
+	{
+		case 0: 
+			//Do nothing
+			return AOK;
+		case 16:
+			//Halt
+			return HLT;
+		case 32:
+			//rrmovl
+			reg1 = floor(curr[1]/10);
+			reg2 = curr[1] % 10;
+			reg_vals[reg2] = registers[reg1];
+			return AOK;
+		case 48:
+			//irmovl
+			reg1 = curr[1] % 10;
+			val1 = 0;
+			for(i = 2; i < 7; i++)
+			{
+				val1 += curr[i];
+			}
+			reg_vals[reg1] = val1;
+			return AOK;
+		case 64:
+			reg1 = floor(curr[1]/10);
+			reg2 = curr[1] % 10;
+			val1 = 0;
+			for(i = 2; i < 7; i++)
+			{
+				val1 += curr[i];
+			}
+			mem1 = (void *) registers[reg2];
+			//FIXME
+			return AOK;
+	}
 }
 
 /*Helper functions to get and put data to and from memory*/

@@ -4,12 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #endif
-
-enum
-{
-	eax, ecx, edx, ebx, esp, ebp, esi, edi
-} Reg;
 
 enum
 {
@@ -36,9 +32,9 @@ void pipeline(void *base, char *instrs);
 /*Fetch, decode, exec, and wb*/
 void fetch(char curr[7], char *instrs, int *pc);
 void decode(char curr[7]);
-int execute(char curr[7], int registers[8], struct Node *mem_vals, 
-	int reg_vals[8]);
-void writeback(struct Node *mem_vals, int reg_vals[8], int registers[8]);
+int execute(char curr[7], long registers[8], struct Node *mem_vals, 
+	long reg_vals[8]);
+void writeback(struct Node *mem_vals, long reg_vals[8], long registers[8]);
 
 /*Put and get functions*/
 void put_byte(char *addr, char byte);
