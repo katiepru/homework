@@ -114,6 +114,13 @@ void disassemble(FILE *file)
 				printf("mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
 			}
+			else if(strcmp(byte, "60") == 0)
+			{
+				//addl
+				printf("addl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
 		}
 	}
 }
