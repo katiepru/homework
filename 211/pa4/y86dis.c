@@ -219,19 +219,67 @@ void disassemble(FILE *file)
 				}
 				printf("call 0x%s\n", val);
 			}
-			else if(strcmp(byte, "A0") == 0)
+			else if(strcmp(byte, "a0") == 0)
 			{
 				//pushl
 				printf("pushl %s %s\n", get_reg(instrs[i]), 
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
-			else if(strcmp(byte, "B0") == 0)
+			else if(strcmp(byte, "b0") == 0)
 			{
 				//popl
 				printf("popl %s %s\n", get_reg(instrs[i]), 
 					get_reg(instrs[i+1]));
 				i += 2;
+			}
+			else if(strcmp(byte, "c0") == 0)
+			{
+				//readb
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("readb 0x%s(%s)\n", val, get_reg(instrs[i]));
+				i += 10;
+			}
+			else if(strcmp(byte, "c1") == 0)
+			{
+				//readw
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("readw 0x%s(%s)\n", val, get_reg(instrs[i]));
+				i += 10;
+			}
+			else if(strcmp(byte, "d0") == 0)
+			{
+				//writeb
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("writeb 0x%s(%s)\n", val, get_reg(instrs[i]));
+				i += 10;
+			}
+			else if(strcmp(byte, "d1") == 0)
+			{
+				//writew
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("writew 0x%s(%s)\n", val, get_reg(instrs[i]));
+				i += 10;
 			}
 		}
 	}
