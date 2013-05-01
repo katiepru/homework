@@ -429,8 +429,27 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
-		/*Call and ret and stack stuff*/
-		
+		case 128:
+			/*Call*/
+			val1 = 0;
+			for(i = 0; i < 5; i++)
+			{
+				val1 += curr[i];
+			}
+
+		case 160:
+			/*pushl*/
+			reg1 = floor(curr[1]/10);
+			/*Decrement esp*/
+			reg_vals[4] = registers[4] - 4;
+			put_long((long *) reg_vals[4], registers[reg1]);
+			return AOK;
+		case 176:
+			/*popl*/
+			reg1 = floor(curr[1]/10);
+			reg_vals[reg1] = get_long((long *) registers[4]);
+			reg_vals[4] = registers[4] + 4;
+			return AOK;
 		case 192:
 			/*readb*/
 			scanf("%s", byte);
