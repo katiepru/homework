@@ -90,6 +90,18 @@ void disassemble(FILE *file)
 				printf("irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
 				i += 10;
 			}
+			else if(strcmp(byte, "40") == 0)
+			{
+				//rmmovl
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
+					get_reg(instrs[i+1]));
+			}
 		}
 	}
 }
