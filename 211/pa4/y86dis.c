@@ -87,6 +87,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
 				i += 10;
 			}
@@ -99,6 +100,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
 			}
@@ -111,6 +113,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
 			}
@@ -157,6 +160,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("jmp 0x%s\n", val);
 			}
 			else if(strcmp(byte, "71") == 0)
@@ -167,6 +171,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("jle 0x%s\n", val);
 			}
 			else if(strcmp(byte, "72") == 0)
@@ -177,6 +182,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("jl 0x%s\n", val);
 			}
 			else if(strcmp(byte, "73") == 0)
@@ -187,6 +193,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("je 0x%s\n", val);
 			}
 			else if(strcmp(byte, "74") == 0)
@@ -197,6 +204,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("jne 0x%s\n", val);
 			}
 			else if(strcmp(byte, "75") == 0)
@@ -207,6 +215,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("jge 0x%s\n", val);
 			}
 			else if(strcmp(byte, "80") == 0)
@@ -217,6 +226,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[i];
 					i++;
 				}
+				val[j] = '\0';
 				printf("call 0x%s\n", val);
 			}
 			else if(strcmp(byte, "a0") == 0)
@@ -242,6 +252,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("readb 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
@@ -254,6 +265,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("readw 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
@@ -266,6 +278,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("writeb 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
@@ -278,6 +291,7 @@ void disassemble(FILE *file)
 					val[j] = instrs[tmp];
 					tmp++;
 				}
+				val[j] = '\0';
 				printf("writew 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
