@@ -34,7 +34,10 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-/*Start parsing the file*/
+/* ----------------------------------------------------------------------------/
+ * - Controls flow of emulator. First, build memory, then insert data, then
+ * - execute instructions.
+ * ---------------------------------------------------------------------------*/
 void run_program(FILE *file)
 {
 	void *base;
@@ -52,6 +55,9 @@ void run_program(FILE *file)
 	pipeline(base, instrs);
 }
 
+/* ---------------------------------------------------------------------------/
+ * Mallocs virtual memory returns pointer to that result.
+ * --------------------------------------------------------------------------*/
 void *get_size(char line[100])
 {
 	int size = 0;
@@ -67,6 +73,9 @@ void *get_size(char line[100])
 
 }
 
+/* ---------------------------------------------------------------------------/
+ * Read lines and put data into virtual memory.
+ * --------------------------------------------------------------------------*/
 long read_lines(FILE *file, void *base)
 {
 	char line[1000];
@@ -148,6 +157,10 @@ long read_lines(FILE *file, void *base)
 	return instr_addr;
 }
 
+
+/* ---------------------------------------------------------------------------/
+ * Begin fetch, decode and execute (pipelining if there is time.
+ * --------------------------------------------------------------------------*/
 void pipeline(void *base, char *instrs)
 {
 	char curr[7];
@@ -169,6 +182,9 @@ void pipeline(void *base, char *instrs)
 
 /*Functions for fetch, decode, exec, and weriteback*/
 
+/* ---------------------------------------------------------------------------/
+ * Fetch instruction and populate curr. Modify program counter as needed.
+ * --------------------------------------------------------------------------*/
 void fetch(char curr[7], char *instrs, int *pc)
 {
 	int i;
@@ -224,6 +240,9 @@ void fetch(char curr[7], char *instrs, int *pc)
 	}
 }
 
+/* ---------------------------------------------------------------------------/
+ * Execute current instruction. Returns status code.
+ * --------------------------------------------------------------------------*/
 int execute(char curr[7], long registers[8], struct Node *memvals, 
 	long reg_vals[8])
 {
@@ -328,11 +347,17 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 
 /*Helper functions to get and put data to and from memory*/
 
+/* ---------------------------------------------------------------------------/
+ * Put num into addr in memory.
+ * --------------------------------------------------------------------------*/
 void put_long(long *addr, long num)
 {
 	memcpy(addr, &num, 4);
 }
 
+/* ---------------------------------------------------------------------------/
+ * Returns long stored in addr.
+ * --------------------------------------------------------------------------*/
 long get_long(long *addr)
 {
 	long num;
@@ -341,12 +366,18 @@ long get_long(long *addr)
 	return num;
 }
 
+/* ---------------------------------------------------------------------------/
+ * Put num into addr in memory.
+ * --------------------------------------------------------------------------*/
 void put_byte(char *addr, char num)
 {
 	printf("byte is %x\n", num);
 	memcpy(addr, &num, 1);
 }
 
+/* ---------------------------------------------------------------------------/
+ * Returns char stored in addr.
+ * --------------------------------------------------------------------------*/
 char get_byte(char *addr)
 {
 	char num;
@@ -355,6 +386,9 @@ char get_byte(char *addr)
 	return num;
 }
 
+/* ---------------------------------------------------------------------------/
+ * Put str into addr in memory.
+ * --------------------------------------------------------------------------*/
 void put_string(char *addr, char *str)
 {
 	int i = 0;
@@ -365,6 +399,9 @@ void put_string(char *addr, char *str)
 	}
 }
 
+/* ---------------------------------------------------------------------------/
+ * Returns string of length len stored in addr.
+ * --------------------------------------------------------------------------*/
 char *get_string(char *addr, int len)
 {
 	char *str = calloc(len, sizeof(char));
@@ -383,6 +420,9 @@ char *get_string(char *addr, int len)
 
 /*Begin linked list functions*/
 
+/* ---------------------------------------------------------------------------/
+ * Malloc a Node.
+ * --------------------------------------------------------------------------*/
 struct Node *create_node(long addr)
 {
 	struct Node *node = malloc(sizeof(struct Node));
@@ -390,6 +430,9 @@ struct Node *create_node(long addr)
 	node->next = NULL;
 }
 
+/* ---------------------------------------------------------------------------/
+ * Free a Node.
+ * --------------------------------------------------------------------------*/
 void delete_node(long addr, struct Node *head)
 {
 	struct Node *ptr;
