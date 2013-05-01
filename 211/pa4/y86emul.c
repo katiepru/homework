@@ -8,14 +8,14 @@ int main(int argc, char *argv[])
 	if(argc != 2)
 	{
 		fprintf(stderr, "ERROR: Wrong number of arguments.\n");
-	//	print_help();
+		/*print_help();*/
 		return 1;
 	}
 
 	/*Check for help mode*/
 	if(strcmp(argv[1], "-h") == 0)
 	{
-	//	print_help();
+		/*print_help();*/
 		return 0;
 	}
 
@@ -175,7 +175,7 @@ void pipeline(void *base, char *instrs)
 	while(!halt)
 	{
 		fetch(curr, instrs, &pc);
-		//decode(curr);
+		/*decode(curr);*/
 		execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
 		/*writeback(mem_vals, reg_vals, registers);*/
 	}
@@ -247,12 +247,15 @@ void fetch(char curr[7], char *instrs, int *pc)
 int execute(char curr[7], long registers[8], struct Node *memvals, 
 	long reg_vals[8], int flags[3], int *pc, char *base)
 {
+	struct Node *node;
 	int reg1, reg2;
 	void *mem1, *mem2;
 	long val1;
 	int i;
+	char byte[2];
+	char num[4];
 
-	//Set all flags to 0
+	/*Set all flags to 0*/
 	flags[OF] = 0;
 	flags[ZF] = 0;
 	flags[SF] = 0;
@@ -260,19 +263,19 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 	switch((int) curr[0])
 	{
 		case 0: 
-			//Do nothing
+			/*Do nothing*/
 			return AOK;
 		case 16:
-			//Halt
+			/*Halt*/
 			return HLT;
 		case 32:
-			//rrmovl
+			/*rrmovl*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg2] = registers[reg1];
 			return AOK;
 		case 48:
-			//irmovl
+			/*irmovl*/
 			reg1 = curr[1] % 10;
 			val1 = 0;
 			for(i = 2; i < 7; i++)
@@ -282,7 +285,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			reg_vals[reg1] = val1;
 			return AOK;
 		case 64:
-			//rmmovl
+			/*rmmovl*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			val1 = 0;
@@ -290,27 +293,27 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				val1 += curr[i];
 			}
-			//FIXME
+			/*FIXME*/
 			return AOK;
 		case 80:
-			//mrmovl
-			//FIXME
+			/*mrmovl*/
+			/*FIXME*/
 			return AOK;
 		case 96:
-			//addl
+			/*addl*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] + registers[reg2];
-			//FIXME: Check overflow
-			//FIXME: Set other flags?
+			/*FIXME: Check overflow*/
+			/*FIXME: Set other flags?*/
 			return AOK;
 		case 97:
-			//subl = Ra -= Rb
+			/*subl = Ra -= Rb*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] - registers[reg2];
-			//FIXME: Check overflow
-			//Set flags
+			/*FIXME: Check overflow*/
+			/*Set flags*/
 			if(reg_vals[reg1] == 0)
 			{
 				flags[ZF] = 1;
@@ -321,115 +324,143 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			}
 			return AOK;
 		case 98:
-			//andl - bitwise and
+			/*andl - bitwise and*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] & registers[reg2];
 			return AOK;
 		case 99:
-			//xorl - bitwise xor
+			/*xorl - bitwise xor*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] ^ registers[reg2];
 			return AOK;
 		case 100:
-			//mull
+			/*mull*/
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] * registers[reg2];
-			//FIXME: Check overflow
-			//FIXME: Set other flags?
+			/*FIXME: Check overflow*/
+			/*FIXME: Set other flags?*/
 			return AOK;
 		case 112:
-			//jmp
-			//Get destination
+			/*jmp*/
+			/*Get destination*/
 			val1 = 0;
 			for(i = 1; i < 6; i++)
 			{
 				val1 += curr[i];
 			}
-			//FIXME: Do error checking here
+			/*FIXME: Do error checking here*/
 			*pc = (val1 - (long) base);
 			return AOK;
 		case 113:
-			//jle
-			//check if jump should occur
+			/*jle*/
+			/*check if jump should occur*/
 			if(flags[ZF] == 1 || flags[SF] == 1)
 			{
-				//Get destination
+				/*Get destination*/
 				val1 = 0;
 				for(i = 1; i < 6; i++)
 				{
 					val1 += curr[i];
 				}
-				//FIXME: Do error checking here
+				/*FIXME: Do error checking here*/
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
 		case 114:
-			//jl
-			//check if jump should occur
+			/*jl*/
+			/*check if jump should occur*/
 			if(flags[SF] == 1)
 			{
-				//Get destination
+				/*Get destination*/
 				val1 = 0;
 				for(i = 1; i < 6; i++)
 				{
 					val1 += curr[i];
 				}
-				//FIXME: Do error checking here
+				/*FIXME: Do error checking here*/
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
 		case 115:
-			//je
-			//check if jump should occur
+			/*je*/
+			/*check if jump should occur*/
 			if(flags[ZF] == 1)
 			{
-				//Get destination
+				/*Get destination*/
 				val1 = 0;
 				for(i = 1; i < 6; i++)
 				{
 					val1 += curr[i];
 				}
-				//FIXME: Do error checking here
+				/*FIXME: Do error checking here*/
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
 		case 116:
-			//jne
-			//check if jump should occur
+			/*jne*/
+			/*check if jump should occur*/
 			if(flags[ZF] == 0)
 			{
-				//Get destination
+				/*Get destination*/
 				val1 = 0;
 				for(i = 1; i < 6; i++)
 				{
 					val1 += curr[i];
 				}
-				//FIXME: Do error checking here
+				/*FIXME: Do error checking here*/
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
 		case 117:
-			//jge
-			//check if jump should occur
+			/*jge*/
+			/*check if jump should occur*/
 			if(flags[SF] == 0)
 			{
-				//Get destination
+				/*Get destination*/
 				val1 = 0;
 				for(i = 1; i < 6; i++)
 				{
 					val1 += curr[i];
 				}
-				//FIXME: Do error checking here
+				/*FIXME: Do error checking here*/
 				*pc = (val1 - (long) base);
 			}
 			return AOK;
-
-		//READING
+		/*Call and ret and stack stuff*/
+		
+		case 192:
+			/*readb*/
+			scanf("%s", byte);
+			reg1 = floor(curr[1]/10);
+			val1 = 0;
+			for(i = 2; i < 7; i++)
+			{
+				val1 += curr[i];
+			}
+			node = create_node(val1 + registers[reg1], strtol(byte, NULL, 16), 
+				1);
+			/*insert into memval linked list*/
+			node->next = memvals->next;
+			memvals->next = node;
+		case 193:
+			/*readb*/
+			scanf("%s", num);
+			reg1 = floor(curr[1]/10);
+			val1 = 0;
+			for(i = 2; i < 7; i++)
+			{
+				val1 += curr[i];
+			}
+			node = create_node(val1 + registers[reg1], strtol(num, NULL, 16), 
+				0);
+			/*insert into memval linked list*/
+			node->next = memvals->next;
+			memvals->next = node;
 		case 208:
-			//writeb
+			/*writeb*/
 			reg1 = floor(curr[1]/10);
 			val1 = 0;
 			for(i = 2; i < 7; i++)
@@ -439,7 +470,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			printf("0x%x\n", (long) get_byte((char *)(registers[reg1] + val1)));
 			return AOK;
 		case 209:
-			//writeb
+			/*writeb*/
 			reg1 = floor(curr[1]/10);
 			val1 = 0;
 			for(i = 2; i < 7; i++)
@@ -529,10 +560,12 @@ char *get_string(char *addr, int len)
 /* ---------------------------------------------------------------------------/
  * Malloc a Node.
  * --------------------------------------------------------------------------*/
-struct Node *create_node(long addr)
+struct Node *create_node(long addr, long data, int byte)
 {
 	struct Node *node = malloc(sizeof(struct Node));
 	node->addr = addr;
+	node->data = data;
+	node->byte = byte;
 	node->next = NULL;
 }
 

@@ -40,7 +40,7 @@ void disassemble(FILE *file)
 	char instrs[1000];
 	char directive[10];
 	char byte[3];
-	char val[9];
+	char val[8];
 	int i = 0;
 	int j, tmp;
 	
@@ -54,6 +54,7 @@ void disassemble(FILE *file)
 			continue;
 		}
 		sscanf(line, "%s %lx %s", directive, &addr, instrs);
+		printf("instrs are %s\n", instrs);
 		printf("Instructions start at offset 0x%lx.\n", addr);
 		while(i < strlen(instrs))
 		{
@@ -82,7 +83,7 @@ void disassemble(FILE *file)
 			{
 				//irmovl
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -95,7 +96,7 @@ void disassemble(FILE *file)
 			{
 				//rmmovl
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -108,7 +109,7 @@ void disassemble(FILE *file)
 			{
 				//mrmovl
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -155,7 +156,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "70") == 0)
 			{
 				//jmp
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -166,7 +167,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "71") == 0)
 			{
 				//jle
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -177,7 +178,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "72") == 0)
 			{
 				//jl
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -188,7 +189,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "73") == 0)
 			{
 				//je
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -199,7 +200,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "74") == 0)
 			{
 				//jne
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -210,7 +211,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "75") == 0)
 			{
 				//jge
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -221,7 +222,7 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "80") == 0)
 			{
 				//call
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
 					i++;
@@ -247,7 +248,7 @@ void disassemble(FILE *file)
 			{
 				//readb
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -260,7 +261,7 @@ void disassemble(FILE *file)
 			{
 				//readw
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -273,7 +274,7 @@ void disassemble(FILE *file)
 			{
 				//writeb
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;
@@ -286,7 +287,7 @@ void disassemble(FILE *file)
 			{
 				//writew
 				tmp = i+2;
-				for(j = 0; j < 9; j++)
+				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[tmp];
 					tmp++;

@@ -20,6 +20,8 @@ enum
 typedef struct Node
 {
 	long addr;
+	long data;
+	int byte;
 	struct Node *next;
 } Node;
 
@@ -43,6 +45,10 @@ void put_long(long *addr, long num);
 long get_long(long *addr);
 void put_string(char *addr, char *str);
 char *get_string(char *addr, int len);
+
+/*Linked list functions*/
+struct Node *create_node(long addr, long data, int byte);
+void delete_node(long addr, struct Node *head);
 
 /*Other shit*/
 char *strdup(const char *str);
