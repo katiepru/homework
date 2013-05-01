@@ -430,13 +430,22 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			}
 			return AOK;
 		case 128:
-			/*Call*/
+			/*Call - push then jump*/
 			val1 = 0;
 			for(i = 0; i < 5; i++)
 			{
 				val1 += curr[i];
 			}
-
+			reg_vals[4] = registers[4] - 4;
+			put_long((long *) reg_vals[4], *pc + *base);
+			*pc = (val1 - (long) base);
+			return AOK;
+		case 144:
+			/*ret - pop and jump*/
+			val1 = get_long((long *) registers[4]);
+			reg_vals[4] = registers[4] + 4;
+			*pc = (val1 - (long) base);
+			return AOK;
 		case 160:
 			/*pushl*/
 			reg1 = floor(curr[1]/10);
