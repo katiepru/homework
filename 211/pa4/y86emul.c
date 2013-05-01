@@ -257,6 +257,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			reg_vals[reg1] = val1;
 			return AOK;
 		case 64:
+			//rmmovl
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			val1 = 0;
@@ -264,8 +265,14 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				val1 += curr[i];
 			}
-			mem1 = (void *) registers[reg2];
 			//FIXME
+			return AOK;
+		case 80:
+			//mrmovl
+			//FIXME
+			return AOK;
+		case 96:
+			//addl
 			return AOK;
 	}
 }
