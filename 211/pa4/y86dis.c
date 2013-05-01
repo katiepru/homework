@@ -233,15 +233,13 @@ void disassemble(FILE *file)
 			else if(strcmp(byte, "a0") == 0)
 			{
 				//pushl
-				printf("pushl %s %s\n", get_reg(instrs[i]), 
-					get_reg(instrs[i+1]));
+				printf("pushl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "b0") == 0)
 			{
 				//popl
-				printf("popl %s %s\n", get_reg(instrs[i]), 
-					get_reg(instrs[i+1]));
+				printf("popl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "c0") == 0)
@@ -321,7 +319,8 @@ const char *get_reg(char c)
 		case '7':
 			return "\%edi";
 		default:
-			return "Error";
+			printf("Error %c\n", c);
+			return "";
 	}
 }
 
