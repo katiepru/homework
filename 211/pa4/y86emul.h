@@ -1,12 +1,12 @@
 #ifndef _Y86EMUL_H
 #define Y86_EMUL_H
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <tgmath.h>
 #include <limits.h>
-#endif
 
 enum
 {

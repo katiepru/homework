@@ -275,7 +275,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return HLT;
 		case 32:
 			/*rrmovl*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg2] = registers[reg1];
 			return AOK;
@@ -291,7 +291,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 64:
 			/*rmmovl*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			val1 = 0;
 			for(i = 2; i < 7; i++)
@@ -306,7 +306,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 96:
 			/*addl*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] + registers[reg2];
 			/*FIXME: Check overflow*/
@@ -314,7 +314,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 97:
 			/*subl = Ra -= Rb*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] - registers[reg2];
 			/*FIXME: Check overflow*/
@@ -330,19 +330,19 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 98:
 			/*andl - bitwise and*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] & registers[reg2];
 			return AOK;
 		case 99:
 			/*xorl - bitwise xor*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] ^ registers[reg2];
 			return AOK;
 		case 100:
 			/*mull*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] * registers[reg2];
 			/*FIXME: Check overflow*/
@@ -453,21 +453,21 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 160:
 			/*pushl*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			/*Decrement esp*/
 			reg_vals[4] = registers[4] - 4;
 			put_long((long *) reg_vals[4], registers[reg1]);
 			return AOK;
 		case 176:
 			/*popl*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			reg_vals[reg1] = get_long((long *) registers[4]);
 			reg_vals[4] = registers[4] + 4;
 			return AOK;
 		case 192:
 			/*readb*/
 			scanf("%s", byte);
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			val1 = 0;
 			for(i = 2; i < 7; i++)
 			{
@@ -479,22 +479,19 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			node->next = memvals->next;
 			memvals->next = node;
 		case 193:
-			/*readb*/
+			/*readw*/
 			scanf("%s", num);
-			reg1 = floor(curr[1]/10);
-			val1 = 0;
+			reg1 = curr[1]/10;
 			for(i = 2; i < 7; i++)
 			{
 				val1 += curr[i];
 			}
-			node = create_node(val1 + registers[reg1], strtol(num, NULL, 16), 
-				0);
-			/*insert into memval linked list*/
-			node->next = memvals->next;
-			memvals->next = node;
+			put_string((char *) (val1 + (long) base), num);
+			return AOK;
+
 		case 208:
 			/*writeb*/
-			reg1 = floor(curr[1]/10);
+			reg1 = curr[1]/10;
 			val1 = 0;
 			for(i = 2; i < 7; i++)
 			{
@@ -503,14 +500,15 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			printf("0x%x\n", (long) get_byte((char *)(registers[reg1] + val1)));
 			return AOK;
 		case 209:
-			/*writeb*/
-			reg1 = floor(curr[1]/10);
+			/*writew*/
+			reg1 = curr[1]/10;
 			val1 = 0;
 			for(i = 2; i < 7; i++)
 			{
 				val1 += curr[i];
 			}
-			printf("0x%x\n", (long) get_long((long *)(registers[reg1] + val1)));
+			printf("0x%s\n", get_string((char *)
+				(registers[reg1] + val1), 4));
 			return AOK;
 	}
 }
