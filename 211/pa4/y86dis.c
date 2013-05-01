@@ -149,6 +149,66 @@ void disassemble(FILE *file)
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
+			else if(strcmp(byte, "70") == 0)
+			{
+				//jmp
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("jmp 0x%s\n", val);
+			}
+			else if(strcmp(byte, "71") == 0)
+			{
+				//jle
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("jle 0x%s\n", val);
+			}
+			else if(strcmp(byte, "72") == 0)
+			{
+				//jl
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("jl 0x%s\n", val);
+			}
+			else if(strcmp(byte, "73") == 0)
+			{
+				//je
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("je 0x%s\n", val);
+			}
+			else if(strcmp(byte, "74") == 0)
+			{
+				//jne
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("jne 0x%s\n", val);
+			}
+			else if(strcmp(byte, "75") == 0)
+			{
+				//jge
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("jge 0x%s\n", val);
+			}
 		}
 	}
 }
