@@ -175,13 +175,17 @@ void pipeline(void *base, char *instrs)
 	
 	while(!halt)
 	{
+		mem_vals = NULL;
 		for(i = 0; i < 8; i++)
 		{
 			reg_vals[i] = registers[i];
 		}
+		puts("fetching");
 		fetch(curr, instrs, &pc);
 		/*decode(curr);*/
-		execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
+		puts("execing");
+		halt = execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
+		puts("writing");
 		writeback(registers, reg_vals, (long *) base, mem_vals);
 	}
 }
@@ -193,6 +197,7 @@ void pipeline(void *base, char *instrs)
  * --------------------------------------------------------------------------*/
 void fetch(char curr[7], char *instrs, int *pc)
 {
+	printf("instrs is %p\n", instrs);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -283,7 +288,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			/*irmovl*/
 			reg1 = curr[1] % 10;
 			val1 = 0;
-			for(i = 2; i < 7; i++)
+			for(i = 2; i < 6; i++)
 			{
 				val1 += curr[i];
 			}
@@ -294,15 +299,33 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			val1 = 0;
-			for(i = 2; i < 7; i++)
+			for(i = 2; i < 6; i++)
 			{
 				val1 += curr[i];
 			}
-			/*FIXME*/
+			node = create_node(((long) base + val1) + registers[reg2], 
+				registers[reg1], 0);
+			if(memvals == NULL)
+			{
+				memvals = node;
+			}
+			else
+			{
+				node->next = memvals->next;
+				memvals->next = node;
+			}
 			return AOK;
 		case 80:
 			/*mrmovl*/
-			/*FIXME*/
+			reg1 = curr[1]/10;
+			reg2 = curr[1] % 10;
+			val1 = 0;
+			for(i = 2; i < 6; i++)
+			{
+				val1 += curr[i];
+			}
+			reg_vals[reg1] = get_long((long *)(registers[reg2] + 
+				(long) base + val1));
 			return AOK;
 		case 96:
 			/*addl*/
@@ -352,7 +375,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			/*jmp*/
 			/*Get destination*/
 			val1 = 0;
-			for(i = 1; i < 6; i++)
+			for(i = 1; i < 4; i++)
 			{
 				val1 += curr[i];
 			}
@@ -381,7 +404,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 6; i++)
+				for(i = 1; i < 5; i++)
 				{
 					val1 += curr[i];
 				}
@@ -396,7 +419,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 6; i++)
+				for(i = 1; i < 5; i++)
 				{
 					val1 += curr[i];
 				}
@@ -411,7 +434,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 6; i++)
+				for(i = 1; i < 5; i++)
 				{
 					val1 += curr[i];
 				}
@@ -426,7 +449,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 6; i++)
+				for(i = 1; i < 5; i++)
 				{
 					val1 += curr[i];
 				}
@@ -437,7 +460,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 		case 128:
 			/*Call - push then jump*/
 			val1 = 0;
-			for(i = 0; i < 5; i++)
+			for(i = 0; i < 4; i++)
 			{
 				val1 += curr[i];
 			}
@@ -482,7 +505,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			/*readw*/
 			scanf("%s", num);
 			reg1 = curr[1]/10;
-			for(i = 2; i < 7; i++)
+			for(i = 2; i < 6; i++)
 			{
 				val1 += curr[i];
 			}
@@ -493,7 +516,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			/*writeb*/
 			reg1 = curr[1]/10;
 			val1 = 0;
-			for(i = 2; i < 7; i++)
+			for(i = 2; i < 6; i++)
 			{
 				val1 += curr[i];
 			}
@@ -574,7 +597,6 @@ long get_long(long *addr)
  * --------------------------------------------------------------------------*/
 void put_byte(char *addr, char num)
 {
-	printf("byte is %x\n", num);
 	memcpy(addr, &num, 1);
 }
 
