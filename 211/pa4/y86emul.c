@@ -171,13 +171,18 @@ void pipeline(void *base, char *instrs)
 	char *str;
 	int halt = 0;
 	int flags[3];
+	int i;
 	
 	while(!halt)
 	{
+		for(i = 0; i < 8; i++)
+		{
+			reg_vals[i] = registers[i];
+		}
 		fetch(curr, instrs, &pc);
 		/*decode(curr);*/
 		execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
-		/*writeback(mem_vals, reg_vals, registers);*/
+		writeback(registers, reg_vals, (long *) base, mem_vals);
 	}
 }
 
@@ -508,6 +513,41 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			printf("0x%x\n", (long) get_long((long *)(registers[reg1] + val1)));
 			return AOK;
 	}
+}
+
+/* ---------------------------------------------------------------------------/
+ * Write back to memory and registers
+ * --------------------------------------------------------------------------*/
+void writeback(long registers[8], long reg_vals[8], long *base,
+	struct Node *memvals)
+{
+	struct Node *tmp;
+	int i;
+
+	/*Write to registers*/
+	for(i = 0; i < 8; i++)
+	{
+		registers[i] = reg_vals[i];
+	}
+
+	/*Write to memory*/
+	tmp = memvals;
+	while(tmp != NULL)
+	{
+		if(tmp->byte == 1)
+		{
+			put_byte((char *) tmp->addr, (char) tmp->data);
+		}
+		else
+		{
+			put_long((long *) tmp->addr, tmp->data);
+		}
+		memvals = tmp;
+		tmp = tmp->next;
+		free(memvals);
+	}
+	memvals = NULL;
+
 }
 
 /*Helper functions to get and put data to and from memory*/

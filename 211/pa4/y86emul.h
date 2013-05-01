@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <limits.h>
 #endif
 
 enum
@@ -36,7 +37,8 @@ void fetch(char curr[7], char *instrs, int *pc);
 void decode(char curr[7]);
 int execute(char curr[7], long registers[8], struct Node *mem_vals, 
 	long reg_vals[8], int flags[3], int *pc, char *base);
-void writeback(struct Node *mem_vals, long reg_vals[8], long registers[8]);
+void writeback(long registers[8], long reg_vals[8], long *base,
+	struct Node *memvals);
 
 /*Put and get functions*/
 void put_byte(char *addr, char byte);
