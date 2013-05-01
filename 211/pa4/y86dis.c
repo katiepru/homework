@@ -40,7 +40,9 @@ void disassemble(FILE *file)
 	char instrs[1000];
 	char directive[10];
 	char byte[3];
+	char val[9];
 	int i = 0;
+	int j, tmp;
 	
 	memset(instrs, 0, 1000);
 	memset(byte, 0, 3);
@@ -75,6 +77,18 @@ void disassemble(FILE *file)
 				printf("rrmovl %s %s\n", get_reg(instrs[i]), 
 					get_reg(instrs[i+1]));
 				i += 2;
+			}
+			else if(strcmp(byte, "30") == 0)
+			{
+				//irmovl
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
+				i += 10;
 			}
 		}
 	}
