@@ -9,6 +9,11 @@
 
 enum
 {
+	OF, ZF, SF
+} ConCode;
+
+enum
+{
 	AOK, HLT, ADR, INS
 } StatCode;
 
@@ -28,7 +33,7 @@ void pipeline(void *base, char *instrs);
 void fetch(char curr[7], char *instrs, int *pc);
 void decode(char curr[7]);
 int execute(char curr[7], long registers[8], struct Node *mem_vals, 
-	long reg_vals[8]);
+	long reg_vals[8], int flags[3], int *pc, char *base);
 void writeback(struct Node *mem_vals, long reg_vals[8], long registers[8]);
 
 /*Put and get functions*/

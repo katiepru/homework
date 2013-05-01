@@ -170,12 +170,13 @@ void pipeline(void *base, char *instrs)
 	struct Node *mem_vals;
 	char *str;
 	int halt = 0;
+	int flags[3];
 	
 	while(!halt)
 	{
 		fetch(curr, instrs, &pc);
 		//decode(curr);
-		execute(curr, registers, mem_vals, reg_vals);
+		execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
 		/*writeback(mem_vals, reg_vals, registers);*/
 	}
 }
@@ -244,12 +245,17 @@ void fetch(char curr[7], char *instrs, int *pc)
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
 int execute(char curr[7], long registers[8], struct Node *memvals, 
-	long reg_vals[8])
+	long reg_vals[8], int flags[3], int *pc, char *base)
 {
 	int reg1, reg2;
 	void *mem1, *mem2;
 	long val1;
 	int i;
+
+	//Set all flags to 0
+	flags[OF] = 0;
+	flags[ZF] = 0;
+	flags[SF] = 0;
 
 	switch((int) curr[0])
 	{
@@ -295,12 +301,24 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] + registers[reg2];
+			//FIXME: Check overflow
+			//FIXME: Set other flags?
 			return AOK;
 		case 97:
 			//subl = Ra -= Rb
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] - registers[reg2];
+			//FIXME: Check overflow
+			//Set flags
+			if(reg_vals[reg1] == 0)
+			{
+				flags[ZF] = 1;
+			}
+			else if(reg_vals[reg1] < 0)
+			{
+				flags[SF] = 1;
+			}
 			return AOK;
 		case 98:
 			//andl - bitwise and
@@ -319,8 +337,96 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			reg1 = floor(curr[1]/10);
 			reg2 = curr[1] % 10;
 			reg_vals[reg1] = registers[reg1] * registers[reg2];
+			//FIXME: Check overflow
+			//FIXME: Set other flags?
 			return AOK;
-		//DO JUMPING and calling and returning HERE
+		case 112:
+			//jmp
+			//Get destination
+			val1 = 0;
+			for(i = 1; i < 6; i++)
+			{
+				val1 += curr[i];
+			}
+			//FIXME: Do error checking here
+			*pc = (val1 - (long) base);
+			return AOK;
+		case 113:
+			//jle
+			//check if jump should occur
+			if(flags[ZF] == 1 || flags[SF] == 1)
+			{
+				//Get destination
+				val1 = 0;
+				for(i = 1; i < 6; i++)
+				{
+					val1 += curr[i];
+				}
+				//FIXME: Do error checking here
+				*pc = (val1 - (long) base);
+			}
+			return AOK;
+		case 114:
+			//jl
+			//check if jump should occur
+			if(flags[SF] == 1)
+			{
+				//Get destination
+				val1 = 0;
+				for(i = 1; i < 6; i++)
+				{
+					val1 += curr[i];
+				}
+				//FIXME: Do error checking here
+				*pc = (val1 - (long) base);
+			}
+			return AOK;
+		case 115:
+			//je
+			//check if jump should occur
+			if(flags[ZF] == 1)
+			{
+				//Get destination
+				val1 = 0;
+				for(i = 1; i < 6; i++)
+				{
+					val1 += curr[i];
+				}
+				//FIXME: Do error checking here
+				*pc = (val1 - (long) base);
+			}
+			return AOK;
+		case 116:
+			//jne
+			//check if jump should occur
+			if(flags[ZF] == 0)
+			{
+				//Get destination
+				val1 = 0;
+				for(i = 1; i < 6; i++)
+				{
+					val1 += curr[i];
+				}
+				//FIXME: Do error checking here
+				*pc = (val1 - (long) base);
+			}
+			return AOK;
+		case 117:
+			//jge
+			//check if jump should occur
+			if(flags[SF] == 0)
+			{
+				//Get destination
+				val1 = 0;
+				for(i = 1; i < 6; i++)
+				{
+					val1 += curr[i];
+				}
+				//FIXME: Do error checking here
+				*pc = (val1 - (long) base);
+			}
+			return AOK;
+
 		//READING
 		case 208:
 			//writeb
