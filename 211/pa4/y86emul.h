@@ -9,11 +9,6 @@
 
 enum
 {
-	OF, ZF, SF
-} ConCode;
-
-enum
-{
 	AOK, HLT, ADR, INS
 } StatCode;
 
