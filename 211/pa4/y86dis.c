@@ -121,6 +121,34 @@ void disassemble(FILE *file)
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
+			else if(strcmp(byte, "61") == 0)
+			{
+				//subl
+				printf("subl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
+			else if(strcmp(byte, "62") == 0)
+			{
+				//andl
+				printf("andl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
+			else if(strcmp(byte, "63") == 0)
+			{
+				//xorl
+				printf("xorl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
+			else if(strcmp(byte, "64") == 0)
+			{
+				//mull
+				printf("mull %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
 		}
 	}
 }
