@@ -205,7 +205,7 @@ void fetch(char curr[7], char *instrs, int *pc)
 		curr[0] = instrs[*pc];
 		for(i = 1; i < 6; i++)
 		{
-			curr[i] = 15;
+			curr[i] = 0;
 		}
 		++*pc;
 	}
@@ -220,7 +220,7 @@ void fetch(char curr[7], char *instrs, int *pc)
 		}
 		for(i = 2; i < 6; i++)
 		{
-			curr[i] = 15;
+			curr[i] = 0;
 		}
 	}
 	/*irmolv, rmovl, mrmovl, readX, and writeX*/
@@ -243,7 +243,7 @@ void fetch(char curr[7], char *instrs, int *pc)
 			++*pc;
 		}
 
-		curr[i] = 15;
+		curr[i] = 0;
 	}
 	else
 	{
@@ -265,6 +265,11 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 	char byte[2];
 	char num[4];
 
+	for(i = 0; i < strlen(curr); i++)
+	{
+		printf("%x", curr[i]);
+	}
+	printf("\n");
 	/*Set all flags to 0*/
 	flags[OF] = 0;
 	flags[ZF] = 0;
