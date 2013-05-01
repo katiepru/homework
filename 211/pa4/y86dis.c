@@ -209,6 +209,30 @@ void disassemble(FILE *file)
 				}
 				printf("jge 0x%s\n", val);
 			}
+			else if(strcmp(byte, "80") == 0)
+			{
+				//call
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[i];
+					i++;
+				}
+				printf("call 0x%s\n", val);
+			}
+			else if(strcmp(byte, "A0") == 0)
+			{
+				//pushl
+				printf("pushl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
+			else if(strcmp(byte, "B0") == 0)
+			{
+				//popl
+				printf("popl %s %s\n", get_reg(instrs[i]), 
+					get_reg(instrs[i+1]));
+				i += 2;
+			}
 		}
 	}
 }
