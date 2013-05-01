@@ -102,6 +102,18 @@ void disassemble(FILE *file)
 				printf("rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
 			}
+			else if(strcmp(byte, "50") == 0)
+			{
+				//mrmovl
+				tmp = i+2;
+				for(j = 0; j < 9; j++)
+				{
+					val[j] = instrs[tmp];
+					tmp++;
+				}
+				printf("mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
+					get_reg(instrs[i]));
+			}
 		}
 	}
 }
