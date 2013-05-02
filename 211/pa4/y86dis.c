@@ -31,19 +31,12 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
+	/*this will hold the list of function locations*/
 	int address_list[1000];
 
 	memset(address_list, -1, 1000);
 
 	find_functions(file, address_list);
-
-	for ( i = 0; i < 1000; i++ )
-	{
-		if (address_list[i] == -1){break;}
-		printf("%d: %d\n", i, address_list[i]);
-	}
-
-	printf("\n\n");
 
 	rewind(file);
 
@@ -92,12 +85,8 @@ void find_functions(FILE *file, int* address_list)
 				}
 				val[j] = '\0';
 
-				printf("string hex is: %s\n", val);
-
 				/*grab the address to jump to as a number*/
 				addr = strtol(val, NULL, 16);
-
-				printf("convertd hex : %d\n", addr);
 
 				for(j = 0; j < address_counter; j++ )
 				{
@@ -146,7 +135,7 @@ void disassemble(FILE *file, int* address_list)
 			{
 				if(address_list[j] == (i/2) + addr)
 				{
-					printf("//.function%d\n", j);
+					printf(".function%d\n", j);
 					break;
 				}
 				if(address_list[j] == -1)
@@ -162,17 +151,17 @@ void disassemble(FILE *file, int* address_list)
 			if(strcmp(byte, "00") == 0)
 			{
 				/*noop*/
-				printf("noop\n");
+				printf("    noop\n");
 			}
 			else if(strcmp(byte, "10") == 0)
 			{
 				/*halt*/
-				printf("halt\n");
+				printf("    halt\n");
 			}
 			else if(strcmp(byte, "20") == 0)
 			{
 				/*rrmovl*/
-				printf("rrmovl %s %s\n", get_reg(instrs[i]),
+				printf("    rrmovl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
@@ -186,7 +175,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
+				printf("    irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
 				i += 10;
 			}
 			else if(strcmp(byte, "40") == 0)
@@ -199,7 +188,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
+				printf("    rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
 			}
 			else if(strcmp(byte, "50") == 0)
@@ -212,41 +201,41 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
+				printf("    mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
 			}
 			else if(strcmp(byte, "60") == 0)
 			{
 				/*addl*/
-				printf("addl %s %s\n", get_reg(instrs[i]),
+				printf("    addl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "61") == 0)
 			{
 				/*subl*/
-				printf("subl %s %s\n", get_reg(instrs[i]),
+				printf("    subl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "62") == 0)
 			{
 				/*andl*/
-				printf("andl %s %s\n", get_reg(instrs[i]),
+				printf("    andl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "63") == 0)
 			{
 				/*xorl*/
-				printf("xorl %s %s\n", get_reg(instrs[i]),
+				printf("    xorl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "64") == 0)
 			{
 				/*mull*/
-				printf("mull %s %s\n", get_reg(instrs[i]),
+				printf("    mull %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
@@ -259,7 +248,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("jmp 0x%s\n", val);
+				printf("    jmp 0x%s\n", val);
 			}
 			else if(strcmp(byte, "71") == 0)
 			{
@@ -270,7 +259,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("jle 0x%s\n", val);
+				printf("    jle 0x%s\n", val);
 			}
 			else if(strcmp(byte, "72") == 0)
 			{
@@ -281,7 +270,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("jl 0x%s\n", val);
+				printf("    jl 0x%s\n", val);
 			}
 			else if(strcmp(byte, "73") == 0)
 			{
@@ -292,7 +281,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("je 0x%s\n", val);
+				printf("    je 0x%s\n", val);
 			}
 			else if(strcmp(byte, "74") == 0)
 			{
@@ -303,7 +292,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("jne 0x%s\n", val);
+				printf("    jne 0x%s\n", val);
 			}
 			else if(strcmp(byte, "75") == 0)
 			{
@@ -314,7 +303,7 @@ void disassemble(FILE *file, int* address_list)
 					i++;
 				}
 				val[j] = '\0';
-				printf("jge 0x%s\n", val);
+				printf("    jge 0x%s\n", val);
 			}
 			else if(strcmp(byte, "80") == 0)
 			{
@@ -332,30 +321,33 @@ void disassemble(FILE *file, int* address_list)
 				{
 					if( address_list[j] == func_addr )
 					{
-						printf("//call .%s%d\n", "function", j);
+						printf("    call .%s%d\n", "function", j);
 						break;
 					}
 					else if ( func_addr == -1 )
 					{
+						/*failsafe*/
+						printf("    call 0x%s\n", val);
 						break;
 					}
 				}
 
-				/*if ( j >= 1000 )*/
-				/*{*/
-					printf("call 0x%s\n", val);
-				/*}*/
+				if ( j >= 1000 )
+				{
+					/*failsafe*/
+					printf("    call 0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "a0") == 0)
 			{
 				/*pushl*/
-				printf("pushl %s\n", get_reg(instrs[i]));
+				printf("    pushl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "b0") == 0)
 			{
 				/*popl*/
-				printf("popl %s\n", get_reg(instrs[i]));
+				printf("    popl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "c0") == 0)
@@ -368,7 +360,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("readb 0x%s(%s)\n", val, get_reg(instrs[i]));
+				printf("    readb 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
 			else if(strcmp(byte, "c1") == 0)
@@ -381,7 +373,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("readw 0x%s(%s)\n", val, get_reg(instrs[i]));
+				printf("    readw 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
 			else if(strcmp(byte, "d0") == 0)
@@ -394,7 +386,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("writeb 0x%s(%s)\n", val, get_reg(instrs[i]));
+				printf("    writeb 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
 			else if(strcmp(byte, "d1") == 0)
@@ -407,7 +399,7 @@ void disassemble(FILE *file, int* address_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("writew 0x%s(%s)\n", val, get_reg(instrs[i]));
+				printf("    writew 0x%s(%s)\n", val, get_reg(instrs[i]));
 				i += 10;
 			}
 		}
