@@ -185,9 +185,12 @@ void pipeline(void *base, unsigned char *instrs)
 	while(!halt)
 	{
 		mem_vals = NULL;
+		puts("fetching");
 		fetch(curr, instrs, &pc);
+		puts("execing");
 		/*decode(curr);*/
 		halt = execute(curr, registers, mem_vals, flags, &pc, base);
+		puts("writing");
 		writeback(registers, (long *) base, mem_vals);
 	}
 }
@@ -317,8 +320,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg1] + registers[reg2];
-			/*FIXME: Check overflow*/
-			/*FIXME: Set other flags?*/
+			/*FIXME overflow*/
 			return AOK;
 		case 97:
 			/*subl = Rb -= Ra*/
