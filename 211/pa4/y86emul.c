@@ -568,6 +568,7 @@ void put_string(unsigned char *addr, unsigned char *str)
 		i++;
 	}
 	printf("teh string is %s\n", addr);
+	printf("addr is %p\n", addr);
 }
 
 /* ---------------------------------------------------------------------------/
