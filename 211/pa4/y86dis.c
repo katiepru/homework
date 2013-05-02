@@ -197,7 +197,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 			continue;
 		}
 		sscanf(line, "%s %x %s", directive, &addr, instrs);
-		printf(".text   %x\n", addr);
+		printf("%s\t%x\n", directive, addr);
 		while(i < strlen(instrs))
 		{
 			for(j=0; j < 1000; j++)
@@ -250,8 +250,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 			else if(strcmp(byte, "30") == 0)
 			{
 				/*irmovl*/
-				tmp = i+2;
-				strncmp(val, &instrs[tmp], 8);
+				strncpy(val, &instrs[i+2], 8);
 				val[8] = '\0';
 				printf("    irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
 				i += 10;
@@ -259,8 +258,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 			else if(strcmp(byte, "40") == 0)
 			{
 				/*rmmovl*/
-				tmp = i+2;
-				strncmp(val, &instrs[tmp], 8);
+				strncpy(val, &instrs[i+2], 8);
 				val[8] = '\0';
 				printf("    rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
@@ -269,8 +267,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 			else if(strcmp(byte, "50") == 0)
 			{
 				/*mrmovl*/
-				tmp = i+2;
-				strncpy(val, &instrs[tmp], 8);
+				strncpy(val, &instrs[i+2], 8);
 				val[8] = '\0';
 				printf("    mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
