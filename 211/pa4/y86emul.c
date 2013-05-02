@@ -109,7 +109,7 @@ long read_lines(FILE *file, void *base)
 		}
 		else if(strcmp(directive, ".string") == 0)
 		{
-			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
+			sscanf(line, "%s %lx \"%[^\"]\"", directive, &addr_offset, str);
 			addr = (unsigned char *) ((long) base + addr_offset);
 			str_ptr = calloc(strlen(str), sizeof(char));
 			for(i = 0; i <= strlen(str); i++)
@@ -567,6 +567,7 @@ void put_string(unsigned char *addr, unsigned char *str)
 		addr[i] = str[i];
 		i++;
 	}
+	printf("teh string is %s\n", addr);
 }
 
 /* ---------------------------------------------------------------------------/
