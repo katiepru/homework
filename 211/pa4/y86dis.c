@@ -1,8 +1,10 @@
 #include "y86dis.h"
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
 	FILE *file;
+	int i;
 
 	/*Check for right number of args*/
 	if(argc != 2)
@@ -28,21 +30,102 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "ERROR: File %s not found.\n", argv[1]);
 		return 2;
 	}
-	disassemble(file);
 
-	return 0;
+	int address_list[1000];
+
+	memset(address_list, -1, 1000);
+
+	find_functions(file, address_list);
+
+	for ( i = 0; i < 1000; i++ )
+	{
+		if (address_list[i] == -1){break;}
+		printf("%d: %d\n", i, address_list[i]);
+	}
+
+	printf("\n\n");
+
+	rewind(file);
+
+	disassemble(file, address_list);
+
 }
 
-void disassemble(FILE *file)
+void find_functions(FILE *file, int* address_list)
+{
+	int i = 0;
+	int j = 0;
+	int address_counter = 0;
+	unsigned int addr;
+	char val[8];
+	char byte[3];
+	char line[1000];
+	char instrs[1000];
+	char directive[10];
+
+	memset(byte, 0, 3);
+
+	while(fgets(line, 1000, file) != NULL)
+	{
+		sscanf(line, "%s", directive);
+		if(strcmp(directive, ".text"))
+		{
+			continue;
+		}
+
+		sscanf(line, "%s %x %s", directive, &addr, instrs);
+
+		while(i < strlen(instrs))
+		{
+			byte[0] = instrs[i];
+			byte[1] = instrs[i+1];
+			i+=2;
+
+			if(!strcmp(byte, "80"))
+			{
+				//call
+				for(j = 0; j < 8; j++)
+				{
+					val[7-j] = instrs[i];
+					i++;
+				}
+				val[j] = '\0';
+
+				printf("string hex is: %s\n", val);
+
+				/*grab the address to jump to as a number*/
+				addr = strtol(val, NULL, 16);
+
+				printf("convertd hex : %d\n", addr);
+
+				for(j = 0; j < address_counter; j++ )
+				{
+					if(address_list[j] == addr)
+					{
+						break;
+					}
+				}
+
+				if(j >= address_counter)
+				{
+					address_list[address_counter] = addr;
+					address_counter++;
+				}
+			}
+		}
+	}
+}
+
+void disassemble(FILE *file, int* address_list)
 {
 	char line[1000];
-	long addr;
+	unsigned int addr;
 	char instrs[1000];
 	char directive[10];
 	char byte[3];
 	char val[8];
 	int i = 0;
-	int j, tmp;
+	int j, tmp, func_addr;
 	
 	memset(instrs, 0, 1000);
 	memset(byte, 0, 3);
@@ -53,9 +136,9 @@ void disassemble(FILE *file)
 		{
 			continue;
 		}
-		sscanf(line, "%s %lx %s", directive, &addr, instrs);
+		sscanf(line, "%s %x %s", directive, &addr, instrs);
 		printf("instrs are %s\n", instrs);
-		printf("Instructions start at offset 0x%lx.\n", addr);
+		printf("Instructions start at offset 0x%x.\n", addr);
 		while(i < strlen(instrs))
 		{
 			byte[0] = instrs[i];
@@ -224,11 +307,29 @@ void disassemble(FILE *file)
 				//call
 				for(j = 0; j < 8; j++)
 				{
-					val[j] = instrs[i];
+					val[7-j] = instrs[i];
 					i++;
 				}
 				val[j] = '\0';
-				printf("call 0x%s\n", val);
+				func_addr = strtol(val, NULL, 16);
+
+				for(j=0; j < 1000; j++)
+				{
+					if( address_list[j] == func_addr )
+					{
+						printf("//call .%s%d\n", "function", j);
+						break;
+					}
+					else if ( func_addr == -1 )
+					{
+						break;
+					}
+				}
+
+				/*if ( j >= 1000 )*/
+				/*{*/
+					printf("call 0x%s\n", val);
+				/*}*/
 			}
 			else if(strcmp(byte, "a0") == 0)
 			{
@@ -295,6 +396,7 @@ void disassemble(FILE *file)
 				i += 10;
 			}
 		}
+		printf("\n\n%d", i);
 	}
 }
 
