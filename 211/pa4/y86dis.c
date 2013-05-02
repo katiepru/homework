@@ -32,22 +32,38 @@ int main(int argc, char *argv[])
 	}
 
 	/*this will hold the list of function locations*/
-	int address_list[1000];
+	int function_list[1000];
+	/*and this will hold the jumps*/
+	int jump_list[1000];
 
-	memset(address_list, -1, 1000);
+	memset(function_list, -1, 1000);
+	memset(jump_list, -1, 1000);
 
-	find_functions(file, address_list);
+	find_functions_and_jumps(file, function_list, jump_list);
+
+	/*for(i=0; i< 1000; i++)                      */
+	/*{                                           */
+	/*    if(jump_list[i] != -1)                  */
+	/*    {                                       */
+	/*        printf("%d: %d\n", i, jump_list[i]);*/
+	/*    }                                       */
+	/*    else                                    */
+	/*    {                                       */
+	/*        break;                              */
+	/*    }                                       */
+	/*}                                           */
 
 	rewind(file);
 
-	disassemble(file, address_list);
+	disassemble(file, function_list, jump_list);
 }
 
-void find_functions(FILE *file, int* address_list)
+void find_functions_and_jumps(FILE *file, int* function_list, int* jump_list)
 {
 	int i = 0;
 	int j = 0;
-	int address_counter = 0;
+	int function_counter = 0;
+	int jump_counter = 0;
 	unsigned int addr;
 	char val[8];
 	char byte[3];
@@ -88,25 +104,79 @@ void find_functions(FILE *file, int* address_list)
 				/*grab the address to jump to as a number*/
 				addr = strtol(val, NULL, 16);
 
-				for(j = 0; j < address_counter; j++ )
+				for(j = 0; j < function_counter; j++ )
 				{
-					if(address_list[j] == addr)
+					if(function_list[j] == addr)
 					{
 						break;
 					}
 				}
 
-				if(j >= address_counter)
+				if(j >= function_counter)
 				{
-					address_list[address_counter] = addr;
-					address_counter++;
+					function_list[function_counter] = addr;
+					function_counter++;
 				}
+			}
+			else if(!(
+						strcmp(byte, "70") &&
+						strcmp(byte, "71") &&
+						strcmp(byte, "72") &&
+						strcmp(byte, "73") &&
+						strcmp(byte, "74") &&
+						strcmp(byte, "75")
+					))
+			{
+				/*jump of some sort*/
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+
+				/*printf("Copied string: %s\n", val);*/
+
+				/*grab the address to jump to as a number*/
+				addr = to_big_endian_int(val);
+
+				/*printf("returned address: %d\n", addr);*/
+
+				for(j=0; j < jump_counter; j++)
+				{
+					if( jump_list[j] ==  addr)
+					{
+						break;
+					}
+				}
+
+				if(j >= jump_counter)
+				{
+					jump_list[jump_counter] = addr;
+					jump_counter++;
+				}
+			}
+			else if(byte[0] == '2' ||
+					byte[0] == '6' ||
+					byte[0] == 'a' ||
+					byte[0] == 'b')
+			{
+				i += 2;
+			}
+			else if(byte[0] == '3' ||
+					byte[0] == '4' ||
+					byte[0] == '5' ||
+					byte[0] == 'c' ||
+					byte[0] == 'd')
+			{
+				i += 10;
+			}
+			else if(byte[0] == '7' ||
+					byte[0] == '8')
+			{
+				i += 8;
 			}
 		}
 	}
 }
 
-void disassemble(FILE *file, int* address_list)
+void disassemble(FILE *file, int* function_list, int* jump_list)
 {
 	char line[1000];
 	unsigned int addr;
@@ -132,12 +202,25 @@ void disassemble(FILE *file, int* address_list)
 		{
 			for(j=0; j < 1000; j++)
 			{
-				if(address_list[j] == (i/2) + addr)
+				if(function_list[j] == (i/2) + addr)
 				{
 					printf(".function%d\n", j);
 					break;
 				}
-				if(address_list[j] == -1)
+				if(function_list[j] == -1)
+				{
+					break;
+				}
+			}
+
+			for(j=0; j < 1000; j++)
+			{
+				if(jump_list[j] == (i/2) + addr)
+				{
+					printf(".L%d\n", j);
+					break;
+				}
+				if(function_list[j] == -1)
 				{
 					break;
 				}
@@ -168,12 +251,8 @@ void disassemble(FILE *file, int* address_list)
 			{
 				/*irmovl*/
 				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
+				strncmp(val, &instrs[tmp], 8);
+				val[8] = '\0';
 				printf("    irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
 				i += 10;
 			}
@@ -181,12 +260,8 @@ void disassemble(FILE *file, int* address_list)
 			{
 				/*rmmovl*/
 				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
+				strncmp(val, &instrs[tmp], 8);
+				val[8] = '\0';
 				printf("    rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
 				i+=10;
@@ -195,12 +270,8 @@ void disassemble(FILE *file, int* address_list)
 			{
 				/*mrmovl*/
 				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
+				strncpy(val, &instrs[tmp], 8);
+				val[8] = '\0';
 				printf("    mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
 				i+=10;
@@ -243,68 +314,104 @@ void disassemble(FILE *file, int* address_list)
 			else if(strcmp(byte, "70") == 0)
 			{
 				/*jmp*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    jmp .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    jmp 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "71") == 0)
 			{
 				/*jle*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    jle .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    jle 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "72") == 0)
 			{
 				/*jl*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    jl .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    jl 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "73") == 0)
 			{
 				/*je*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    je .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    je 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "74") == 0)
 			{
 				/*jne*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    jne .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    jne 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "75") == 0)
 			{
 				/*jge*/
-				for(j = 0; j < 8; j++)
+				strncpy(val, &instrs[i], 8);
+				val[8] = '\0';
+				i+=8;
+				tmp = to_big_endian_int(val);
+				tmp = check_for_jump(tmp, jump_list);
+				if(tmp != -1)
 				{
-					val[j] = instrs[i];
-					i++;
+					printf("    jge .L%d\n", tmp);
 				}
-				val[j] = '\0';
-				printf("    jge 0x%s\n", val);
+				else
+				{
+				printf("    0x%s\n", val);
+				}
 			}
 			else if(strcmp(byte, "80") == 0)
 			{
@@ -320,7 +427,7 @@ void disassemble(FILE *file, int* address_list)
 
 				for(j=0; j < 1000; j++)
 				{
-					if( address_list[j] == func_addr )
+					if( function_list[j] == func_addr )
 					{
 						printf("    call .%s%d\n", "function", j);
 						break;
@@ -442,4 +549,42 @@ const char *get_reg(char c)
 void print_help()
 {
 	printf("Usage: y86dis [-h] <y86 input file>\n");
+}
+
+int check_for_jump(int addr, int* jump_list)
+{
+	/*printf("\nChecking addr %d\n\n", addr);*/
+	int i;
+	for(i=0; i< 1000; i++)
+	{
+		if(jump_list[i] == addr)
+		{
+			return i;
+		}
+		if(jump_list[i] == -1)
+		{
+			return -1;
+		}
+	}
+	return -1;
+}
+
+int to_big_endian_int(char* little_endy_str)
+{
+	int string_lenght = strlen(little_endy_str);
+	/*printf("String length: %d\n", string_lenght);*/
+	char new_str[string_lenght+1];
+	int i;
+
+	for(i=0; i<string_lenght; i+=2)
+	{
+		new_str[(string_lenght-i)-1] = little_endy_str[i+1];
+		new_str[(string_lenght-(i+1))-1] = little_endy_str[i];
+	}
+
+	new_str[i] = '\0';
+
+	/*printf("New string: %s\n", new_str);*/
+
+	return strtol(new_str, NULL, 16);
 }
