@@ -339,6 +339,12 @@ void disassemble(FILE *file, int* address_list)
 					printf("    call 0x%s\n", val);
 				}
 			}
+			else if(strcmp(byte, "90") == 0)
+			{
+				/*ret*/
+				printf("    ret\n");
+
+			}
 			else if(strcmp(byte, "a0") == 0)
 			{
 				/*pushl*/

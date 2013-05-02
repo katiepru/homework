@@ -185,12 +185,9 @@ void pipeline(void *base, unsigned char *instrs)
 	while(!halt)
 	{
 		mem_vals = NULL;
-		puts("fetching");
 		fetch(curr, instrs, &pc);
-		puts("execing");
 		/*decode(curr);*/
-		halt = execute(curr, registers, mem_vals, flags, &pc, base);
-		puts("writing");
+		halt = execute(curr, registers, mem_vals, flags, &pc, base, instrs);
 		writeback(registers, (long *) base, mem_vals);
 	}
 }
@@ -202,6 +199,7 @@ void pipeline(void *base, unsigned char *instrs)
  * --------------------------------------------------------------------------*/
 void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
+	printf("pc is %x\n", *pc);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -259,16 +257,17 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
 int execute(unsigned char curr[7], long registers[8], struct Node *memvals, 
-	int flags[3], int *pc, unsigned char *base)
+	int flags[3], int *pc, unsigned char *base, unsigned char *instrs)
 {
 	struct Node *node;
 	int reg1, reg2;
 	void *mem1, *mem2;
-	long val1;
+	long val1, val2;
 	int i;
 	unsigned char byte[2];
 	unsigned char num[4];
 
+	printf("curr is %x\n", curr[0]);
 
 	switch((int) curr[0])
 	{
@@ -370,7 +369,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			val1 = 0;
 			val1 = get_long((long *) &curr[1]);
 			/*FIXME: Do error checking here*/
-			*pc = val1;
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 113:
 			/*jle*/
@@ -381,7 +380,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 114:
@@ -393,7 +392,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 115:
@@ -405,7 +404,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 116:
@@ -415,7 +414,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = get_long((long *) &curr[1]);
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 117:
@@ -427,33 +426,34 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 128:
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
 			registers[4] = registers[4] - 4;
-			put_long((long *) registers[4], *pc + *base);
-			*pc = (val1 - (long) base);
+			val2 = *pc + (long) instrs;
+			put_long((long *) (long) base + registers[4], val2);
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 144:
 			/*ret - pop and jump*/
-			val1 = get_long((long *) registers[4]);
+			val1 = get_long((long *) (long) base + registers[4]);
 			registers[4] = registers[4] + 4;
-			*pc = (val1 - (long) base);
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 160:
 			/*pushl*/
 			reg1 = curr[1]/0x10;
 			/*Decrement esp*/
 			registers[4] = registers[4] - 4;
-			put_long((long *) registers[4], registers[reg1]);
+			put_long((long *) (long) base + registers[4], registers[reg1]);
 			return AOK;
 		case 176:
 			/*popl*/
 			reg1 = curr[1]/0x10;
-			registers[reg1] = get_long((long *) registers[4]);
+			registers[reg1] = get_long((long *) (long) base +registers[4]);
 			registers[4] = registers[4] + 4;
 			return AOK;
 		case 192:
@@ -469,10 +469,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 193:
 			/*readw*/
-			scanf("%s", num);
+			scanf("%d", val2);
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
-			put_string((unsigned char *) (val1 + (long) base), num);
+			put_long((long *) (val1 + (long) base), val2);
 			return AOK;
 
 		case 208:
