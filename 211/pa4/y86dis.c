@@ -126,7 +126,7 @@ void disassemble(FILE *file, int* address_list)
 	char val[8];
 	int i = 0;
 	int j, tmp, func_addr;
-	
+
 	memset(instrs, 0, 1000);
 	memset(byte, 0, 3);
 	while(fgets(line, 1000, file) != NULL)
@@ -158,7 +158,7 @@ void disassemble(FILE *file, int* address_list)
 			else if(strcmp(byte, "20") == 0)
 			{
 				//rrmovl
-				printf("rrmovl %s %s\n", get_reg(instrs[i]), 
+				printf("rrmovl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
@@ -204,35 +204,35 @@ void disassemble(FILE *file, int* address_list)
 			else if(strcmp(byte, "60") == 0)
 			{
 				//addl
-				printf("addl %s %s\n", get_reg(instrs[i]), 
+				printf("addl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "61") == 0)
 			{
 				//subl
-				printf("subl %s %s\n", get_reg(instrs[i]), 
+				printf("subl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "62") == 0)
 			{
 				//andl
-				printf("andl %s %s\n", get_reg(instrs[i]), 
+				printf("andl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "63") == 0)
 			{
 				//xorl
-				printf("xorl %s %s\n", get_reg(instrs[i]), 
+				printf("xorl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "64") == 0)
 			{
 				//mull
-				printf("mull %s %s\n", get_reg(instrs[i]), 
+				printf("mull %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
