@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	if(argc != 2)
 	{
 		fprintf(stderr, "ERROR: Wrong number of arguments.\n");
-	//	print_help();
+		/*print_help();*/
 		return 1;
 	}
 
@@ -83,7 +83,7 @@ void find_functions(FILE *file, int* address_list)
 
 			if(!strcmp(byte, "80"))
 			{
-				//call
+				/*call*/
 				for(j = 0; j < 8; j+=2)
 				{
 					val[7-j] = instrs[i+1];
@@ -161,24 +161,24 @@ void disassemble(FILE *file, int* address_list)
 
 			if(strcmp(byte, "00") == 0)
 			{
-				//noop
+				/*noop*/
 				printf("noop\n");
 			}
 			else if(strcmp(byte, "10") == 0)
 			{
-				//halt
+				/*halt*/
 				printf("halt\n");
 			}
 			else if(strcmp(byte, "20") == 0)
 			{
-				//rrmovl
+				/*rrmovl*/
 				printf("rrmovl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "30") == 0)
 			{
-				//irmovl
+				/*irmovl*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -191,7 +191,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "40") == 0)
 			{
-				//rmmovl
+				/*rmmovl*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -204,7 +204,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "50") == 0)
 			{
-				//mrmovl
+				/*mrmovl*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -217,42 +217,42 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "60") == 0)
 			{
-				//addl
+				/*addl*/
 				printf("addl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "61") == 0)
 			{
-				//subl
+				/*subl*/
 				printf("subl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "62") == 0)
 			{
-				//andl
+				/*andl*/
 				printf("andl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "63") == 0)
 			{
-				//xorl
+				/*xorl*/
 				printf("xorl %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "64") == 0)
 			{
-				//mull
+				/*mull*/
 				printf("mull %s %s\n", get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
 			else if(strcmp(byte, "70") == 0)
 			{
-				//jmp
+				/*jmp*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -263,7 +263,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "71") == 0)
 			{
-				//jle
+				/*jle*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -274,7 +274,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "72") == 0)
 			{
-				//jl
+				/*jl*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -285,7 +285,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "73") == 0)
 			{
-				//je
+				/*je*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -296,7 +296,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "74") == 0)
 			{
-				//jne
+				/*jne*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -307,7 +307,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "75") == 0)
 			{
-				//jge
+				/*jge*/
 				for(j = 0; j < 8; j++)
 				{
 					val[j] = instrs[i];
@@ -318,7 +318,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "80") == 0)
 			{
-				//call
+				/*call*/
 				for(j = 0; j < 8; j+=2)
 				{
 					val[7-j] = instrs[i+1];
@@ -348,19 +348,19 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "a0") == 0)
 			{
-				//pushl
+				/*pushl*/
 				printf("pushl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "b0") == 0)
 			{
-				//popl
+				/*popl*/
 				printf("popl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
 			else if(strcmp(byte, "c0") == 0)
 			{
-				//readb
+				/*readb*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -373,7 +373,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "c1") == 0)
 			{
-				//readw
+				/*readw*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -386,7 +386,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "d0") == 0)
 			{
-				//writeb
+				/*writeb*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -399,7 +399,7 @@ void disassemble(FILE *file, int* address_list)
 			}
 			else if(strcmp(byte, "d1") == 0)
 			{
-				//writew
+				/*writew*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
