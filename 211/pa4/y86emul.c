@@ -456,7 +456,8 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			/*Decrement esp*/
 			registers[4] = registers[4] - 4;
-			put_long((long *) registers[4], registers[reg1]);
+			printf("esp is %x, val is %x\n", registers[4], registers[reg1]);
+			put_long((long *) (long) base + registers[4], registers[reg1]);
 			return AOK;
 		case 176:
 			/*popl*/
