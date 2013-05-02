@@ -185,12 +185,9 @@ void pipeline(void *base, unsigned char *instrs)
 	while(!halt)
 	{
 		mem_vals = NULL;
-		puts("fetching");
 		fetch(curr, instrs, &pc);
-		puts("execing");
 		/*decode(curr);*/
 		halt = execute(curr, registers, mem_vals, flags, &pc, base, instrs);
-		puts("writing");
 		writeback(registers, (long *) base, mem_vals);
 	}
 }
@@ -206,7 +203,6 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
 	{
-		puts("in halt");
 		curr[0] = instrs[*pc];
 		for(i = 1; i < 6; i++)
 		{
@@ -218,7 +214,6 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	else if(instrs[*pc] == 32 || (instrs[*pc] >= 96 && instrs[*pc] <= 100) || 
 		instrs[*pc] == 160 || instrs[*pc] == 176)
 	{
-		puts("in push");
 		for(i = 0; i < 2; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -234,7 +229,6 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 		instrs[*pc] == 192 || instrs[*pc] == 193 || instrs[*pc] == 208 ||
 		instrs[*pc] == 209)
 	{
-		puts("in movl");
 		for(i = 0; i < 6; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -244,7 +238,6 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	/*jmp and call*/
 	else if(instrs[*pc] == 128 || (instrs[*pc] >= 112 && instrs[*pc] <= 117))
 	{
-		puts("in call");
 		for(i = 0; i < 5; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -273,7 +266,6 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 	unsigned char byte[2];
 	unsigned char num[4];
 
-	printf("curr is %x\n", (int) curr[0]);
 
 	switch((int) curr[0])
 	{
@@ -438,9 +430,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 		case 128:
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
-			printf("val one is %x\n", val1);
 			registers[4] = registers[4] - 4;
-			printf("esp is %x\n", registers[4]);
 			val2 = *pc + (long) instrs;
 			put_long((long *) (long) base + registers[4], val2);
 			*pc = val1 - ((long) instrs - (long)base);
@@ -456,7 +446,6 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			/*Decrement esp*/
 			registers[4] = registers[4] - 4;
-			printf("esp is %x, val is %x\n", registers[4], registers[reg1]);
 			put_long((long *) (long) base + registers[4], registers[reg1]);
 			return AOK;
 		case 176:
