@@ -287,22 +287,14 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 		case 48:
 			/*irmovl*/
 			reg1 = curr[1] % 10;
-			val1 = 0;
-			for(i = 2; i < 6; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			reg_vals[reg1] = val1;
 			return AOK;
 		case 64:
 			/*rmmovl*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			val1 = 0;
-			for(i = 2; i < 6; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			node = create_node(((long) base + val1) + registers[reg2], 
 				registers[reg1], 0);
 			if(memvals == NULL)
@@ -319,11 +311,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*mrmovl*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			val1 = 0;
-			for(i = 2; i < 6; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			reg_vals[reg1] = get_long((long *)(registers[reg2] + 
 				(long) base + val1));
 			return AOK;
@@ -375,12 +363,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*jmp*/
 			/*Get destination*/
 			val1 = 0;
-			for(i = 1; i < 4; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[1]);
 			/*FIXME: Do error checking here*/
-			*pc = (val1 - (long) base);
+			*pc = val1;
 			return AOK;
 		case 113:
 			/*jle*/
@@ -389,12 +374,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 6; i++)
-				{
-					val1 += curr[i];
-				}
+				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = (val1 - (long) base);
+				*pc = val1;
 			}
 			return AOK;
 		case 114:
@@ -404,12 +386,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 5; i++)
-				{
-					val1 += curr[i];
-				}
+				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = (val1 - (long) base);
+				*pc = val1;
 			}
 			return AOK;
 		case 115:
@@ -419,12 +398,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 5; i++)
-				{
-					val1 += curr[i];
-				}
+				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = (val1 - (long) base);
+				*pc = val1;
 			}
 			return AOK;
 		case 116:
@@ -433,12 +409,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			if(flags[ZF] == 0)
 			{
 				/*Get destination*/
-				val1 = get_long((long *) (long) curr + 1);
-				/*FIXME: Do error checking here*/
-				printf("val is %d\n", val1);
+				val1 = get_long((long *) &curr[1]);
 				*pc = val1;
 			}
-			return HLT;
+			return AOK;
 		case 117:
 			/*jge*/
 			/*check if jump should occur*/
@@ -446,21 +420,14 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = 0;
-				for(i = 1; i < 5; i++)
-				{
-					val1 += curr[i];
-				}
+				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = (val1 - (long) base);
+				*pc = val1;
 			}
 			return AOK;
 		case 128:
 			/*Call - push then jump*/
-			val1 = 0;
-			for(i = 0; i < 4; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[1]);
 			reg_vals[4] = registers[4] - 4;
 			put_long((long *) reg_vals[4], *pc + *base);
 			*pc = (val1 - (long) base);
@@ -488,11 +455,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*readb*/
 			scanf("%s", byte);
 			reg1 = curr[1]/10;
-			val1 = 0;
-			for(i = 2; i < 7; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			node = create_node(val1 + registers[reg1], strtol(byte, NULL, 16), 
 				1);
 			/*insert into memval linked list*/
@@ -502,31 +465,20 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*readw*/
 			scanf("%s", num);
 			reg1 = curr[1]/10;
-			for(i = 2; i < 6; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			put_string((unsigned char *) (val1 + (long) base), num);
 			return AOK;
 
 		case 208:
 			/*writeb*/
 			reg1 = curr[1]/10;
-			val1 = 0;
-			for(i = 2; i < 6; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			printf("0x%x\n", (long) get_byte((unsigned char *)(registers[reg1] + val1)));
 			return AOK;
 		case 209:
 			/*writew*/
 			reg1 = curr[1]/10;
-			val1 = 0;
-			for(i = 2; i < 7; i++)
-			{
-				val1 += curr[i];
-			}
+			val1 = get_long((long *) &curr[2]);
 			printf("0x%s\n", get_string((unsigned char *)
 				(registers[reg1] + val1), 4));
 			return AOK;
@@ -582,9 +534,11 @@ void put_long(long *addr, long num)
  * --------------------------------------------------------------------------*/
 long get_long(long *addr)
 {
-	long num;
+	long num = 0;
+	int i;
 
 	memcpy(&num, addr, 4);
+
 	return num;
 }
 
