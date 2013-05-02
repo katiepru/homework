@@ -273,6 +273,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 	unsigned char byte[2];
 	unsigned char num[4];
 
+	printf("curr is %x\n", (int) curr[0]);
 
 	switch((int) curr[0])
 	{
@@ -374,7 +375,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			val1 = 0;
 			val1 = get_long((long *) &curr[1]);
 			/*FIXME: Do error checking here*/
-			*pc = val1;
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 113:
 			/*jle*/
@@ -385,7 +386,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 114:
@@ -397,7 +398,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 115:
@@ -409,7 +410,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 116:
@@ -419,7 +420,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = get_long((long *) &curr[1]);
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 117:
@@ -431,23 +432,24 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
 				/*FIXME: Do error checking here*/
-				*pc = val1;
+				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
 		case 128:
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
+			printf("val one is %x\n", val1);
 			registers[4] = registers[4] - 4;
 			printf("esp is %x\n", registers[4]);
 			val2 = *pc + (long) instrs;
 			put_long((long *) (long) base + registers[4], val2);
-			*pc = val1;
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 144:
 			/*ret - pop and jump*/
 			val1 = get_long((long *) registers[4]);
 			registers[4] = registers[4] + 4;
-			*pc = val1;
+			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 160:
 			/*pushl*/
