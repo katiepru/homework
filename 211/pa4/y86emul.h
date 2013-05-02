@@ -28,31 +28,30 @@ typedef struct Node
 
 /*Starting functions*/
 void run_program(FILE *file);
-void *get_size(char line[100]);
+void *get_size(unsigned char line[100]);
 long read_lines(FILE *file, void *base);
-void pipeline(void *base, char *instrs);
+void pipeline(void *base, unsigned char *instrs);
 
 /*Fetch, decode, exec, and wb*/
-void fetch(char curr[7], char *instrs, int *pc);
-void decode(char curr[7]);
-int execute(char curr[7], long registers[8], struct Node *mem_vals, 
-	long reg_vals[8], int flags[3], int *pc, char *base);
+void fetch(unsigned char curr[7], unsigned char *instrs, int *pc);
+void decode(unsigned char curr[7]);
+int execute(unsigned char curr[7], long registers[8], struct Node *mem_vals, 
+	long reg_vals[8], int flags[3], int *pc, unsigned char *base);
 void writeback(long registers[8], long reg_vals[8], long *base,
 	struct Node *memvals);
 
 /*Put and get functions*/
-void put_byte(char *addr, char byte);
-char get_byte(char *addr);
+void put_byte(unsigned char *addr, unsigned char byte);
+unsigned char get_byte(unsigned char *addr);
 void put_long(long *addr, long num);
 long get_long(long *addr);
-void put_string(char *addr, char *str);
-char *get_string(char *addr, int len);
+void put_string(unsigned char *addr, unsigned char *str);
+unsigned char *get_string(unsigned char *addr, int len);
 
 /*Linked list functions*/
 struct Node *create_node(long addr, long data, int byte);
 void delete_node(long addr, struct Node *head);
 
 /*Other shit*/
-char *strdup(const char *str);
 void print_help();
 

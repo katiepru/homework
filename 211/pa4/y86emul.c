@@ -1,6 +1,6 @@
 #include "y86emul.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char*argv[])
 {
 	FILE *file;
 
@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 void run_program(FILE *file)
 {
 	void *base;
-	char line[100];
-	char *instrs;
+	unsigned char line[100];
+	unsigned char *instrs;
 	int i;
 
 	/*Take care of size*/
@@ -50,7 +50,7 @@ void run_program(FILE *file)
 	base = get_size(line);
 
 	/*read lines and place data*/
-	instrs = (char *) read_lines(file, base);
+	instrs = (unsigned char *) read_lines(file, base);
 
 	pipeline(base, instrs);
 }
@@ -58,11 +58,11 @@ void run_program(FILE *file)
 /* ---------------------------------------------------------------------------/
  * Mallocs virtual memory returns pointer to that result.
  * --------------------------------------------------------------------------*/
-void *get_size(char line[100])
+void *get_size(unsigned char line[100])
 {
 	int size = 0;
 	void * base;
-	char trash[10];
+	unsigned char trash[10];
 	int stat;
 	
 	stat = sscanf(line, "%s %x", trash, &size);
@@ -78,13 +78,13 @@ void *get_size(char line[100])
  * --------------------------------------------------------------------------*/
 long read_lines(FILE *file, void *base)
 {
-	char line[1000];
-	char directive[10];
-	char *bss[2];
-	char byte;
-	char str[1000];
-	char *str_ptr;
-	char byte_chars[3];
+	unsigned char line[1000];
+	unsigned char directive[10];
+	unsigned char *bss[2];
+	unsigned char byte;
+	unsigned char str[1000];
+	unsigned char *str_ptr;
+	unsigned char byte_chars[3];
 	long num;
 	long addr_offset;
 	long instr_addr;
@@ -104,13 +104,13 @@ long read_lines(FILE *file, void *base)
 		else if(strcmp(directive, ".byte") == 0)
 		{
 			sscanf(line, "%s %lx %x", directive, &addr_offset, &byte);
-			addr = (char *) (long) base + addr_offset;
+			addr = (unsigned char *) (long) base + addr_offset;
 			put_byte(addr, byte);
 		}
 		else if(strcmp(directive, ".string") == 0)
 		{
 			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
-			addr = (char *) ((long) base + addr_offset);
+			addr = (unsigned char *) ((long) base + addr_offset);
 			str_ptr = calloc(strlen(str), sizeof(char));
 			for(i = 0; i <= strlen(str); i++)
 			{
@@ -124,7 +124,7 @@ long read_lines(FILE *file, void *base)
 		else if(strcmp(directive, ".text") == 0)
 		{
 			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
-			addr = (char *) ((long) base + addr_offset);
+			addr = (unsigned char *) ((long) base + addr_offset);
 			instr_addr = (long) addr;
 			memset(byte_chars, 0, 2);
 			for(i = 0; i < strlen(str); i++)
@@ -141,12 +141,12 @@ long read_lines(FILE *file, void *base)
 				{
 					byte = (char) strtol(byte_chars, NULL, 16);
 					put_byte(addr, byte);
-					addr = (char *)((long) addr + 1);
+					addr = (unsigned char *)((long) addr + 1);
 					memset(byte_chars, 0, 2);
 				}
 			}
 			put_byte(addr, '\0');
-			addr = (char *)((long) addr + 1);
+			addr = (unsigned char *)((long) addr + 1);
 		}
 		else
 		{
@@ -161,14 +161,14 @@ long read_lines(FILE *file, void *base)
 /* ---------------------------------------------------------------------------/
  * Begin fetch, decode and execute (pipelining if there is time.
  * --------------------------------------------------------------------------*/
-void pipeline(void *base, char *instrs)
+void pipeline(void *base, unsigned char *instrs)
 {
-	char curr[7];
+	unsigned char curr[7];
 	long registers[8];
 	long reg_vals[8];
 	int pc = 0;
 	struct Node *mem_vals;
-	char *str;
+	unsigned char *str;
 	int halt = 0;
 	int flags[3];
 	int i;
@@ -195,9 +195,9 @@ void pipeline(void *base, char *instrs)
 /* ---------------------------------------------------------------------------/
  * Fetch instruction and populate curr. Modify program counter as needed.
  * --------------------------------------------------------------------------*/
-void fetch(char curr[7], char *instrs, int *pc)
+void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
-	printf("instrs is %p\n", instrs);
+	printf("instrs at pc is %x\n", instrs[*pc]);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -254,22 +254,17 @@ void fetch(char curr[7], char *instrs, int *pc)
 /* ---------------------------------------------------------------------------/
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
-int execute(char curr[7], long registers[8], struct Node *memvals, 
-	long reg_vals[8], int flags[3], int *pc, char *base)
+int execute(unsigned char curr[7], long registers[8], struct Node *memvals, 
+	long reg_vals[8], int flags[3], int *pc, unsigned char *base)
 {
 	struct Node *node;
 	int reg1, reg2;
 	void *mem1, *mem2;
 	long val1;
 	int i;
-	char byte[2];
-	char num[4];
+	unsigned char byte[2];
+	unsigned char num[4];
 
-	for(i = 0; i < strlen(curr); i++)
-	{
-		printf("%x", curr[i]);
-	}
-	printf("\n");
 	/*Set all flags to 0*/
 	flags[OF] = 0;
 	flags[ZF] = 0;
@@ -438,15 +433,12 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			if(flags[ZF] == 0)
 			{
 				/*Get destination*/
-				val1 = 0;
-				for(i = 1; i < 5; i++)
-				{
-					val1 += curr[i];
-				}
+				val1 = get_long((long *) (long) curr + 1);
 				/*FIXME: Do error checking here*/
-				*pc = (val1 - (long) base);
+				printf("val is %d\n", val1);
+				*pc = val1;
 			}
-			return AOK;
+			return HLT;
 		case 117:
 			/*jge*/
 			/*check if jump should occur*/
@@ -514,7 +506,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				val1 += curr[i];
 			}
-			put_string((char *) (val1 + (long) base), num);
+			put_string((unsigned char *) (val1 + (long) base), num);
 			return AOK;
 
 		case 208:
@@ -525,7 +517,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				val1 += curr[i];
 			}
-			printf("0x%x\n", (long) get_byte((char *)(registers[reg1] + val1)));
+			printf("0x%x\n", (long) get_byte((unsigned char *)(registers[reg1] + val1)));
 			return AOK;
 		case 209:
 			/*writew*/
@@ -535,7 +527,7 @@ int execute(char curr[7], long registers[8], struct Node *memvals,
 			{
 				val1 += curr[i];
 			}
-			printf("0x%s\n", get_string((char *)
+			printf("0x%s\n", get_string((unsigned char *)
 				(registers[reg1] + val1), 4));
 			return AOK;
 	}
@@ -562,7 +554,7 @@ void writeback(long registers[8], long reg_vals[8], long *base,
 	{
 		if(tmp->byte == 1)
 		{
-			put_byte((char *) tmp->addr, (char) tmp->data);
+			put_byte((unsigned char *) tmp->addr, (char) tmp->data);
 		}
 		else
 		{
@@ -573,7 +565,6 @@ void writeback(long registers[8], long reg_vals[8], long *base,
 		free(memvals);
 	}
 	memvals = NULL;
-
 }
 
 /*Helper functions to get and put data to and from memory*/
@@ -600,17 +591,17 @@ long get_long(long *addr)
 /* ---------------------------------------------------------------------------/
  * Put num into addr in memory.
  * --------------------------------------------------------------------------*/
-void put_byte(char *addr, char num)
+void put_byte(unsigned char *addr, unsigned char num)
 {
 	memcpy(addr, &num, 1);
 }
 
 /* ---------------------------------------------------------------------------/
- * Returns char stored in addr.
+ * Returns unsigned char stored in addr.
  * --------------------------------------------------------------------------*/
-char get_byte(char *addr)
+unsigned char get_byte(unsigned char *addr)
 {
-	char num;
+	unsigned char num;
 
 	memcpy(&num, addr, 1);
 	return num;
@@ -619,7 +610,7 @@ char get_byte(char *addr)
 /* ---------------------------------------------------------------------------/
  * Put str into addr in memory.
  * --------------------------------------------------------------------------*/
-void put_string(char *addr, char *str)
+void put_string(unsigned char *addr, unsigned char *str)
 {
 	int i = 0;
 	while(i <= strlen(str))
@@ -632,9 +623,9 @@ void put_string(char *addr, char *str)
 /* ---------------------------------------------------------------------------/
  * Returns string of length len stored in addr.
  * --------------------------------------------------------------------------*/
-char *get_string(char *addr, int len)
+unsigned char *get_string(unsigned char *addr, int len)
 {
-	char *str = calloc(len, sizeof(char));
+	unsigned char *str = calloc(len, sizeof(char));
 	int i = 0;
 	
 	while(i <= len)
