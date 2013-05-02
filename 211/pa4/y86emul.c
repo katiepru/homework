@@ -185,12 +185,9 @@ void pipeline(void *base, unsigned char *instrs)
 	while(!halt)
 	{
 		mem_vals = NULL;
-		puts("fetching");
 		fetch(curr, instrs, &pc);
 		/*decode(curr);*/
-		puts("execing");
 		halt = execute(curr, registers, mem_vals, flags, &pc, base);
-		puts("writing");
 		writeback(registers, (long *) base, mem_vals);
 	}
 }
@@ -202,7 +199,6 @@ void pipeline(void *base, unsigned char *instrs)
  * --------------------------------------------------------------------------*/
 void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
-	printf("instrs at pc is %x\n", instrs[*pc]);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -289,7 +285,6 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*irmovl*/
 			reg1 = curr[1] % 0x10;
 			val1 = get_long((long *) &curr[2]);
-			printf("inserting %x into reg %d\n", val1, reg1);
 			registers[reg1] = val1;
 			return AOK;
 		case 64:
@@ -321,7 +316,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*addl*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
-			registers[reg1] = registers[reg1] + registers[reg2];
+			registers[reg2] = registers[reg1] + registers[reg2];
 			/*FIXME: Check overflow*/
 			/*FIXME: Set other flags?*/
 			return AOK;
@@ -482,15 +477,15 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*writeb*/
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
-			printf("0x%x\n", get_byte((unsigned char *)((long) base + registers[reg1] + val1)));
+			printf("%c", get_byte((unsigned char *)((long) base + registers[reg1] + val1)));
 			return AOK;
 		case 209:
 			/*writew*/
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
 			/*FIXME: Back ti get string*/
-			printf("0x%x\n", get_long((long *)
-				((long) base + registers[reg1] + val1)));
+			printf("%s\n", get_string((unsigned char *)
+				((long) base + registers[reg1] + val1), 4));
 			return AOK;
 	}
 }
