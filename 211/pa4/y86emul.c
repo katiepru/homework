@@ -199,7 +199,6 @@ void pipeline(void *base, unsigned char *instrs)
  * --------------------------------------------------------------------------*/
 void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
-	printf("pc is %x\n", *pc);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -266,8 +265,6 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 	int i;
 	unsigned char byte[2];
 	unsigned char num[4];
-
-	printf("curr is %x\n", curr[0]);
 
 	switch((int) curr[0])
 	{
@@ -433,7 +430,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
 			registers[4] = registers[4] - 4;
-			val2 = *pc + (long) instrs;
+			val2 = *pc + (long) instrs - (long) base;
 			put_long((long *) (long) base + registers[4], val2);
 			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
