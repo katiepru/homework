@@ -199,6 +199,7 @@ void pipeline(void *base, unsigned char *instrs)
  * --------------------------------------------------------------------------*/
 void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
+	printf("pc is %x\n", *pc);
 	int i;
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
@@ -266,6 +267,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 	unsigned char byte[2];
 	unsigned char num[4];
 
+	printf("curr is %x\n", curr[0]);
 
 	switch((int) curr[0])
 	{
@@ -437,7 +439,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 144:
 			/*ret - pop and jump*/
-			val1 = get_long((long *) registers[4]);
+			val1 = get_long((long *) (long) base + registers[4]);
 			registers[4] = registers[4] + 4;
 			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
@@ -451,7 +453,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 		case 176:
 			/*popl*/
 			reg1 = curr[1]/0x10;
-			registers[reg1] = get_long((long *) registers[4]);
+			registers[reg1] = get_long((long *) (long) base +registers[4]);
 			registers[4] = registers[4] + 4;
 			return AOK;
 		case 192:
@@ -467,10 +469,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			return AOK;
 		case 193:
 			/*readw*/
-			scanf("%s", num);
+			scanf("%d", val2);
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
-			put_string((unsigned char *) (val1 + (long) base), num);
+			put_long((long *) (val1 + (long) base), val2);
 			return AOK;
 
 		case 208:
