@@ -165,7 +165,6 @@ void pipeline(void *base, unsigned char *instrs)
 {
 	unsigned char curr[7];
 	long registers[8];
-	long reg_vals[8];
 	int pc = 0;
 	struct Node *mem_vals;
 	unsigned char *str;
@@ -173,20 +172,26 @@ void pipeline(void *base, unsigned char *instrs)
 	int flags[3];
 	int i;
 	
+	/*Set all flags to 0*/
+	flags[OF] = 0;
+	flags[ZF] = 0;
+	flags[SF] = 0;
+
+	for(i = 0; i< 8; i++)
+	{
+		registers[i] = 0;
+	}
+	
 	while(!halt)
 	{
 		mem_vals = NULL;
-		for(i = 0; i < 8; i++)
-		{
-			reg_vals[i] = registers[i];
-		}
 		puts("fetching");
 		fetch(curr, instrs, &pc);
 		/*decode(curr);*/
 		puts("execing");
-		halt = execute(curr, registers, mem_vals, reg_vals, flags, &pc, base);
+		halt = execute(curr, registers, mem_vals, flags, &pc, base);
 		puts("writing");
-		writeback(registers, reg_vals, (long *) base, mem_vals);
+		writeback(registers, (long *) base, mem_vals);
 	}
 }
 
@@ -255,7 +260,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
 int execute(unsigned char curr[7], long registers[8], struct Node *memvals, 
-	long reg_vals[8], int flags[3], int *pc, unsigned char *base)
+	int flags[3], int *pc, unsigned char *base)
 {
 	struct Node *node;
 	int reg1, reg2;
@@ -265,10 +270,6 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 	unsigned char byte[2];
 	unsigned char num[4];
 
-	/*Set all flags to 0*/
-	flags[OF] = 0;
-	flags[ZF] = 0;
-	flags[SF] = 0;
 
 	switch((int) curr[0])
 	{
@@ -282,13 +283,13 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*rrmovl*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg2] = registers[reg1];
+			registers[reg2] = registers[reg1];
 			return AOK;
 		case 48:
 			/*irmovl*/
 			reg1 = curr[1] % 10;
 			val1 = get_long((long *) &curr[2]);
-			reg_vals[reg1] = val1;
+			registers[reg1] = val1;
 			return AOK;
 		case 64:
 			/*rmmovl*/
@@ -312,50 +313,56 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
 			val1 = get_long((long *) &curr[2]);
-			reg_vals[reg1] = get_long((long *)(registers[reg2] + 
+			registers[reg1] = get_long((long *)(registers[reg2] + 
 				(long) base + val1));
 			return AOK;
 		case 96:
 			/*addl*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg1] = registers[reg1] + registers[reg2];
+			registers[reg1] = registers[reg1] + registers[reg2];
 			/*FIXME: Check overflow*/
 			/*FIXME: Set other flags?*/
 			return AOK;
 		case 97:
-			/*subl = Ra -= Rb*/
+			/*subl = Rb -= Ra*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg1] = registers[reg1] - registers[reg2];
+			registers[reg2] = registers[reg2] - registers[reg1];
 			/*FIXME: Check overflow*/
 			/*Set flags*/
-			if(reg_vals[reg1] == 0)
+			if(registers[reg2] == 0)
 			{
 				flags[ZF] = 1;
 			}
-			else if(reg_vals[reg1] < 0)
+			else if(registers[reg2] < 0)
 			{
 				flags[SF] = 1;
+				flags[ZF] = 0;
+			}
+			else if(registers[reg2] > 0)
+			{
+				flags[SF] = 0;
+				flags[ZF] = 0;
 			}
 			return AOK;
 		case 98:
 			/*andl - bitwise and*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg1] = registers[reg1] & registers[reg2];
+			registers[reg1] = registers[reg1] & registers[reg2];
 			return AOK;
 		case 99:
 			/*xorl - bitwise xor*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg1] = registers[reg1] ^ registers[reg2];
+			registers[reg1] = registers[reg1] ^ registers[reg2];
 			return AOK;
 		case 100:
 			/*mull*/
 			reg1 = curr[1]/10;
 			reg2 = curr[1] % 10;
-			reg_vals[reg1] = registers[reg1] * registers[reg2];
+			registers[reg1] = registers[reg1] * registers[reg2];
 			/*FIXME: Check overflow*/
 			/*FIXME: Set other flags?*/
 			return AOK;
@@ -428,28 +435,28 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 		case 128:
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
-			reg_vals[4] = registers[4] - 4;
-			put_long((long *) reg_vals[4], *pc + *base);
+			registers[4] = registers[4] - 4;
+			put_long((long *) registers[4], *pc + *base);
 			*pc = (val1 - (long) base);
 			return AOK;
 		case 144:
 			/*ret - pop and jump*/
 			val1 = get_long((long *) registers[4]);
-			reg_vals[4] = registers[4] + 4;
+			registers[4] = registers[4] + 4;
 			*pc = (val1 - (long) base);
 			return AOK;
 		case 160:
 			/*pushl*/
 			reg1 = curr[1]/10;
 			/*Decrement esp*/
-			reg_vals[4] = registers[4] - 4;
-			put_long((long *) reg_vals[4], registers[reg1]);
+			registers[4] = registers[4] - 4;
+			put_long((long *) registers[4], registers[reg1]);
 			return AOK;
 		case 176:
 			/*popl*/
 			reg1 = curr[1]/10;
-			reg_vals[reg1] = get_long((long *) registers[4]);
-			reg_vals[4] = registers[4] + 4;
+			registers[reg1] = get_long((long *) registers[4]);
+			registers[4] = registers[4] + 4;
 			return AOK;
 		case 192:
 			/*readb*/
@@ -461,6 +468,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*insert into memval linked list*/
 			node->next = memvals->next;
 			memvals->next = node;
+			return AOK;
 		case 193:
 			/*readw*/
 			scanf("%s", num);
@@ -473,14 +481,14 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*writeb*/
 			reg1 = curr[1]/10;
 			val1 = get_long((long *) &curr[2]);
-			printf("0x%x\n", (long) get_byte((unsigned char *)(registers[reg1] + val1)));
+			printf("0x%x\n", get_byte((unsigned char *)((long) base + registers[reg1] + val1)));
 			return AOK;
 		case 209:
 			/*writew*/
 			reg1 = curr[1]/10;
 			val1 = get_long((long *) &curr[2]);
 			printf("0x%s\n", get_string((unsigned char *)
-				(registers[reg1] + val1), 4));
+				((long) base + registers[reg1] + val1), 4));
 			return AOK;
 	}
 }
@@ -488,17 +496,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 /* ---------------------------------------------------------------------------/
  * Write back to memory and registers
  * --------------------------------------------------------------------------*/
-void writeback(long registers[8], long reg_vals[8], long *base,
-	struct Node *memvals)
+void writeback(long registers[8], long *base, struct Node *memvals)
 {
 	struct Node *tmp;
-	int i;
-
-	/*Write to registers*/
-	for(i = 0; i < 8; i++)
-	{
-		registers[i] = reg_vals[i];
-	}
 
 	/*Write to memory*/
 	tmp = memvals;
@@ -535,7 +535,6 @@ void put_long(long *addr, long num)
 long get_long(long *addr)
 {
 	long num = 0;
-	int i;
 
 	memcpy(&num, addr, 4);
 
