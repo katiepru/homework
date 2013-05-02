@@ -189,7 +189,7 @@ void pipeline(void *base, unsigned char *instrs)
 		fetch(curr, instrs, &pc);
 		puts("execing");
 		/*decode(curr);*/
-		halt = execute(curr, registers, mem_vals, flags, &pc, base);
+		halt = execute(curr, registers, mem_vals, flags, &pc, base, instrs);
 		puts("writing");
 		writeback(registers, (long *) base, mem_vals);
 	}
@@ -206,6 +206,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	/*noop, halt or ret*/
 	if(instrs[*pc] == 0 || instrs[*pc] == 16 || instrs[*pc] == 144)
 	{
+		puts("in halt");
 		curr[0] = instrs[*pc];
 		for(i = 1; i < 6; i++)
 		{
@@ -217,6 +218,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	else if(instrs[*pc] == 32 || (instrs[*pc] >= 96 && instrs[*pc] <= 100) || 
 		instrs[*pc] == 160 || instrs[*pc] == 176)
 	{
+		puts("in push");
 		for(i = 0; i < 2; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -232,6 +234,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 		instrs[*pc] == 192 || instrs[*pc] == 193 || instrs[*pc] == 208 ||
 		instrs[*pc] == 209)
 	{
+		puts("in movl");
 		for(i = 0; i < 6; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -241,6 +244,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	/*jmp and call*/
 	else if(instrs[*pc] == 128 || (instrs[*pc] >= 112 && instrs[*pc] <= 117))
 	{
+		puts("in call");
 		for(i = 0; i < 5; i++)
 		{
 			curr[i] = instrs[*pc];
@@ -259,12 +263,12 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
 int execute(unsigned char curr[7], long registers[8], struct Node *memvals, 
-	int flags[3], int *pc, unsigned char *base)
+	int flags[3], int *pc, unsigned char *base, unsigned char *instrs)
 {
 	struct Node *node;
 	int reg1, reg2;
 	void *mem1, *mem2;
-	long val1;
+	long val1, val2;
 	int i;
 	unsigned char byte[2];
 	unsigned char num[4];
@@ -434,14 +438,16 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
 			registers[4] = registers[4] - 4;
-			put_long((long *) registers[4], *pc + *base);
-			*pc = (val1 - (long) base);
+			printf("esp is %x\n", registers[4]);
+			val2 = *pc + (long) instrs;
+			put_long((long *) (long) base + registers[4], val2);
+			*pc = val1;
 			return AOK;
 		case 144:
 			/*ret - pop and jump*/
 			val1 = get_long((long *) registers[4]);
 			registers[4] = registers[4] + 4;
-			*pc = (val1 - (long) base);
+			*pc = val1;
 			return AOK;
 		case 160:
 			/*pushl*/
