@@ -189,6 +189,7 @@ void disassemble(FILE *file, int* address_list)
 				val[j] = '\0';
 				printf("    rmmovl %s 0x%s(%s)\n", get_reg(instrs[i]), val,
 					get_reg(instrs[i+1]));
+				i+=10;
 			}
 			else if(strcmp(byte, "50") == 0)
 			{
@@ -202,6 +203,7 @@ void disassemble(FILE *file, int* address_list)
 				val[j] = '\0';
 				printf("    mrmovl 0x%s(%s) %s\n", val, get_reg(instrs[i+1]),
 					get_reg(instrs[i]));
+				i+=10;
 			}
 			else if(strcmp(byte, "60") == 0)
 			{
