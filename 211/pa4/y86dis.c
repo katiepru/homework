@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
 	rewind(file);
 
 	disassemble(file, address_list);
-
 }
 
 void find_functions(FILE *file, int* address_list)
@@ -63,6 +62,7 @@ void find_functions(FILE *file, int* address_list)
 		sscanf(line, "%s", directive);
 		if(strcmp(directive, ".text"))
 		{
+			printf(line);
 			continue;
 		}
 
@@ -127,8 +127,7 @@ void disassemble(FILE *file, int* address_list)
 			continue;
 		}
 		sscanf(line, "%s %x %s", directive, &addr, instrs);
-		printf("instrs are %s\n", instrs);
-		printf("Instructions start at offset 0x%x.\n", addr);
+		printf(".text   %x\n", addr);
 		while(i < strlen(instrs))
 		{
 			for(j=0; j < 1000; j++)
