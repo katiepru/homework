@@ -84,10 +84,11 @@ void find_functions(FILE *file, int* address_list)
 			if(!strcmp(byte, "80"))
 			{
 				//call
-				for(j = 0; j < 8; j++)
+				for(j = 0; j < 8; j+=2)
 				{
-					val[7-j] = instrs[i];
-					i++;
+					val[7-j] = instrs[i+1];
+					val[7-(j+1)] = instrs[i];
+					i+=2;
 				}
 				val[j] = '\0';
 
@@ -141,6 +142,19 @@ void disassemble(FILE *file, int* address_list)
 		printf("Instructions start at offset 0x%x.\n", addr);
 		while(i < strlen(instrs))
 		{
+			for(j=0; j < 1000; j++)
+			{
+				if(address_list[j] == (i/2) + addr)
+				{
+					printf("//.function%d\n", j);
+					break;
+				}
+				if(address_list[j] == -1)
+				{
+					break;
+				}
+			}
+
 			byte[0] = instrs[i];
 			byte[1] = instrs[i+1];
 			i+=2;
@@ -305,10 +319,11 @@ void disassemble(FILE *file, int* address_list)
 			else if(strcmp(byte, "80") == 0)
 			{
 				//call
-				for(j = 0; j < 8; j++)
+				for(j = 0; j < 8; j+=2)
 				{
-					val[7-j] = instrs[i];
-					i++;
+					val[7-j] = instrs[i+1];
+					val[7-(j+1)] = instrs[i];
+					i+=2;
 				}
 				val[j] = '\0';
 				func_addr = strtol(val, NULL, 16);
@@ -396,7 +411,6 @@ void disassemble(FILE *file, int* address_list)
 				i += 10;
 			}
 		}
-		printf("\n\n%d", i);
 	}
 }
 
