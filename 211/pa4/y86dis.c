@@ -220,7 +220,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 					printf(".L%d\n", j);
 					break;
 				}
-				if(function_list[j] == -1)
+				if(jump_list[j] == -1)
 				{
 					break;
 				}
