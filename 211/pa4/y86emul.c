@@ -426,6 +426,18 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
+		case 118:
+			/*jg*/
+			/*check if jump should occur*/
+			if(flags[SF] == 0 && flags[ZF] == 0)
+			{
+				/*Get destination*/
+				val1 = 0;
+				val1 = get_long((long *) &curr[1]);
+				/*FIXME: Do error checking here*/
+				*pc = val1 - ((long) instrs - (long)base);
+			}
+			return AOK;
 		case 128:
 			/*Call - push then jump*/
 			val1 = get_long((long *) &curr[1]);
