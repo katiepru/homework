@@ -483,8 +483,8 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
 			/*FIXME: Back ti get string*/
-			printf("%s\n", get_string((unsigned char *)
-				((long) base + registers[reg1] + val1), 4));
+			printf("%d\n", get_long((long *)
+				((long) base + registers[reg1] + val1)));
 			return AOK;
 	}
 }
