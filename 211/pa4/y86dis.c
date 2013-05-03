@@ -273,44 +273,16 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 					get_reg(instrs[i]));
 				i+=10;
 			}
-			else if(strcmp(byte, "60") == 0)
+			else if(byte[0] == '6')
 			{
-				/*addl*/
-				printf("    addl %s %s\n", get_reg(instrs[i]),
+				/*op1*/
+				printf("    %s %s %s\n", math_ops[byte[1] - '0'], get_reg(instrs[i]),
 					get_reg(instrs[i+1]));
 				i += 2;
 			}
-			else if(strcmp(byte, "61") == 0)
+			else if(byte[0] == '7')
 			{
-				/*subl*/
-				printf("    subl %s %s\n", get_reg(instrs[i]),
-					get_reg(instrs[i+1]));
-				i += 2;
-			}
-			else if(strcmp(byte, "62") == 0)
-			{
-				/*andl*/
-				printf("    andl %s %s\n", get_reg(instrs[i]),
-					get_reg(instrs[i+1]));
-				i += 2;
-			}
-			else if(strcmp(byte, "63") == 0)
-			{
-				/*xorl*/
-				printf("    xorl %s %s\n", get_reg(instrs[i]),
-					get_reg(instrs[i+1]));
-				i += 2;
-			}
-			else if(strcmp(byte, "64") == 0)
-			{
-				/*mull*/
-				printf("    mull %s %s\n", get_reg(instrs[i]),
-					get_reg(instrs[i+1]));
-				i += 2;
-			}
-			else if(strcmp(byte, "70") == 0)
-			{
-				/*jmp*/
+				/*j<X>*/
 				strncpy(val, &instrs[i], 8);
 				val[8] = '\0';
 				i+=8;
@@ -318,96 +290,11 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 				tmp = check_for_jump(tmp, jump_list);
 				if(tmp != -1)
 				{
-					printf("    jmp .L%d\n", tmp);
+					printf("    %s .L%d\n", jump_ops[byte[1] - '0'], tmp);
 				}
 				else
 				{
-				printf("    0x%s\n", val);
-				}
-			}
-			else if(strcmp(byte, "71") == 0)
-			{
-				/*jle*/
-				strncpy(val, &instrs[i], 8);
-				val[8] = '\0';
-				i+=8;
-				tmp = to_big_endian_int(val);
-				tmp = check_for_jump(tmp, jump_list);
-				if(tmp != -1)
-				{
-					printf("    jle .L%d\n", tmp);
-				}
-				else
-				{
-				printf("    0x%s\n", val);
-				}
-			}
-			else if(strcmp(byte, "72") == 0)
-			{
-				/*jl*/
-				strncpy(val, &instrs[i], 8);
-				val[8] = '\0';
-				i+=8;
-				tmp = to_big_endian_int(val);
-				tmp = check_for_jump(tmp, jump_list);
-				if(tmp != -1)
-				{
-					printf("    jl .L%d\n", tmp);
-				}
-				else
-				{
-				printf("    0x%s\n", val);
-				}
-			}
-			else if(strcmp(byte, "73") == 0)
-			{
-				/*je*/
-				strncpy(val, &instrs[i], 8);
-				val[8] = '\0';
-				i+=8;
-				tmp = to_big_endian_int(val);
-				tmp = check_for_jump(tmp, jump_list);
-				if(tmp != -1)
-				{
-					printf("    je .L%d\n", tmp);
-				}
-				else
-				{
-				printf("    0x%s\n", val);
-				}
-			}
-			else if(strcmp(byte, "74") == 0)
-			{
-				/*jne*/
-				strncpy(val, &instrs[i], 8);
-				val[8] = '\0';
-				i+=8;
-				tmp = to_big_endian_int(val);
-				tmp = check_for_jump(tmp, jump_list);
-				if(tmp != -1)
-				{
-					printf("    jne .L%d\n", tmp);
-				}
-				else
-				{
-				printf("    0x%s\n", val);
-				}
-			}
-			else if(strcmp(byte, "75") == 0)
-			{
-				/*jge*/
-				strncpy(val, &instrs[i], 8);
-				val[8] = '\0';
-				i+=8;
-				tmp = to_big_endian_int(val);
-				tmp = check_for_jump(tmp, jump_list);
-				if(tmp != -1)
-				{
-					printf("    jge .L%d\n", tmp);
-				}
-				else
-				{
-				printf("    0x%s\n", val);
+				printf("    %s 0x%s\n", jump_ops[byte[1] - 1], val);
 				}
 			}
 			else if(strcmp(byte, "80") == 0)
@@ -461,9 +348,9 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 				printf("    popl %s\n", get_reg(instrs[i]));
 				i += 2;
 			}
-			else if(strcmp(byte, "c0") == 0)
+			else if(byte[0] == 'c')
 			{
-				/*readb*/
+				/*read<X>*/
 				tmp = i+2;
 				for(j = 0; j < 8; j++)
 				{
@@ -471,46 +358,15 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 					tmp++;
 				}
 				val[j] = '\0';
-				printf("    readb 0x%s(%s)\n", val, get_reg(instrs[i]));
+				printf("    %s 0x%s(%s)\n", read_ops[byte[1] - '0'], val, get_reg(instrs[i]));
 				i += 10;
 			}
-			else if(strcmp(byte, "c1") == 0)
+			else if(byte[0] == 'd')
 			{
-				/*readw*/
-				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
-				printf("    readw 0x%s(%s)\n", val, get_reg(instrs[i]));
-				i += 10;
-			}
-			else if(strcmp(byte, "d0") == 0)
-			{
-				/*writeb*/
-				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
-				printf("    writeb 0x%s(%s)\n", val, get_reg(instrs[i]));
-				i += 10;
-			}
-			else if(strcmp(byte, "d1") == 0)
-			{
-				/*writew*/
-				tmp = i+2;
-				for(j = 0; j < 8; j++)
-				{
-					val[j] = instrs[tmp];
-					tmp++;
-				}
-				val[j] = '\0';
-				printf("    writew 0x%s(%s)\n", val, get_reg(instrs[i]));
+				/*write<X>*/
+				strncpy(val, &instrs[i+2], 8);
+				val[8] = '\0';
+				printf("    %s 0x%s(%s)\n", write_ops[byte[1] - '0'], val, get_reg(instrs[i]));
 				i += 10;
 			}
 		}
