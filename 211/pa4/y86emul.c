@@ -69,8 +69,6 @@ void *get_size(unsigned char line[100])
 
 	base = malloc(size);
 
-	printf("base is %x\n", (long) base);
-
 	return (void *) base;
 
 }
@@ -126,10 +124,8 @@ long read_lines(FILE *file, void *base)
 		else if(strcmp(directive, ".text") == 0)
 		{
 			sscanf(line, "%s %lx %s", directive, &addr_offset, str);
-			printf("addr_offset is %x\n", addr_offset);
 			addr = (unsigned char *) ((long) base + addr_offset);
 			instr_addr = (long) addr;
-			printf("instrs start at %x\n", instr_addr);
 			memset(byte_chars, 0, 2);
 			for(i = 0; i < strlen(str); i++)
 			{
@@ -151,7 +147,6 @@ long read_lines(FILE *file, void *base)
 			}
 			put_byte(addr, '\0');
 			addr = (unsigned char *)((long) addr + 1);
-			printf("done putting instructions\n");
 		}
 		else
 		{
@@ -547,7 +542,6 @@ long get_long(long *addr)
  * --------------------------------------------------------------------------*/
 void put_byte(unsigned char *addr, unsigned char num)
 {
-	printf("putting byte %x at %x\n", num, (long) addr);
 	memcpy(addr, &num, 1);
 }
 
@@ -573,8 +567,6 @@ void put_string(unsigned char *addr, unsigned char *str)
 		addr[i] = str[i];
 		i++;
 	}
-	printf("teh string is %s\n", addr);
-	printf("addr is %p\n", addr);
 }
 
 /* ---------------------------------------------------------------------------/
