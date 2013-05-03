@@ -3,8 +3,8 @@
 #############################
 
 COMPILER = gcc
-#CCFLAGS = --ansi --pedantic -Wall -g
-CCFLAGS = -Wall -g
+CCFLAGS = --ansi --pedantic -Wall
+#CCFLAGS = -Wall -g
 
 all: y86emul y86dis
 
