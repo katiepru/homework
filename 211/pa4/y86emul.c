@@ -317,6 +317,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg1] + registers[reg2];
 			/*FIXME overflow*/
+			set_flags(registers[reg2], flags);
 			return AOK;
 		case 97:
 			/*subl = Rb -= Ra*/
@@ -324,33 +325,21 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg2] - registers[reg1];
 			/*FIXME: Check overflow*/
-			/*Set flags*/
-			if(registers[reg2] == 0)
-			{
-				flags[ZF] = 1;
-			}
-			else if(registers[reg2] < 0)
-			{
-				flags[SF] = 1;
-				flags[ZF] = 0;
-			}
-			else if(registers[reg2] > 0)
-			{
-				flags[SF] = 0;
-				flags[ZF] = 0;
-			}
+			set_flags(registers[reg2], flags);
 			return AOK;
 		case 98:
 			/*andl - bitwise and*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg1] & registers[reg2];
+			set_flags(registers[reg2], flags);
 			return AOK;
 		case 99:
 			/*xorl - bitwise xor*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg1] ^ registers[reg2];
+			set_flags(registers[reg2], flags);
 			return AOK;
 		case 100:
 			/*mull*/
@@ -358,7 +347,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg2 = curr[1] % 0x10;
 			registers[reg2] = registers[reg1] * registers[reg2];
 			/*FIXME: Check overflow*/
-			/*FIXME: Set other flags?*/
+			set_flags(registers[reg2], flags);
 			return AOK;
 		case 112:
 			/*jmp*/
@@ -475,6 +464,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*insert into memval linked list*/
 			node->next = memvals->next;
 			memvals->next = node;
+			if(val2 == 0)
+			{
+				flags[ZF] = 1;
+			}
 			return AOK;
 		case 193:
 			/*readw*/
@@ -482,7 +475,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
 			put_long((long *) (val1 + (long) base), val2);
-			set_flags(val2, flags);
+			if(val2 == 0)
+			{
+				flags[ZF] = 1;
+			}
 			return AOK;
 
 		case 208:
@@ -541,7 +537,6 @@ void set_flags(long val, int flags[4])
 	{
 		flags[SF] = 1;
 	}
-
 }
 
 /*Helper functions to get and put data to and from memory*/
