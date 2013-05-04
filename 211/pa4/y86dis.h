@@ -17,9 +17,10 @@ int check_for_jump(int addr, int* jump_list);
 int to_big_endian_int(char* little_endy_str);
 
 /*Arrays of instructions*/
-const char math_ops[4][5] = {
+const char math_ops[5][5] = {
 	"addl\0",
 	"subl\0",
+	"andl\0",
 	"xorl\0",
 	"mull\0"
 };

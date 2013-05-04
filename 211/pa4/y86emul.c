@@ -468,6 +468,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				flags[ZF] = 1;
 			}
+			else
+			{
+				flags[ZF] = 0;
+			}
 			return AOK;
 		case 193:
 			/*readw*/
@@ -478,6 +482,10 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			if(val2 == 0)
 			{
 				flags[ZF] = 1;
+			}
+			else
+			{
+				flags[ZF] = 0;
 			}
 			return AOK;
 
