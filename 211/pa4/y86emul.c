@@ -97,7 +97,7 @@ long read_lines(FILE *file, void *base)
 		sscanf(line, "%s", directive);
 		if(strcmp(directive, ".long") == 0)
 		{
-			sscanf(line, "%s %lx %d", directive, &addr, &num);
+			sscanf(line, "%s %lx %d", directive, &addr_offset, &num);
 			addr = (void *)((long) base + addr_offset);
 			put_long((long *) addr, num);
 		}
@@ -482,7 +482,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
 			put_long((long *) (val1 + (long) base), val2);
-			set_flags(val1, flags);
+			set_flags(val2, flags);
 			return AOK;
 
 		case 208:
