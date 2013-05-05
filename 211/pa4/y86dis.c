@@ -253,7 +253,7 @@ void disassemble(FILE *file, int* function_list, int* jump_list)
 				/*irmovl*/
 				strncpy(val, &instrs[i+2], 8);
 				val[8] = '\0';
-				printf("    irmovl %s 0x%s\n", get_reg(instrs[i+1]), val);
+				printf("    irmovl 0x%s %s\n", val, get_reg(instrs[i+1]));
 				i += 10;
 			}
 			else if(strcmp(byte, "40") == 0)
