@@ -236,7 +236,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 		}
 	}
 	/*jmp and call*/
-	else if(instrs[*pc] == 128 || (instrs[*pc] >= 112 && instrs[*pc] <= 117))
+	else if(instrs[*pc] == 128 || (instrs[*pc] >= 112 && instrs[*pc] <= 118))
 	{
 		for(i = 0; i < 5; i++)
 		{
@@ -248,7 +248,7 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	}
 	else
 	{
-		fprintf(stderr, "You fucked up\n");
+		fprintf(stderr, "You fucked up. Instrs is %x\n", instrs[*pc]);
 	}
 }
 
