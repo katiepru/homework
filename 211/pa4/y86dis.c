@@ -124,7 +124,8 @@ void find_functions_and_jumps(FILE *file, int* function_list, int* jump_list)
 						strcmp(byte, "72") &&
 						strcmp(byte, "73") &&
 						strcmp(byte, "74") &&
-						strcmp(byte, "75")
+						strcmp(byte, "75") &&
+						strcmp(byte, "76")
 					))
 			{
 				/*jump of some sort*/
