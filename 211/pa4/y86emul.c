@@ -263,7 +263,7 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 	void *mem1, *mem2;
 	int val1, val2;
 	int i;
-	unsigned char byte[2];
+	unsigned char byte;
 	unsigned char num[4];
 
 	switch((int) curr[0])
@@ -491,14 +491,10 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 			return AOK;
 		case 192:
 			/*readb*/
-			scanf("%s", byte);
+			scanf("%c", &byte);
 			reg1 = curr[1]/0x10;
 			val1 = get_long((long *) &curr[2]);
-			node = create_node(val1 + registers[reg1], strtol(byte, NULL, 16), 
-				1);
-			/*insert into memval linked list*/
-			node->next = memvals->next;
-			memvals->next = node;
+			put_byte((char *) (registers[reg1] + val1 + (long) base), byte);
 			if(val2 == 0)
 			{
 				flags[ZF] = 1;
