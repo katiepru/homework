@@ -295,7 +295,15 @@ char get_register(char* reg)
 
 void print_as_little_endian(int num)
 {
+	int i;
 	int converted;
+	char as_string[9];
+	as_string[8] = '\0';
 	converted = ((num>>24)&0xff) | ((num<<8)&0xff0000) | ((num>>8)&0xff00) | ((num<<24)&0xff000000);
-	printf("%x", converted);
+	sprintf(as_string, "%x", converted);
+	for(i=0; i < 8 - strlen(as_string); i++)
+	{
+		printf("0");
+	}
+	printf("%s", as_string);
 }
