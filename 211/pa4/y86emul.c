@@ -317,17 +317,37 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*addl*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
+			val1 = registers[reg2];
 			registers[reg2] = registers[reg1] + registers[reg2];
-			/*FIXME overflow*/
 			set_flags(registers[reg2], flags);
+			if((registers[reg1] > 0 && val1 > 0 && registers[reg2] < 0) || 
+				(registers[reg1] < 0 && val1 < 0 && registers[reg2] > 0))
+			{
+				flags[OF] = 1;
+				fprintf(stderr, "Warning: Overflow in addl.\n");
+			}
+			else
+			{
+				flags[OF] = 0;
+			}
 			return AOK;
 		case 97:
 			/*subl = Rb -= Ra*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
+			val1 = registers[reg2];
 			registers[reg2] = registers[reg2] - registers[reg1];
-			/*FIXME: Check overflow*/
 			set_flags(registers[reg2], flags);
+			if((registers[reg1] > 0 && val1 < 0 && registers[reg2] > 0) ||
+				(registers[reg1] < 0 && val1 > 0 && registers[reg2] < 0))
+			{
+				flags[OF] = 1;
+				fprintf(stderr, "Warning: Overflow in subl.\n");
+			}
+			else
+			{
+				flags[OF] = 0;
+			}
 			return AOK;
 		case 98:
 			/*andl - bitwise and*/
@@ -347,9 +367,22 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			/*mull*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
+			val1 = registers[reg2];
 			registers[reg2] = registers[reg1] * registers[reg2];
-			/*FIXME: Check overflow*/
 			set_flags(registers[reg2], flags);
+			if((registers[reg1] > 0 && val1 > 0 && registers[reg2] < 0) ||
+				(registers[reg1] < 0 && val1 < 0 && registers[reg2] < 0) ||
+				(registers[reg1] < 0 && val1 > 0 && registers[reg2] > 0) ||
+				(registers[reg1] > 0 && val1 < 0 && registers[reg2] > 0))
+			{
+				flags[OF] = 1;
+				fprintf(stderr, "Warning: Overflow in mull.\n");
+			}
+			else
+			{
+				flags[OF] = 0;
+			}
+
 			return AOK;
 		case 112:
 			/*jmp*/
