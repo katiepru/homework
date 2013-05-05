@@ -164,7 +164,7 @@ long read_lines(FILE *file, void *base)
 void pipeline(void *base, unsigned char *instrs)
 {
 	unsigned char curr[7];
-	long registers[8];
+	int registers[8];
 	int pc = 0;
 	struct Node *mem_vals;
 	unsigned char *str;
@@ -255,13 +255,13 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 /* ---------------------------------------------------------------------------/
  * Execute current instruction. Returns status code.
  * --------------------------------------------------------------------------*/
-int execute(unsigned char curr[7], long registers[8], struct Node *memvals, 
+int execute(unsigned char curr[7], int registers[8], struct Node *memvals, 
 	int flags[3], int *pc, unsigned char *base, unsigned char *instrs)
 {
 	struct Node *node;
 	int reg1, reg2;
 	void *mem1, *mem2;
-	long val1, val2;
+	int val1, val2;
 	int i;
 	unsigned char byte[2];
 	unsigned char num[4];
@@ -544,7 +544,7 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 /* ---------------------------------------------------------------------------/
  * Write back to memory and registers
  * --------------------------------------------------------------------------*/
-void writeback(long registers[8], long *base, struct Node *memvals)
+void writeback(int registers[8], long *base, struct Node *memvals)
 {
 	struct Node *tmp;
 

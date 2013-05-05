@@ -35,9 +35,9 @@ void pipeline(void *base, unsigned char *instrs);
 /*Fetch, decode, exec, and wb*/
 void fetch(unsigned char curr[7], unsigned char *instrs, int *pc);
 void decode(unsigned char curr[7]);
-int execute(unsigned char curr[7], long registers[8], struct Node *mem_vals, 
+int execute(unsigned char curr[7], int registers[8], struct Node *mem_vals, 
 	int flags[3], int *pc, unsigned char *base, unsigned char *instrs);
-void writeback(long registers[8], long *base, struct Node *memvals);
+void writeback(int registers[8], long *base, struct Node *memvals);
 
 void set_flags(long val, int flags[4]);
 
