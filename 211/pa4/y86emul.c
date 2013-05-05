@@ -291,7 +291,9 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
 			val1 = get_long((long *) &curr[2]);
-			node = create_node(((long) base + val1) + registers[reg2], 
+			val1 = val1 + registers[reg2];
+			put_long((long *) (((long) base) + (int)val1), registers[reg1]);
+			/*node = create_node(((long) base + val1) + registers[reg2], 
 				registers[reg1], 0);
 			if(memvals == NULL)
 			{
@@ -301,15 +303,15 @@ int execute(unsigned char curr[7], long registers[8], struct Node *memvals,
 			{
 				node->next = memvals->next;
 				memvals->next = node;
-			}
+			}*/
 			return AOK;
 		case 80:
 			/*mrmovl*/
 			reg1 = curr[1]/0x10;
 			reg2 = curr[1] % 0x10;
 			val1 = get_long((long *) &curr[2]);
-			registers[reg1] = get_long((long *)(registers[reg2] + 
-				(long) base + val1));
+			registers[reg1] = get_long((long *)((int)registers[reg2] + 
+				(long) base + (int)val1));
 			return AOK;
 		case 96:
 			/*addl*/
@@ -563,7 +565,7 @@ void put_long(long *addr, long num)
 long get_long(long *addr)
 {
 	long num = 0;
-
+	
 	memcpy(&num, addr, 4);
 
 	return num;
