@@ -186,7 +186,8 @@ void pipeline(void *base, unsigned char *instrs)
 	while(!halt)
 	{
 		mem_vals = NULL;
-		fetch(curr, instrs, &pc);
+		halt = fetch(curr, instrs, &pc);
+		if(halt) break;
 		/*decode(curr);*/
 		halt = execute(curr, registers, mem_vals, flags, &pc, base, instrs);
 		writeback(registers, (long *) base, mem_vals);
@@ -198,7 +199,7 @@ void pipeline(void *base, unsigned char *instrs)
 /* ---------------------------------------------------------------------------/
  * Fetch instruction and populate curr. Modify program counter as needed.
  * --------------------------------------------------------------------------*/
-void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
+int fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 {
 	int i;
 	/*noop, halt or ret*/
@@ -249,8 +250,10 @@ void fetch(unsigned char curr[7], unsigned char *instrs, int *pc)
 	}
 	else
 	{
-		fprintf(stderr, "You fucked up. Instrs is %x\n", instrs[*pc]);
+		fprintf(stderr, "Error: Invalid Instruction %x\n", instrs[*pc]);
+		return INS;
 	}
+	return AOK;
 }
 
 /* ---------------------------------------------------------------------------/
