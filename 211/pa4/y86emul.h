@@ -39,7 +39,9 @@ int execute(unsigned char curr[7], int registers[8], struct Node *mem_vals,
 	int flags[3], int *pc, unsigned char *base, unsigned char *instrs);
 void writeback(int registers[8], long *base, struct Node *memvals);
 
+/*Helpers*/
 void set_flags(long val, int flags[4]);
+int check_addr(int addr);
 
 /*Put and get functions*/
 void put_byte(unsigned char *addr, unsigned char byte);

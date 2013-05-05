@@ -1,5 +1,7 @@
 #include "y86emul.h"
 
+int size = 0;
+
 int main(int argc, char*argv[])
 {
 	FILE *file;
@@ -60,7 +62,6 @@ void run_program(FILE *file)
  * --------------------------------------------------------------------------*/
 void *get_size(unsigned char line[100])
 {
-	int size = 0;
 	void * base;
 	unsigned char trash[10];
 	int stat;
@@ -389,7 +390,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 			/*Get destination*/
 			val1 = 0;
 			val1 = get_long((long *) &curr[1]);
-			/*FIXME: Do error checking here*/
+			val2 = check_addr(val1);
+			if(!val2)
+			{
+				fprintf(stderr, "Invalid address %x\n", val1);
+				return ADR;
+			}
 			*pc = val1 - ((long) instrs - (long)base);
 			return AOK;
 		case 113:
@@ -400,7 +406,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 				/*Get destination*/
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
-				/*FIXME: Do error checking here*/
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -412,7 +423,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 				/*Get destination*/
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
-				/*FIXME: Do error checking here*/
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -424,7 +440,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 				/*Get destination*/
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
-				/*FIXME: Do error checking here*/
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -435,6 +456,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 			{
 				/*Get destination*/
 				val1 = get_long((long *) &curr[1]);
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -446,7 +473,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 				/*Get destination*/
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
-				/*FIXME: Do error checking here*/
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -458,7 +490,12 @@ int execute(unsigned char curr[7], int registers[8], struct Node *memvals,
 				/*Get destination*/
 				val1 = 0;
 				val1 = get_long((long *) &curr[1]);
-				/*FIXME: Do error checking here*/
+				val2 = check_addr(val1);
+				if(!val2)
+				{
+					fprintf(stderr, "Invalid address %x\n", val1);
+					return ADR;
+				}
 				*pc = val1 - ((long) instrs - (long)base);
 			}
 			return AOK;
@@ -576,6 +613,15 @@ void set_flags(long val, int flags[4])
 	{
 		flags[SF] = 1;
 	}
+}
+
+int check_addr(int addr)
+{
+	if(addr < 0 || addr >= size)
+	{
+		return 0;
+	}
+	return 1;
 }
 
 /*Helper functions to get and put data to and from memory*/
