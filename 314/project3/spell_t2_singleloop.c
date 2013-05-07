@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 	
-#pragma omp parallel shared(wl_size, num_hf, bv_size)
+#pragma omp parallel shared(wl, hf, bv, wl_size, num_hf, bv_size)
 	{
 	#pragma omp for private(i, j, hash) schedule(dynamic)
 	for (i = 0; i < wl_size; i++) {
