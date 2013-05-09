@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	
 #pragma omp parallel shared(wl, hf, bv, wl_size, num_hf, bv_size)
 	{
-	#pragma omp for private(i, j, hash) schedule(static)
+	#pragma omp for private(i, j, hash) schedule(static, 100)
 	for (i = 0; i < wl_size; i++) {
 		for (j = 0; j < num_hf; j++) {
 			hash = hf[j] (get_word(wl, i));
