@@ -1,0 +1,144 @@
+Kaitlin Poskaitis
+Homework 1b
+
+a.)
+
+S0: base
+    b
+    ____
+    3,2
+    2,1
+
+S1: S0 U Infer(S0)
+    b       m
+    ----    ----
+    3,2     3,2
+    2,1     2,1
+
+S2: S1 U Infer(S1)
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            ~3,~2~
+            ~2,~1~
+            2,3
+            1,2
+
+S3: S2 U Infer(S2)
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            2,3     ~2~,3~
+            1,2     ~1~,2~
+            ~3,~2~  2,1
+            ~2,~1~  3,2
+            ~3~,2~  1,3
+            ~2~,1~  1,1
+            ~3~,2~
+            ~2~,1~
+
+S4: S3 U Infer(S3)
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            2,3     ~2~,3~
+            1,2     ~1~,2~
+            ~3,~2~  2,1
+            ~2,~1~  3,2
+            ~3~,2~  1,3
+            ~2~,1~  3,3
+            ~3~,2~  1,1
+            ~2~,1~  3,1
+                    ~1,~2~
+                    ~2,~1~
+                    ~3,~2~
+                    ~1,~3~
+                    ~1,~1~
+                    ~2,~3~
+
+S5: S4 U Infer(S4)
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            2,3     ~2~,3~
+            1,2     ~1~,2~
+            ~3,~2~  2,1
+            ~2,~1~  3,2
+            ~3~,2~  1,3
+            ~2~,1~  3,3
+            ~3~,2~  1,1
+            ~2~,1~  3,1
+                    ~1,~2~
+                    ~2,~1~
+                    ~3,~2~
+                    ~1,~3~
+                    ~1,~1~
+                    ~2,~3~
+
+Done
+
+
+
+b.) Results:
+    X=3, X=1
+
+c.) The rules in R1 are statified and can be assigned stratum numbers as followed:
+    m would have stratum number 0, and s would have stratum number 1
+    This is because the new rule depends on m being complete because of the negation of m
+
+    This new rule is unsafe because we have a negation before a positive match for the same variables.
+    This will create an infinite set for it to filter through to match the b part of the rule.
+
+d.)
+
+S0: base
+    b
+    ____
+    3,2
+    2,1
+
+S1: S0 U Infer(S0)
+    b       m
+    ----    ----
+    3,2     3,2
+    2,1     2,1
+
+S2:
+    b       m
+    ----    ----
+    3,2     3,2
+    2,1     2,1
+            2,3
+            1,2
+
+S3:
+    b       m
+    ----    ----
+    3,2     3,2
+    2,1     2,1
+            2,3
+            1,2
+            ~3,~2~
+            ~2,~1~
+
+S4: Can start S
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            2,3     3,2
+            1,2     2,1
+
+S5:
+    b       m       s
+    ----    ----    ----
+    3,2     3,2     2,3
+    2,1     2,1     1,2
+            2,3     3,2
+            1,2     2,1
+
+Done
