@@ -1,0 +1,18 @@
+Kaitlin Poskaitis
+Assignment 2
+
+1. Datalog
+    q1 :- ENJOYS(jane, M, _), SHOWED(T, M, _).
+
+2. Datalog
+    q2 :- ATTENDED(P,T,DT), SHOWED(T,M,DT,PR), PR>0, PR<=5.
+
+3. Datalog
+    q3 :- ENJOYS(P,M,4), ENJOYS(Jane,M,4).
+
+4. Datalog
+    q4 :- ENJOYS(P, _, _), \= ATTENDED(P,_,_).
+
+5. Datalog
+    q5 :- ATTENDED(P,T,_), SHOWED(T,Jaws,_,_).
+    q5 :- ATTENDED(P,T,_), SHOWED(T,Wars,_,_).
