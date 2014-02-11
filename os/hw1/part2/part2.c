@@ -1,4 +1,5 @@
 #include <sys/time.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -9,7 +10,7 @@ int main(int argc, char *argv[])
     struct timeval after;
 
     long total_time = 0;
-    long current_time;
+    int current_time;
 
     float avg_time;
 
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
     int pid;
     int mbs;
     int i;
+    int ret;
 
     //Check arguments
     if(argc != 2)
@@ -39,25 +41,20 @@ int main(int argc, char *argv[])
 
         gettimeofday(&after, NULL);
 
-        //In the child - die
-        if(pid == 0)
+        if(pid != 0)
         {
-            return 0;
+            waitpid(pid, &ret, 0);
+            total_time += ret;
         }
 
-        //Compute time that operation took in microseconds
-        current_time = ((after.tv_sec * 1000000) + after.tv_usec)
-                     - ((before.tv_sec * 1000000) + before.tv_usec);
-
-        //Detect errors in time struct
-        if(current_time <= 0)
+        else
         {
-            fprintf(stderr, "The %dth fork took negative time\n", i);
-            return 1;
-        }
+            //Compute time that operation took in microseconds
+            current_time = ((after.tv_sec * 1000000) + after.tv_usec)
+                         - ((before.tv_sec * 1000000) + before.tv_usec);
 
-        //Add to total time
-        total_time += current_time;
+            return current_time;
+        }
 
     }
 
@@ -65,7 +62,6 @@ int main(int argc, char *argv[])
     avg_time = ((float) total_time)/10000;
 
     printf("Each fork took %f microseconds on average.\n", avg_time);
-
 
     return 0;
 }
