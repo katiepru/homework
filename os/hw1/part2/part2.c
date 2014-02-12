@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     int i;
     int ret;
 
+    int fd[2];
+
     //Check arguments
     if(argc != 2)
     {
@@ -35,25 +37,31 @@ int main(int argc, char *argv[])
 
     for (i = 0; i < 10000; ++i)
     {
+        pipe(fd);
+
         gettimeofday(&before, NULL);
-
         pid = fork();
-
         gettimeofday(&after, NULL);
 
         if(pid != 0)
         {
-            waitpid(pid, &ret, 0);
+            waitpid(pid, NULL, 0);
+            close(fd[1]);
+            read(fd[0], &ret, sizeof(ret));
             total_time += ret;
         }
 
         else
         {
+            close(fd[0]);
+
             //Compute time that operation took in microseconds
             current_time = ((after.tv_sec * 1000000) + after.tv_usec)
                          - ((before.tv_sec * 1000000) + before.tv_usec);
 
-            return current_time;
+            write(fd[1], &current_time, sizeof(current_time));
+
+            exit(0);
         }
 
     }
