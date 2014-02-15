@@ -52,3 +52,15 @@ Assignment 2
 7. Datalog
     at_least_2(P,T) :- enjoys(P,M,_), enjoys(P,M2,_), showed(T,M,_,_), showed(T,M2,_,_), \+ M=M2.
     q7(P) :- attended(P,T,_), at_least_2(P,T).
+
+  Relational Algebra
+    en1 := project[person,movie2](rename[movie~>movie2](Enjoys))
+    en2 := project[person,movie](Enjoys)
+
+    sh1 := project[theater,movie2](rename[movie~>movie2](Showed))
+    sh2 := project[theater,movie](Showed)
+
+    rela := select[not(movie=movie2)](join(en1, en2))
+    relb := select[not(movie=movie2)](join(sh1, sh2))
+
+    q7 := project[person](join(rela, relb))
