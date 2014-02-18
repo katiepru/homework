@@ -11,7 +11,8 @@ int main(int argc, char *argv[])
 
     char *arr;
     float avg_time;
-    int pid, i, arr_size, current_time, mbs, total_time=0;
+    int pid, i, arr_size, current_time, mbs;
+    long total_time = 0;
     int fdp[2], fdc[2];
 
     //Check arguments
