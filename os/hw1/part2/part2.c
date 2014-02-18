@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     mbs = atoi(argv[1]);
 
     //Malloc a chunk to change program size
-    c = malloc(mbs * 1048576);
+    c = calloc(mbs * 1048576, sizeof(char));
 
     for (i = 0; i < 10000; ++i)
     {
