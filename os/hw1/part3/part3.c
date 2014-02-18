@@ -11,12 +11,20 @@ int main(int argc, char *argv[])
 
     char *arr;
     float avg_time;
-    int pid, i, arr_size, current_time, total_time=0;
+    int pid, i, arr_size, current_time, mbs, total_time=0;
     int fdp[2], fdc[2];
 
+    //Check arguments
+    if(argc != 2)
+    {
+        fprintf(stderr, "Usage: ./part3 <MBs>\n");
+        return 2;
+    }
 
-    arr = calloc(100, sizeof(char));
-    arr_size = 100 * sizeof(char);
+    mbs = atoi(argv[1]);
+
+    arr = calloc(mbs * 1048576, sizeof(char));
+    arr_size = mbs * 1048576, sizeof(char);
 
     pipe(fdp);
     pipe(fdc);
