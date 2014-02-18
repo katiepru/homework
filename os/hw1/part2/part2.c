@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     //Compute average time from total time
     avg_time = ((float) total_time)/10000;
 
-    printf("Each fork took %f microseconds on average.\n", avg_time);
+    printf("%f\n", avg_time);
 
     return 0;
 }

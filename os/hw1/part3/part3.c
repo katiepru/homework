@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
         for(i = 0; i < 10000; ++i)
         {
-            read(fdp[0], &arr, arr_size);
-            write(fdc[1], &arr, arr_size);
+            read(fdp[0], arr, arr_size);
+            write(fdc[1], arr, arr_size);
         }
         exit(0);
     }
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
         for(i = 0; i < 10000; ++i)
         {
             gettimeofday(&before, NULL);
-            write(fdp[1], &arr, arr_size);
-            read(fdc[0], &arr, arr_size);
+            write(fdp[1], arr, arr_size);
+            read(fdc[0], arr, arr_size);
             gettimeofday(&after, NULL);
 
             current_time = ((after.tv_sec * 1000000) + after.tv_usec)
