@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-#define ACCESS_SIZE 524288 //512 * 1024
-#define ARR_SIZE 16785408
+#define ARR_SIZE 10240
 
 int main(int argc, char *argv[])
 {
-    register *a;
+    register int *a;
     register int i, dummy, iter, access;
     register long timeTaken;
     register float time_per_access;
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     //Page alignment
     a=sbrk(ARR_SIZE);
-    a=(int *)((((int)a>>13)<<13)+8192);
+    a=(int *)((((long)a>>13)<<13)+8192);
 
     //Map it to virtual memory
     for(i = 0; i < ARR_SIZE; ++i)
@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
         dummy = a[i];
     }
 
-    for(access = ACCESS_SIZE; access >= 2; access/=2)
+    for(access = 1; access < ARR_SIZE; access*=2)
     {
         gettimeofday(&before, NULL);
-        for(iter = 0; iter < 10000; ++iter)
+        for(iter = 0; iter < 1000000; ++iter)
         {
             for(i = 0; i < ARR_SIZE; i += access)
             {
