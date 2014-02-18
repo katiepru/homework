@@ -6,8 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    struct timeval before;
-    struct timeval after;
+    struct timeval before, after;
 
     long total_time = 0;
     int current_time;
@@ -16,10 +15,7 @@ int main(int argc, char *argv[])
 
     char *c;
 
-    int pid;
-    int mbs;
-    int i;
-    int ret;
+    int pid, mbs, i, ret;
 
     int fd[2];
 

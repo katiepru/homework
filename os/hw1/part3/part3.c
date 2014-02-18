@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         }
 
         avg_time = ((float) total_time)/10000;
-        printf("Each pipe took %f microseconds on average.\n", avg_time);
+        printf("%f\n", avg_time);
 
         waitpid(pid, NULL, 0);
         exit(0);
