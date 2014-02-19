@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         close(fdc[0]);
         close(fdp[1]);
 
-        for(i = 0; i < 10000; ++i)
+        for(i = 0; i < 1000; ++i)
         {
             read(fdp[0], arr, arr_size);
             write(fdc[1], arr, arr_size);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         close(fdc[1]);
         close(fdp[0]);
 
-        for(i = 0; i < 10000; ++i)
+        for(i = 0; i < 1000; ++i)
         {
             gettimeofday(&before, NULL);
             write(fdp[1], arr, arr_size);
