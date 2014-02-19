@@ -43,6 +43,9 @@ int main(int argc, char *argv[])
             read(fdp[0], arr, arr_size);
             write(fdc[1], arr, arr_size);
         }
+        close(fdp[0]);
+        close(fdc[0]);
+        free(arr);
         exit(0);
     }
 
@@ -68,6 +71,9 @@ int main(int argc, char *argv[])
         printf("%f\n", avg_time);
 
         waitpid(pid, NULL, 0);
+        close(fdp[1]);
+        close(fdc[0]);
+        free(arr);
         exit(0);
     }
 }
