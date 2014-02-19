@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
     arr_size_partial = atoi(argv[2])*1024;
 
     a=sbrk(ARR_SIZE*sizeof(int)+8192);
-    a=(int *)((((long)a>>13)<<13)+8192);
+    a=(int *)((((int)a>>13)<<13)+8192);
 
     //Map it to virtual memory
-    for(i = 0; i < ARR_SIZE; ++i)
+    for(i = 0; i < ARR_SIZE*sizeof(int)+8192; ++i)
     {
         dummy = a[i];
     }
@@ -47,5 +47,7 @@ int main(int argc, char *argv[])
 
     time_per_access = timeTaken/(arr_size_partial/access);
 
-    printf("It took %f microseconds at arr size %d\n", time_per_access, arr_size_partial);
+    printf("%d %f\n", arr_size_partial, time_per_access);
+
+    return 0;
 }
