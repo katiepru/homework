@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define ARR_SIZE 2097152 //2 megs
+#define ARR_SIZE 4194304 //4 megs
 
 int main(int argc, char *argv[])
 {
@@ -14,15 +14,16 @@ int main(int argc, char *argv[])
 
     struct timeval before, after;
 
-    if(argc != 2)
+    if(argc != 3)
     {
-        fprintf(stderr, "Not enough args: include a line size\n");
+        fprintf(stderr, "Not enough args: include a line size in Bs and walk size in KBs\n");
         exit(1);
     }
 
     access = atoi(argv[1]);
+    arr_size_partial = atoi(argv[2])*1024;
 
-    a=sbrk(ARR_SIZE);
+    a=sbrk(ARR_SIZE*sizeof(int)+8192);
     a=(int *)((((long)a>>13)<<13)+8192);
 
     //Map it to virtual memory
@@ -31,23 +32,20 @@ int main(int argc, char *argv[])
         dummy = a[i];
     }
 
-    for(arr_size_partial = access; arr_size_partial <= ARR_SIZE; arr_size_partial *= 2)
+    gettimeofday(&before, NULL);
+    for(iter = 0; iter < 1000000; ++iter)
     {
-        gettimeofday(&before, NULL);
-        for(iter = 0; iter < 1000000; ++iter)
+        for(i = 0; i < arr_size_partial; i += access)
         {
-            for(i = 0; i < arr_size_partial; ++i)
-            {
-                dummy = a[i];
-            }
+            dummy = a[i];
         }
-        gettimeofday(&after, NULL);
-
-        timeTaken = (after.tv_sec * 1000000 + after.tv_usec) -
-                    (before.tv_sec*1000000 + before.tv_usec);
-
-        time_per_access = timeTaken/i;
-
-        printf("It took %f microseconds at arr size %d\n", time_per_access, arr_size_partial);
     }
+    gettimeofday(&after, NULL);
+
+    timeTaken = (after.tv_sec * 1000000 + after.tv_usec) -
+                (before.tv_sec*1000000 + before.tv_usec);
+
+    time_per_access = timeTaken/(arr_size_partial/access);
+
+    printf("It took %f microseconds at arr size %d\n", time_per_access, arr_size_partial);
 }
