@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define ARR_SIZE 10240
+#define ARR_SIZE 2048
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     struct timeval before, after;
 
     //Page alignment
-    a=sbrk(ARR_SIZE);
+    a=sbrk(ARR_SIZE*sizeof(int)+8192);
     a=(int *)((((long)a>>13)<<13)+8192);
 
     //Map it to virtual memory
