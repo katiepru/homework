@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
             close(fd[1]);
             read(fd[0], &ret, sizeof(ret));
             total_time += ret;
+            close(fd[0]);
         }
 
         else
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
 
             write(fd[1], &current_time, sizeof(current_time));
 
+            free(c);
+            close(fd[1]);
             exit(0);
         }
 
@@ -66,6 +69,8 @@ int main(int argc, char *argv[])
     avg_time = ((float) total_time)/10000;
 
     printf("%f\n", avg_time);
+
+    free(c);
 
     return 0;
 }
