@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     time_per_access = timeTaken/(arr_size_partial/access);
 
-    printf("%d %f\n", arr_size_partial, time_per_access);
+    printf("%d %f\n", arr_size_partial/1024, time_per_access);
 
     return 0;
 }
