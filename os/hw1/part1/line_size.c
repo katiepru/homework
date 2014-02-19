@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
         time_per_access = timeTaken/(i/access);
 
-        printf("It took %f microseconds at jump size %d\n", time_per_access, access);
+        printf("%d %f\n", access, time_per_access);
     }
 
     return 0;

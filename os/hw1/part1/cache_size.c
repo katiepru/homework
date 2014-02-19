@@ -3,11 +3,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define ARR_SIZE 4194304 //4 megs
+#define ARR_SIZE (1024 * 4096) //4 megs
 
 int main(int argc, char *argv[])
 {
-    register int *a;
+    register volatile int *a;
     register int i, dummy, iter, access, arr_size_partial;
     register long timeTaken;
     register float time_per_access;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     a=(int *)((((int)a>>13)<<13)+8192);
 
     //Map it to virtual memory
-    for(i = 0; i < ARR_SIZE*sizeof(int)+8192; ++i)
+    for(i = 0; i < ARR_SIZE; ++i)
     {
         dummy = a[i];
     }
