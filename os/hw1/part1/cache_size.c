@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     if(argc != 3)
     {
-        fprintf(stderr, "Not enough args: include a line size in Bs and walk size in KBs\n");
+        fprintf(stderr, "Usage: ./cache_size <line_size> <MBs>\n");
         exit(1);
     }
 
