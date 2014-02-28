@@ -1,0 +1,58 @@
+Kaitlin Poskaitis
+Homework 4
+
+Part A:
+    1. SELECT S.theater
+       FROM (SELECT *
+             FROM Enjoys E
+             WHERE E.person="Jane"
+            ) AS J,
+            Showed S
+       WHERE S.movie=J.movie
+
+    2. SELECT A.person
+       FROM Showed S, Attended A
+       WHERE S.theater=A.theater AND S.dateTime=A.dateTime AND S.price<=5
+
+    3. SELECT other_4.person
+       FROM (SELECT *
+             FROM Enjoys E1
+             WHERE E1.person="Jane" AND E1.howMuch=4) AS jane_4,
+            (SELECT *
+             FROM Enoys E2
+             WHERE NOT E2.person="Jane" AND E2.howMuch=4) AS other_4
+       WHERE jane_4.movie=other_4.movie
+
+    4. SELECT E.person
+       FROM Enjoys E
+       EXCEPT
+       SELECT A.person
+       FROM Attended A
+
+    5. SELECT R.person
+       FROM ((SELECT *
+              FROM Showed S
+              WHERE S.movie="Jaws" OR S.movie="Wars")
+              JOIN Attended) AS R
+
+    6  SELECT S.theater
+       FROM Showed S
+       WHERE NOT EXISTS (
+            SELECT E.movie
+            FROM Enjoys
+            WHERE E.person="Jane"
+            EXCEPT
+            SELECT S2.movie
+            FROM Showed S2
+            WHERE S.theater=S2.theater)
+
+    7. SELECT F.person
+       FROM (SELECT *
+             FROM Enjoys E1, Enjoys E2
+             WHERE E1.person=E2.person
+                AND NOT E1.movie=E2.movie) AS Ra,
+            (SELECT *
+             FROM Showed S1, Showed S2
+             WHERE S1.theater=S2.theater
+                AND NOT S1.movie=S2.movie) AS Rb
+            (Ra JOIN Rb USING(movie)) AS F
