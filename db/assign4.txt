@@ -50,9 +50,10 @@ Part A:
        FROM (SELECT *
              FROM Enjoys E1, Enjoys E2
              WHERE E1.person=E2.person
-                AND NOT E1.movie=E2.movie) AS Ra,
-            (SELECT *
-             FROM Showed S1, Showed S2
-             WHERE S1.theater=S2.theater
-                AND NOT S1.movie=S2.movie) AS Rb
-            (Ra JOIN Rb USING(movie)) AS F
+               AND NOT E1.movie=E2.movie
+               AND EXISTS
+                  (SELECT *
+                   FROM Showed S1, Showed S2
+                   WHERE S1.theater=S2.theater
+                      AND NOT S1.movie=S2.movie)
+            )
