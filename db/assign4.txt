@@ -57,3 +57,15 @@ Part A:
                    WHERE S1.theater=S2.theater
                       AND NOT S1.movie=S2.movie)
             )
+
+Part B:
+    a. SELECT R3.name
+       FROM ((SELECT J.did
+              FROM Dept d
+              WHERE d.name="harware" OR d.name="software")
+            JOIN WorksIn USING(did)) AS R1,
+            (SELECT R1.eid
+             FROM R1
+             GROUPBY R.eid
+             HAVING COUNT(*) > 1) AS R2,
+            (R2 JOIN Emp USING(eid)) AS R3
