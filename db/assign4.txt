@@ -81,6 +81,9 @@ Part B:
        WHERE R.budget = (SELECT MAX(R.budget) FROM R)
 
     d. SELECT managerid
-       FROM (Worksin JOIN Dept USING(did)) AS R
-       GROUP BY R.managerid
-       HAVING SUM(R.budget)
+       FROM Dept D
+       GROUP BY D.managerid
+       HAVING SUM(D.budget) = (SELECT MAX(R.SUM(budget))
+                               FROM (SELECT managerid,SUM(budget)
+                                     FROM D
+                                     GROUP BY D.managerid) AS R)
