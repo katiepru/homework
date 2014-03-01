@@ -66,16 +66,21 @@ Part B:
             JOIN WorksIn USING(did)) AS R1,
             (SELECT R1.eid
              FROM R1
-             GROUPBY R.eid
+             GROUP BY R.eid
              HAVING COUNT(*) > 1) AS R2,
             (R2 JOIN Emp USING(eid)) AS R3
 
     b. SELECT R2.ename
        FROM (Dept JOIN WorksIn USING(did)) AS R1,
             (R1 JOIN Emp USING(eid)) AS R2,
-       GROUPBY R2.eid
+       GROUP BY R2.eid
        HAVING R2.salary > MAX(R2.budget)
 
     c. SELECT R.ename
        FROM (Dept D JOIN Emp E ON E.eid=D.managerid) AS R
        WHERE R.budget = (SELECT MAX(R.budget) FROM R)
+
+    d. SELECT managerid
+       FROM (Worksin JOIN Dept USING(did)) AS R
+       GROUP BY R.managerid
+       HAVING SUM(R.budget)
