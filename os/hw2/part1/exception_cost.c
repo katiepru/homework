@@ -2,12 +2,15 @@
 #include <signal.h>
 #include <sys/time.h>
 
+//16*4 for the registers, 4 for x, 4 for return address
+#define OFFSET 72
+
 void catch()
 {
-    unsigned char x;
+    int x;
     static int count = 0;
     if(++count == 1000)
-        *(int *)(&x + 69) += 8;
+        *(&x + (OFFSET/sizeof(int))) += 8;
 }
 
 int main(int argc, char *argv[])
