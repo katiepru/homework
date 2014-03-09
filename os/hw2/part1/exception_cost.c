@@ -2,8 +2,9 @@
 #include <signal.h>
 #include <sys/time.h>
 
-//16*4 for the registers, 4 for x, 4 for return address
-#define OFFSET 72
+//16 ints for the registers, 1 for x, 1 for return address
+//#define OFFSET 72
+#define OFFSET (18*sizeof(int))
 
 void catch()
 {
