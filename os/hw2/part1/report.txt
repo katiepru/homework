@@ -1,0 +1,17 @@
+Kaitlin Poskaitis
+Part 1 Report
+
+Implementation:
+    I largely followed the example done in recitation where you modify the
+    return value of the function in order to skip over some set of
+    instructions.  This assignment had a different call stack structure
+    though, in that all of the registers were pushed onto the stack as well.
+    This required me to skip past all 16 of them (-m32) in order to get to
+    the return address.  The final offset, including my integer variable
+    used as a reference point on the stack was 72 bytes (assuming sizeof
+    int is 4).
+
+Results:
+    Each call to the signal handler consitently took under 1 microsecond,
+    so that is pretty fast. This is expected to be faster than fork or pipe
+    because there is not a lot of memory copying that needs to occur.
