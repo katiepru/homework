@@ -1,0 +1,64 @@
+Kaitlin Poskaitis
+
+Part 1 - Tables
+
+    CREATE TABLE persons
+    (
+        _pid_ PRIMARY KEY,
+        name,
+        address
+    );
+
+    CREATE TABLE doctors
+    (
+        _pid_ references persons,
+        specialty
+    );
+
+    CREATE TABLE patients
+    (
+        _pid_ references persons,
+        ins#
+    );
+
+    CREATE TABLE visits
+    (
+        patientid references patients,
+        doctorid references doctors,
+        date NOT NULL
+    );
+
+    CREATE TABLE prescrDoctors
+    (
+        _pid_ references persons,
+        license# NOT NULL
+    );
+
+    CREATE TABLE prescriptions
+    (
+        prescrdoctorid references prescrDoctors,
+        topatientid references patients,
+        fordrugid references drugs,
+        dosage NOT NULL,
+        date NOT NULL
+    );
+
+    CREATE TABLE drugs
+    (
+        name PRIMARY KEY,
+        composition NOT NULL
+    );
+
+    CREATE TABLE bottles
+    (
+        bid PRIMARY KEY,
+        containsDrugID references drugs
+    );
+
+    CREATE TABLE fills
+    (
+       prid references prescriptions,
+       phid references pharmacies,
+       bid references bottles,
+       date
+    );
