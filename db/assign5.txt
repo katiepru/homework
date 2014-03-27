@@ -1,46 +1,18 @@
 Kaitlin Poskaitis
 
-Part 1 - Tables
+Tables
 
-    CREATE TABLE persons
+    CREATE TABLE bottles
     (
-        _pid_ PRIMARY KEY,
-        name,
-        address
+        bid PRIMARY KEY,
+        containsDrugID REFERENCES drugs
     );
 
     CREATE TABLE doctors
     (
-        _pid_ references persons,
-        specialty
-    );
-
-    CREATE TABLE patients
-    (
-        _pid_ references persons,
-        ins#
-    );
-
-    CREATE TABLE visits
-    (
-        patientid references patients,
-        doctorid references doctors,
-        date NOT NULL
-    );
-
-    CREATE TABLE prescrDoctors
-    (
-        _pid_ references persons,
-        license# NOT NULL
-    );
-
-    CREATE TABLE prescriptions
-    (
-        prescrdoctorid references prescrDoctors,
-        topatientid references patients,
-        fordrugid references drugs,
-        dosage NOT NULL,
-        date NOT NULL
+        docid REFERENCES persons,
+        specialty,
+        PRIMARY KEY(docid)
     );
 
     CREATE TABLE drugs
@@ -49,16 +21,58 @@ Part 1 - Tables
         composition NOT NULL
     );
 
-    CREATE TABLE bottles
-    (
-        bid PRIMARY KEY,
-        containsDrugID references drugs
-    );
-
     CREATE TABLE fills
     (
-       prid references prescriptions,
-       phid references pharmacies,
-       bid references bottles,
-       date
+       prid REFERENCES prescriptions,
+       phid REFERENCES pharmacies,
+       bid REFERENCES bottles,
+       date NOT NULL,
+       PRIMARY KEY(prid,phid,bid,date),
+       CHECK (date >= (SELECT p.date FROM prescriptions p WHERE prid=p.prid))
+    );
+
+    CREATE TABLE patients
+    (
+        ptid REFERENCES persons,
+        ins#,
+        PRIMARY KEY(ptid)
+    );
+
+    CREATE TABLE persons
+    (
+        pid PRIMARY KEY,
+        name NOT NULL,
+        address NOT NULL
+    );
+
+    CREATE TABLE pharmacies
+    (
+        phid PRIMARY KEY,
+        name NOT NULL,
+        address
+    );
+
+    CREATE TABLE prescrDoctors
+    (
+        prdocid REFERENCES doctors,
+        license# NOT NULL,
+        PRIMARY KEY(prdocid)
+    );
+
+    CREATE TABLE prescriptions
+    (
+        prid PRIMARY KEY,
+        prdocid REFERENCES prescrDoctors,
+        topid REFERENCES patients,
+        fordrugid REFERENCES drugs,
+        dosage NOT NULL CHECK (dosage>0),
+        date NOT NULL
+    );
+
+    CREATE TABLE visits
+    (
+        patientid REFERENCES patients,
+        doctorid REFERENCES doctors,
+        date NOT NULL
+        PRIMARY KEY(patientid,doctorid,date)
     );
