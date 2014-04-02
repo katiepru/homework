@@ -3,8 +3,7 @@ CREATE TABLE IF NOT EXISTS users
     username    varchar(255)    PRIMARY KEY,
     email       varchar(255)    NOT NULL,
     password    varchar(255)    NOT NULL
-    isAdmin     integer         NOT NULL,
-    isMod       integer         NOT NULL
+    privLev     integer         NOT NULL,
 );
 
 CREATE TABLE IF NOT EXISTS sales_reps
