@@ -2,43 +2,51 @@ CREATE TABLE IF NOT EXISTS users
 (
     username    varchar(255)    PRIMARY KEY,
     email       varchar(255)    NOT NULL,
-    password    varchar(255)    NOT NULL
-    privLev     integer         NOT NULL,
+    password    varchar(255)    NOT NULL,
+    privLev     integer         NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sales_reps
 (
-    username    varchar(255)    REFERENCES users,
+    username    varchar(255),
     represents  varchar(255)    NOT NULL,
-    PRIMARY KEY(username)
+    PRIMARY KEY(username),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS customers
 (
-    username    varchar(255)    REFERENCES users,
-    PRIMARY KEY(username)
+    username    varchar(255),
+    PRIMARY KEY(username),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS messages
 (
     mid         integer         PRIMARY KEY,
-    to          varchar(255)    REFERENCES users,
-    from        varchar(255)    REFERENCES users,
+    to_u        varchar(255),
+    from_u      varchar(255),
     sent_dt     datetime        NOT NULL,
-    content     varchar(1024)   NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS votes
-(
-    username    varchar(255),   REFERENCES users,
-    pid         integer         REFERENCES posts,
-    isUp        integer         NOT NULL
+    content     varchar(1024)   NOT NULL,
+    FOREIGN KEY (to_u) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY (from_u) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS posts
 (
-    pid         integer         PRIMARY KEY
-    child_of    integer         REFERENCES posts
+    pid         integer         PRIMARY KEY,
+    child_of    integer,
+    FOREIGN KEY (child_of) REFERENCES posts(pid) ON DELETE CASCADE
+
+);
+
+CREATE TABLE IF NOT EXISTS votes
+(
+    username    varchar(255),
+    pid         integer         REFERENCES posts,
+    isUp        integer         NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS threads
