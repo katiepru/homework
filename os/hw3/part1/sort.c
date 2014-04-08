@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
     {
         printf("%d\n", nums[i]);
     }
+
+    return 0;
 }
 
 void *sort(void *args)
@@ -99,6 +101,8 @@ void *sort(void *args)
         pthread_mutex_unlock(right);
         pthread_mutex_unlock(left);
     }
+
+    return NULL;
 }
 
 void *check(void *args)
@@ -128,4 +132,6 @@ void *check(void *args)
             return NULL;
     }
     done = 1;
+
+    return NULL;
 }
