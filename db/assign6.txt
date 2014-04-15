@@ -1,0 +1,86 @@
+Kaitlin Poskaitis
+Homework 6
+
+Part 1 - Functional Dependencies
+
+1. (A,B,E,F,J,K)
+
+2. (A, B, E, F)
+   (B, E, J, K)
+   (A, B, E, J, K)
+   (E, F, J, K)
+   (B, E, J)
+   (A, B, J, K)
+   (E, F, K)
+
+3. R is not in BCNF because F-->B but F is not a super key.
+   R is in 3NF because for every FD X-->Y, Y is part of a key.
+
+4. R1(B,E,J,K), F1 = {BE-->JK}, K1 = (B,E) - done
+   R2(A,B,E,F), F2 = {F-->B}, K2 = (A,E,F) - not done
+
+6.    R21(B,F), F21 = {F-->B}, K21 = (F) - done
+ R22(A,B,F), F22 = {}, K22 = (A,B,F) - done
+
+5. The first step is lossless because all of the information
+   found in the original relation can be found in these new relations.
+   It is not dependency preserving because we lost J-->BA.
+   R1 is in BCNF because BE is a key, and therefore a superkey. R2 is not because F is not a superkey.
+   R1 is in 3NF becuase BE is a superkey. R2 is not because B is not part of the key.
+
+Part 2 - Constraints and Triggers
+
+1. CREATE ASSERTION checkUndergradOrGrad
+   CHECK
+      SELECT s.stdId FROM student
+      WHERE 1 = (SELECT COUNT(*) FROM (grad UNION undergrad) AS level
+                 WHERE level.stdID=s.stdId);
+
+2. (On create table...)
+   stdId integer PRIMARY KEY CHECK 1 = (SELECT COUNT(*) FROM (grad UNION undergrad) AS level
+                                        WHERE level.stdId=stdId);
+
+3. error :- student(Sid,_,_,_,_), undergrad(Sid,_,_), grad(Sid,_,_).
+   error :- student(Sid,_,_,_,_), \+ undergrad(Sid,_,_), \+ grad(Sid,_,_).
+
+4. student:
+      Insert - yes (new stdId must also end up in grad or undergrad)
+      Update - yes (changing a stdId may invalidate entries in grad or undergrad)
+      Delete - no (if not a student, constraint does not hold)
+
+   grad:
+      Insert - yes (if a student, must not also be in undergrad)
+      Update - yes (if a student, must not also be in undergrad)
+      Delete - yes (if a student, must end up in grad or undergrad)
+
+   undergrad - (see above for explanations)
+      Insert - yes
+      Update - yes
+      Delete - yes
+
+5. student:
+      Insert - yes (new stdId must also end up in grad or undergrad)
+      Update - no (cascading changes)
+      Delete - no (cascading changes)
+
+   grad:
+      Insert - yes (if a student, must not also be in undergrad)
+      Update - yes (if a student, must not also be in undergrad)
+      Delete - yes (if a student, must end up in grad or undergrad)
+
+   undergrad - (see above for explanations)
+      Insert - yes
+      Update - yes
+      Delete - yes
+
+6. CREATE TRIGGER insertStdId
+   AFTER INSERT OF stdId
+   ON student
+   FOR EACH ROW
+   REFERENCING NEW ROW AS new
+   WHEN NOT 1 = (SELECT COUNT(*) FROM (grad UNION undergrad) AS level WHERE level.stdId = new.stdId)
+   THEN
+   BEGIN
+   INSERT INTO errors VALUES(new.stdId, new.name, new,age, new,nr_of_credits, new.gpa)
+   DELETE * FROM student s WHERE s.stdId = new.stdId
+   END
