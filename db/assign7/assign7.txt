@@ -1,0 +1,24 @@
+Kaitlin Poskaitis
+Homework 7
+
+A.
+    1. for $a in doc("bib.xml")//book/author
+       return $a/first
+
+    2. for $a in doc("bib.xml")//book
+       where $a(@year) > 1995 and $a/price < 100
+       return $a/title
+
+    3. for $a in doc("bib.xml")//book
+       where empty($a/author)
+       return $a/title
+
+    4. let $prices := <prices> {
+           for $a in doc("bib.xml")
+           where every $auth in $a/author
+                satisfies contains($auth/first,"Peter")
+           return $a/price
+           }</prices>
+       return avg($prices)
+
+    5. get back to this
