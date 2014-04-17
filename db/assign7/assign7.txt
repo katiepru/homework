@@ -1,6 +1,9 @@
 Kaitlin Poskaitis
 Homework 7
 
+
+Part 1 - XML
+
 A.
     1. for $a in doc("bib.xml")//book/author
        return $a/first
@@ -22,3 +25,28 @@ A.
        return avg($prices)
 
     5. get back to this
+B.
+C.
+
+
+Part 2 - Transactions
+
+Answers in form (p1,p2)
+
+a. (25,25)
+   (40,40)
+
+b. (25,25)
+   (40,40)
+   (25,35)
+
+c. (25,25)
+   (40,40)
+   (25,40)
+
+d. (25,25)
+   (40,40)
+   (25,40)
+   (30,30)
+   (35,30)
+   (30,40)
