@@ -1,6 +1,7 @@
 #include "mypthread.h"
 
 mypthread_t **threads;
+int curr_tid;
 
 void mypthread_create(mypthread_t *thread, thread_func f, void *args)
 {
