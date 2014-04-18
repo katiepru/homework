@@ -37,5 +37,6 @@ void mypthread_exit(void *ret);
 
 //Function definitions - internal use
 void scheduler();
+mypthread_t *get_curr_thread(char *);
 
 #endif

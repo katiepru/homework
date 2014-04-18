@@ -33,7 +33,6 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
         sched_thread->context.uc_stack.ss_size = STACK_SIZE;
         //FIXME: Successor
         makecontext(&(sched_thread->context), scheduler, 0);
-
     }
 
     thread = malloc(sizeof(mypthread_t));
@@ -49,11 +48,26 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
     thread->context.uc_stack.ss_size = STACK_SIZE;
     //FIXME: Successor
     makecontext(&(thread->context), f, 1, args);
+    f(args);
+    return;
+}
 
+void mypthread_yield()
+{
+    char x;
+    mypthread_t *thread = get_curr_thread(&x);
+    setcontext(&(thread->context));
+    swapcontext(&(thread->context), &(threads[1]->context));
+    return;
 }
 
 //Internal functions
 
 void scheduler()
 {
+}
+
+mypthread_t *get_curr_thread(char *x)
+{
+    return NULL;
 }
