@@ -4,6 +4,8 @@
 //Includes
 
 #include <stdlib.h>
+#include <ucontext.h>
+#include <stdio.h>
 
 
 //Defines
@@ -13,6 +15,7 @@
 #define KILLED   3
 #define NEW      4
 
+#define STACK_SIZE 16384
 
 //Typedefs
 
@@ -33,5 +36,6 @@ void mypthread_join(mypthread_t thread, void **ret);
 void mypthread_exit(void *ret);
 
 //Function definitions - internal use
+void scheduler();
 
 #endif
