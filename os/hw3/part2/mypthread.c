@@ -10,8 +10,6 @@ void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
     static int tid = 1; //First thread is for main
     static char init = 0;
     _mypthread_t *main_thread, *thread;
-    mypthread_t prev_running;
-    char *main_thread_stack, *thread_stack;
 
     if(!init)
     {
@@ -22,52 +20,18 @@ void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
         run_queue = queue_init();
 
         //Create main thread
-        main_thread = malloc(sizeof(_mypthread_t));
-        threads[0] = main_thread;
-        main_thread->tid = 0;
-        main_thread->retval = NULL;
-        main_thread->status = NEW;
-        if(getcontext(&(main_thread->context)) == -1)
-        {
-            fprintf(stderr, "getcontext failed\n");
-            exit(5);
-        }
-        main_thread_stack = malloc(STACK_SIZE*sizeof(char));
-        main_thread->context.uc_stack.ss_sp = main_thread_stack;
-        main_thread->context.uc_stack.ss_size = STACK_SIZE;
-        //FIXME: Successor
-        main_thread->status = RUNNING;
+        main_thread = thread_init(0);
         running_thread = 0;
 
     }
 
 
-    thread = malloc(sizeof(mypthread_t));
     *threadID = tid++;
-    thread->tid = *threadID;
-    threads[*threadID] = thread;
-    thread->status = NEW;
-    thread->retval = NULL;
-
-    if(getcontext(&(thread->context)) == -1)
-    {
-        fprintf(stderr, "getcontext failed\n");
-        exit(5);
-    }
-    thread_stack = malloc(STACK_SIZE*sizeof(char));
-    thread->context.uc_stack.ss_sp = thread_stack;
-    thread->context.uc_stack.ss_size = STACK_SIZE;
-    //FIXME: Successor
+    thread = thread_init(*threadID);
 
     makecontext(&(thread->context), f, 1, args);
-    prev_running = running_thread;
-    running_thread = *threadID;
-    threads[prev_running]->status = WAITING;
-    enqueue(run_queue, threadnode_init(prev_running));
-    thread->status = RUNNING;
-
-    swapcontext(&(threads[prev_running]->context), &(thread->context));
-    return;
+    push(run_queue, threadnode_init(*threadID));
+    scheduler();
 }
 
 void mypthread_exit(void *ret)
@@ -81,9 +45,7 @@ void mypthread_join(mypthread_t thread, void **ret)
 {
     while(threads[thread]->status != KILLED)
     {
-        printf("Callinf yeild\n");
         mypthread_yield();
-        printf("Waking up\n");
     }
 
     ret = &(threads[thread]->retval);
@@ -103,7 +65,7 @@ void scheduler()
     ThreadNode *enqueued, *dequeued;
 
     //Enter current thread into run queue
-    if(threads[curr]->status == RUNNING)
+    if(threads[curr]->status != KILLED)
     {
         threads[curr]->status = WAITING;
         enqueued = threadnode_init(curr);
@@ -123,8 +85,30 @@ void scheduler()
     } while(threads[next_runner]->status != WAITING);
 
     running_thread = next_runner;
+    threads[running_thread]->status = RUNNING;
     swapcontext(&(threads[curr]->context), &(threads[next_runner]->context));
+}
 
+_mypthread_t *thread_init(mypthread_t threadID)
+{
+    char *stack;
+    _mypthread_t *ret = malloc(sizeof(_mypthread_t));
+
+    threads[threadID] = ret;
+    ret->tid = threadID;
+    ret->retval = NULL;
+    ret->status = WAITING;
+    if(getcontext(&(ret->context)) == -1)
+    {
+        fprintf(stderr, "getcontext failed\n");
+        exit(5);
+    }
+    stack = malloc(STACK_SIZE*sizeof(char));
+    ret->context.uc_stack.ss_sp = stack;
+    ret->context.uc_stack.ss_size = STACK_SIZE;
+    //FIXME: Successor
+
+    return ret;
 }
 
 
@@ -156,11 +140,25 @@ void queue_destroy(Queue *q)
     free(q);
 }
 
+//Push to front of queue - ignore all queue logic
+void push(Queue *q, ThreadNode *item)
+{
+    if(q->back == NULL)
+    {
+        //We are empty
+        q->back = item;
+    }
+    item->next = q->front;
+    q->front = item;
+    q->length++;
+}
+
 //Enqueue an item into q
 void enqueue(Queue *q, ThreadNode *item)
 {
     if(q->front == NULL)
     {
+        //We are empty
         q->front = item;
     } else
     {

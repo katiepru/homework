@@ -57,10 +57,12 @@ void mypthread_exit(void *ret);
 
 //Function definitions - internal use
 void scheduler();
+_mypthread_t *thread_init(mypthread_t);
 
 //Function definitions - queue
 Queue *queue_init();
 void queue_destroy();
+void push(Queue *, ThreadNode *);
 void enqueue(Queue *, ThreadNode *);
 ThreadNode *dequeue(Queue *);
 
