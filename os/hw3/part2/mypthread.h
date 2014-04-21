@@ -27,6 +27,16 @@ typedef struct mypthread_t {
     thread_func f;
 } mypthread_t;
 
+typedef struct ThreadNode {
+    mypthread_t *thread;
+    struct ThreadNode *next;
+} ThreadNode;
+
+typedef struct Queue {
+    ThreadNode *front;
+    ThreadNode *back;
+    int length;
+} Queue;
 
 //Function definitions - user facing
 
@@ -37,6 +47,11 @@ void mypthread_exit(void *ret);
 
 //Function definitions - internal use
 void scheduler();
-mypthread_t *get_curr_thread(char *);
+
+//Function definitions - queue
+Queue *queue_init();
+void queue_destroy();
+void enqueue(Queue *, ThreadNode *);
+ThreadNode *dequeue(Queue *);
 
 #endif
