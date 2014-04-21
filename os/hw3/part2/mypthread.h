@@ -27,17 +27,18 @@ typedef enum ThreadState ThreadState;
 
 //Typedefs
 
+typedef int mypthread_t;
 typedef void *(*thread_func)(void *);
-typedef struct mypthread_t {
+typedef struct _mypthread_t {
     int tid;
     ThreadState status;
     ucontext_t context;
     thread_func f;
     void *retval;
-} mypthread_t;
+} _mypthread_t;
 
 typedef struct ThreadNode {
-    mypthread_t *thread;
+    mypthread_t thread;
     struct ThreadNode *next;
 } ThreadNode;
 
@@ -51,7 +52,7 @@ typedef struct Queue {
 
 void mypthread_create(mypthread_t *thread, thread_func, void *args);
 void mypthread_yield();
-void mypthread_join(mypthread_t *thread, void **ret);
+void mypthread_join(mypthread_t thread, void **ret);
 void mypthread_exit(void *ret);
 
 //Function definitions - internal use
@@ -63,6 +64,6 @@ void queue_destroy();
 void enqueue(Queue *, ThreadNode *);
 ThreadNode *dequeue(Queue *);
 
-ThreadNode *threadnode_init(mypthread_t *);
+ThreadNode *threadnode_init(mypthread_t);
 
 #endif

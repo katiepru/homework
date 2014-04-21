@@ -1,27 +1,28 @@
 #include "mypthread.h"
 
-mypthread_t **threads;
-mypthread_t *running_thread;
+_mypthread_t **threads;
+mypthread_t running_thread;
 Queue *run_queue;
 int curr_tid;
 
-void mypthread_create(mypthread_t *thread, thread_func f, void *args)
+void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
 {
     static int tid = 1; //First thread is for main
     static char init = 0;
-    mypthread_t *main_thread, *prev_running;
+    _mypthread_t *main_thread, *thread;
+    mypthread_t prev_running;
     char *main_thread_stack, *thread_stack;
 
     if(!init)
     {
         init = 1;
-        threads = calloc(512, sizeof(mypthread_t *));
+        threads = calloc(512, sizeof(_mypthread_t *));
 
         //Init run queue
         run_queue = queue_init();
 
         //Create main thread
-        main_thread = malloc(sizeof(mypthread_t));
+        main_thread = malloc(sizeof(_mypthread_t));
         threads[0] = main_thread;
         main_thread->tid = 0;
         main_thread->retval = NULL;
@@ -36,14 +37,15 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
         main_thread->context.uc_stack.ss_size = STACK_SIZE;
         //FIXME: Successor
         main_thread->status = RUNNING;
-        running_thread = main_thread;
+        running_thread = 0;
 
     }
 
 
     thread = malloc(sizeof(mypthread_t));
-    thread->tid = tid++;
-    threads[tid-1] = thread;
+    *threadID = tid++;
+    thread->tid = *threadID;
+    threads[*threadID] = thread;
     thread->status = NEW;
     thread->retval = NULL;
 
@@ -59,34 +61,32 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
 
     makecontext(&(thread->context), f, 1, args);
     prev_running = running_thread;
-    running_thread = thread;
-    prev_running->status = WAITING;
+    running_thread = *threadID;
+    threads[prev_running]->status = WAITING;
     enqueue(run_queue, threadnode_init(prev_running));
     thread->status = RUNNING;
 
-    swapcontext(&(prev_running->context), &(thread->context));
-    //f(args);
+    swapcontext(&(threads[prev_running]->context), &(thread->context));
     return;
 }
 
 void mypthread_exit(void *ret)
 {
-    running_thread->retval = ret;
-    running_thread->status = KILLED;
+    threads[running_thread]->retval = ret;
+    threads[running_thread]->status = KILLED;
     scheduler();
 }
 
-void mypthread_join(mypthread_t *thread, void **ret)
+void mypthread_join(mypthread_t thread, void **ret)
 {
-    printf("thread %d status %d\n", thread->tid, thread->status);
-    while(thread->status != KILLED)
+    while(threads[thread]->status != KILLED)
     {
         printf("Callinf yeild\n");
         mypthread_yield();
         printf("Waking up\n");
     }
 
-    ret = &(thread->retval);
+    ret = &(threads[thread]->retval);
 }
 
 void mypthread_yield()
@@ -98,16 +98,14 @@ void mypthread_yield()
 
 void scheduler()
 {
-    mypthread_t *next_runner;
-    mypthread_t *curr = running_thread;
+    mypthread_t next_runner;
+    mypthread_t curr = running_thread;
     ThreadNode *enqueued, *dequeued;
 
-    printf("currently rinning %d with status %d\n", curr->tid, curr->status);
-
     //Enter current thread into run queue
-    if(curr->status == RUNNING)
+    if(threads[curr]->status == RUNNING)
     {
-        curr->status = WAITING;
+        threads[curr]->status = WAITING;
         enqueued = threadnode_init(curr);
         enqueue(run_queue, enqueued);
     }
@@ -122,12 +120,10 @@ void scheduler()
             return;
         }
         next_runner = dequeued->thread;
-    } while(next_runner->status != WAITING);
-
-    printf("About to run thread %d\n", next_runner->tid);
+    } while(threads[next_runner]->status != WAITING);
 
     running_thread = next_runner;
-    swapcontext(&(curr->context), &(next_runner->context));
+    swapcontext(&(threads[curr]->context), &(threads[next_runner]->context));
 
 }
 
@@ -180,7 +176,6 @@ ThreadNode *dequeue(Queue *q)
     ThreadNode *ret = q->front;
     if(q->front == NULL)
     {
-        printf("Bas dequeue\n");
         return NULL;
     }
     q->front = q->front->next;
@@ -189,7 +184,7 @@ ThreadNode *dequeue(Queue *q)
 }
 
 //Init a ThreadNode
-ThreadNode *threadnode_init(mypthread_t *thread)
+ThreadNode *threadnode_init(mypthread_t thread)
 {
     ThreadNode *t = malloc(sizeof(ThreadNode));
     t->thread = thread;

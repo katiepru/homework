@@ -24,11 +24,11 @@ int main(int argc, char *argv[])
     printf("Creating second thread\n");
     mypthread_create(&thread2, func2, NULL);
 
-    printf("Joining %d\n", thread1.status);
-    mypthread_join(&thread1, NULL);
+    printf("Joining %d\n", thread1);
+    mypthread_join(thread1, NULL);
 
-    printf("Joining %d\n", thread2.status);
-    mypthread_join(&thread2, NULL);
+    printf("Joining %d\n", thread2);
+    mypthread_join(thread2, NULL);
 
     printf("In main\n");
 
