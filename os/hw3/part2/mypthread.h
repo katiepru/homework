@@ -10,10 +10,17 @@
 
 //Defines
 
-#define RUNNING  1
-#define WAITING  2
-#define KILLED   3
-#define NEW      4
+enum ThreadState {
+    RUNNING,
+    WAITING,
+    KILLED
+};
+
+typedef enum ThreadState ThreadState;
+
+//#define RUNNING  1
+//#define WAITING  2
+//#define KILLED   3
 
 #define STACK_SIZE 16384
 
@@ -22,9 +29,10 @@
 typedef void *(*thread_func)(void *);
 typedef struct mypthread_t {
     int tid;
-    int status;
+    ThreadState status;
     ucontext_t context;
     thread_func f;
+    void *retval;
 } mypthread_t;
 
 typedef struct ThreadNode {
@@ -42,7 +50,7 @@ typedef struct Queue {
 
 void mypthread_create(mypthread_t *thread, thread_func, void *args);
 void mypthread_yield();
-void mypthread_join(mypthread_t thread, void **ret);
+void mypthread_join(mypthread_t *thread, void **ret);
 void mypthread_exit(void *ret);
 
 //Function definitions - internal use
@@ -53,5 +61,7 @@ Queue *queue_init();
 void queue_destroy();
 void enqueue(Queue *, ThreadNode *);
 ThreadNode *dequeue(Queue *);
+
+ThreadNode *threadnode_init(mypthread_t *);
 
 #endif
