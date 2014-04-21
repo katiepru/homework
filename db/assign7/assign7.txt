@@ -5,16 +5,11 @@ Homework 7
 Part 1 - XML
 
 A.
-    1. for $a in doc("bib.xml")//book/author
-       return $a/first
+    1. //book/author/first
 
-    2. for $a in doc("bib.xml")//book
-       where $a(@year) > 1995 and $a/price < 100
-       return $a/title
+    2. //book[@year > 1995][price < 100]/title
 
-    3. for $a in doc("bib.xml")//book
-       where empty($a/author)
-       return $a/title
+    3. //book[not(author)]/title
 
     4. let $prices := <prices> {
            for $a in doc("bib.xml")
@@ -23,10 +18,6 @@ A.
            return $a/price
            }</prices>
        return avg($prices)
-
-    5. get back to this
-B. SELECT 
-C.
 
 
 Part 2 - Transactions
@@ -48,5 +39,5 @@ d. (25,25)
    (40,40)
    (25,40)
    (30,30)
-   (35,30)
+   (25,30)
    (30,40)
