@@ -13,7 +13,8 @@
 enum ThreadState {
     RUNNING,
     WAITING,
-    KILLED
+    KILLED,
+    NEW
 };
 
 typedef enum ThreadState ThreadState;

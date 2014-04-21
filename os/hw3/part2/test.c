@@ -18,15 +18,18 @@ void *func2(void *args)
 
 int main(int argc, char *argv[])
 {
-    mypthread_t *thread1, *thread2;
+    mypthread_t thread1, thread2;
     printf("Creatinf first thread\n");
-    mypthread_create(thread1, func, NULL);
+    mypthread_create(&thread1, func, NULL);
     printf("Creating second thread\n");
-    mypthread_create(thread2, func2, NULL);
-    printf("Joining 1\n");
-    mypthread_join(thread1, NULL);
-    printf("Joining 2\n");
-    mypthread_join(thread2, NULL);
+    mypthread_create(&thread2, func2, NULL);
+
+    printf("Joining %d\n", thread1.status);
+    mypthread_join(&thread1, NULL);
+
+    printf("Joining %d\n", thread2.status);
+    mypthread_join(&thread2, NULL);
+
     printf("In main\n");
 
     return 0;

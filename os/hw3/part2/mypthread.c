@@ -17,13 +17,15 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
         init = 1;
         threads = calloc(512, sizeof(mypthread_t *));
 
+        //Init run queue
+        run_queue = queue_init();
+
         //Create main thread
         main_thread = malloc(sizeof(mypthread_t));
         threads[0] = main_thread;
         main_thread->tid = 0;
-        main_thread->status = RUNNING;
         main_thread->retval = NULL;
-        running_thread = main_thread;
+        main_thread->status = NEW;
         if(getcontext(&(main_thread->context)) == -1)
         {
             fprintf(stderr, "getcontext failed\n");
@@ -33,16 +35,16 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
         main_thread->context.uc_stack.ss_sp = main_thread_stack;
         main_thread->context.uc_stack.ss_size = STACK_SIZE;
         //FIXME: Successor
-
-        //Init run queue
-        run_queue = queue_init();
+        main_thread->status = RUNNING;
+        running_thread = main_thread;
 
     }
 
 
     thread = malloc(sizeof(mypthread_t));
     thread->tid = tid++;
-    thread->status = RUNNING;
+    threads[tid-1] = thread;
+    thread->status = NEW;
     thread->retval = NULL;
 
     if(getcontext(&(thread->context)) == -1)
@@ -60,6 +62,7 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
     running_thread = thread;
     prev_running->status = WAITING;
     enqueue(run_queue, threadnode_init(prev_running));
+    thread->status = RUNNING;
 
     swapcontext(&(prev_running->context), &(thread->context));
     //f(args);
@@ -68,7 +71,6 @@ void mypthread_create(mypthread_t *thread, thread_func f, void *args)
 
 void mypthread_exit(void *ret)
 {
-    printf("In exit\n");
     running_thread->retval = ret;
     running_thread->status = KILLED;
     scheduler();
@@ -98,14 +100,9 @@ void scheduler()
 {
     mypthread_t *next_runner;
     mypthread_t *curr = running_thread;
-    ThreadNode *enqueued;
+    ThreadNode *enqueued, *dequeued;
 
-    //Check if we have something to run
-    if(run_queue->length == 0)
-    {
-        printf("out of things to run\n");
-        return;
-    }
+    printf("currently rinning %d with status %d\n", curr->tid, curr->status);
 
     //Enter current thread into run queue
     if(curr->status == RUNNING)
@@ -118,7 +115,13 @@ void scheduler()
     //Get next thread to run
     do
     {
-        next_runner = dequeue(run_queue)->thread;
+        dequeued = dequeue(run_queue);
+        if(dequeued == NULL)
+        {
+            printf("Out of things to run\n");
+            return;
+        }
+        next_runner = dequeued->thread;
     } while(next_runner->status != WAITING);
 
     printf("About to run thread %d\n", next_runner->tid);
