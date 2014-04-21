@@ -22,6 +22,7 @@ void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
         //Create main thread
         main_thread = thread_init(0);
         running_thread = 0;
+        main_thread->status = RUNNING;
 
     }
 
@@ -43,6 +44,7 @@ void mypthread_exit(void *ret)
 
 void mypthread_join(mypthread_t thread, void **ret)
 {
+    if(threads[thread] == NULL) return;
     while(threads[thread]->status != KILLED)
     {
         mypthread_yield();
