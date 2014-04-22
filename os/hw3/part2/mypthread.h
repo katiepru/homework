@@ -30,6 +30,7 @@ typedef enum ThreadState ThreadState;
 
 typedef int mypthread_t;
 typedef void *(*thread_func)(void *);
+
 typedef struct _mypthread_t {
     int tid;
     ThreadState status;
@@ -37,6 +38,13 @@ typedef struct _mypthread_t {
     thread_func f;
     void *retval;
 } _mypthread_t;
+
+typedef struct _mypthread_mutex_t {
+    char locked;
+    int tid_locked_by;
+} _mypthread_mutex_t;
+
+typedef struct _mypthread_mutex_t * mypthread_mutex_t;
 
 typedef struct ThreadNode {
     mypthread_t thread;
@@ -50,11 +58,17 @@ typedef struct Queue {
 } Queue;
 
 //Function definitions - user facing
-
 void mypthread_create(mypthread_t *thread, thread_func, void *args);
 void mypthread_yield();
 void mypthread_join(mypthread_t thread, void **ret);
 void mypthread_exit(void *ret);
+
+//Function definitions - locks
+int mypthread_mutex_init(mypthread_mutex_t *, char *);
+int mypthread_mutex_destroy(mypthread_mutex_t *);
+int mypthread_mutex_unlock(mypthread_mutex_t *);
+int mypthread_mutex_lock(mypthread_mutex_t *);
+int mypthread_mutex_trylock(mypthread_mutex_t *);
 
 //Function definitions - internal use
 void scheduler();

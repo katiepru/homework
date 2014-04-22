@@ -7,6 +7,9 @@ int curr_tid;
 char in_lib = 0;
 struct itimerval timer;
 
+
+//Thread user-facing functions
+
 void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
 {
     static int tid = 1; //First thread is for main
@@ -74,6 +77,58 @@ void mypthread_yield()
 {
     scheduler();
 }
+
+//Mutex user-facing functions
+
+//Initialize a mutex
+int mypthread_mutex_init(mypthread_mutex_t *mutex, char *garbage)
+{
+    *mutex = malloc(sizeof(_mypthread_mutex_t));
+    if(*mutex == NULL) return 1;
+    (*mutex)->locked = 0;
+    (*mutex)->tid_locked_by = -1;
+    return 0;
+}
+
+//Destroy a mutex
+int mypthread_mutex_destroy(mypthread_mutex_t *mutex)
+{
+    if((*mutex)->locked) return 1;
+    free(*mutex);
+    return 0;
+}
+
+//Unlock a mutex
+int mypthread_mutex_unlock(mypthread_mutex_t *mutex)
+{
+    if(!(*mutex)->locked) return 1;
+    if((*mutex)->tid_locked_by != running_thread) return 2;
+    (*mutex)->locked = 0;
+    (*mutex)->tid_locked_by = -1;
+    return 0;
+}
+
+//Lock a mutex
+int mypthread_mutex_lock(mypthread_mutex_t *mutex)
+{
+    while((*mutex)->locked)
+    {
+        mypthread_yield();
+    }
+    (*mutex)->locked = 1;
+    (*mutex)->tid_locked_by = running_thread;
+    return 0;
+}
+
+//Try to lock a mutex
+int mypthread_mutex_trylock(mypthread_mutex_t *mutex)
+{
+    if((*mutex)->locked) return 1;
+    (*mutex)->locked = 1;
+    (*mutex)->tid_locked_by = running_thread;
+    return 0;
+}
+
 
 //Internal functions
 
