@@ -2,6 +2,7 @@
 
 void *func(void *args)
 {
+    while(1);
     printf("I am a function\n");
     mypthread_yield();
     printf("Done yieling bitch\n");
@@ -11,6 +12,11 @@ void *func(void *args)
 
 void *func2(void *args)
 {
+    while(1)
+    {
+        printf("func2\n");
+        mypthread_yield();
+    }
     printf("I'm great\n");
     mypthread_exit(NULL);
     return NULL;
