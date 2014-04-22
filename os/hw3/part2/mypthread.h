@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <ucontext.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 
 //Defines
@@ -58,6 +59,7 @@ void mypthread_exit(void *ret);
 //Function definitions - internal use
 void scheduler();
 _mypthread_t *thread_init(mypthread_t);
+void timer_handler(int);
 
 //Function definitions - queue
 Queue *queue_init();

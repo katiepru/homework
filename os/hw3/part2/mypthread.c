@@ -4,12 +4,16 @@ _mypthread_t **threads;
 mypthread_t running_thread;
 Queue *run_queue;
 int curr_tid;
+char in_lib = 0;
+struct itimerval timer;
 
 void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
 {
     static int tid = 1; //First thread is for main
     static char init = 0;
     _mypthread_t *main_thread, *thread;
+
+    in_lib = 1;
 
     if(!init)
     {
@@ -18,6 +22,16 @@ void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
 
         //Init run queue
         run_queue = queue_init();
+
+        //Register timer handler
+        signal(SIGVTALRM, timer_handler);
+
+        //Init timer
+        timer.it_value.tv_sec = 0 ;
+        timer.it_value.tv_usec = 10000;
+        timer.it_interval.tv_sec = 0;
+        timer.it_interval.tv_usec = 10000 ;
+        setitimer(ITIMER_VIRTUAL, &timer, NULL);
 
         //Create main thread
         main_thread = thread_init(0);
@@ -37,6 +51,7 @@ void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
 
 void mypthread_exit(void *ret)
 {
+    in_lib = 1;
     threads[running_thread]->retval = ret;
     threads[running_thread]->status = KILLED;
     scheduler();
@@ -44,6 +59,7 @@ void mypthread_exit(void *ret)
 
 void mypthread_join(mypthread_t thread, void **ret)
 {
+    in_lib = 1;
     if(threads[thread] == NULL) return;
     while(threads[thread]->status != KILLED)
     {
@@ -51,6 +67,7 @@ void mypthread_join(mypthread_t thread, void **ret)
     }
 
     ret = &(threads[thread]->retval);
+    in_lib = 0;
 }
 
 void mypthread_yield()
@@ -88,6 +105,7 @@ void scheduler()
 
     running_thread = next_runner;
     threads[running_thread]->status = RUNNING;
+    in_lib = 0;
     swapcontext(&(threads[curr]->context), &(threads[next_runner]->context));
 }
 
@@ -111,6 +129,18 @@ _mypthread_t *thread_init(mypthread_t threadID)
     //FIXME: Successor
 
     return ret;
+}
+
+void timer_handler(int signum)
+{
+    printf("handling\n");
+    if(in_lib)
+    {
+        printf("doing nothing\n");
+        return; //Do nothing if we are already in the library
+    }
+    in_lib = 1;
+    scheduler();
 }
 
 
