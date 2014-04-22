@@ -83,49 +83,59 @@ void mypthread_yield()
 //Initialize a mutex
 int mypthread_mutex_init(mypthread_mutex_t *mutex, char *garbage)
 {
+    in_lib = 1;
     *mutex = malloc(sizeof(_mypthread_mutex_t));
     if(*mutex == NULL) return 1;
     (*mutex)->locked = 0;
     (*mutex)->tid_locked_by = -1;
+    in_lib = 0;
     return 0;
 }
 
 //Destroy a mutex
 int mypthread_mutex_destroy(mypthread_mutex_t *mutex)
 {
+    in_lib = 1;
     if((*mutex)->locked) return 1;
     free(*mutex);
+    in_lib = 0;
     return 0;
 }
 
 //Unlock a mutex
 int mypthread_mutex_unlock(mypthread_mutex_t *mutex)
 {
+    in_lib = 1;
     if(!(*mutex)->locked) return 1;
     if((*mutex)->tid_locked_by != running_thread) return 2;
     (*mutex)->locked = 0;
     (*mutex)->tid_locked_by = -1;
+    in_lib = 0;
     return 0;
 }
 
 //Lock a mutex
 int mypthread_mutex_lock(mypthread_mutex_t *mutex)
 {
+    in_lib = 1;
     while((*mutex)->locked)
     {
         mypthread_yield();
     }
     (*mutex)->locked = 1;
     (*mutex)->tid_locked_by = running_thread;
+    in_lib = 0;
     return 0;
 }
 
 //Try to lock a mutex
 int mypthread_mutex_trylock(mypthread_mutex_t *mutex)
 {
+    in_lib = 1;
     if((*mutex)->locked) return 1;
     (*mutex)->locked = 1;
     (*mutex)->tid_locked_by = running_thread;
+    in_lib = 0;
     return 0;
 }
 
