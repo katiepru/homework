@@ -10,7 +10,7 @@ struct itimerval timer;
 
 //Thread user-facing functions
 
-void mypthread_create(mypthread_t *threadID, thread_func f, void *args)
+void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void *args)
 {
     static int tid = 1; //First thread is for main
     static char init = 0;
@@ -198,10 +198,8 @@ _mypthread_t *thread_init(mypthread_t threadID)
 
 void timer_handler(int signum)
 {
-    printf("handling\n");
     if(in_lib)
     {
-        printf("doing nothing\n");
         return; //Do nothing if we are already in the library
     }
     in_lib = 1;

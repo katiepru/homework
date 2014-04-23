@@ -58,7 +58,7 @@ typedef struct Queue {
 } Queue;
 
 //Function definitions - user facing
-void mypthread_create(mypthread_t *thread, thread_func, void *args);
+void mypthread_create(mypthread_t *thread, char *garbage, thread_func, void *args);
 void mypthread_yield();
 void mypthread_join(mypthread_t thread, void **ret);
 void mypthread_exit(void *ret);

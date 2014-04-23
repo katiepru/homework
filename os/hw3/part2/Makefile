@@ -9,7 +9,10 @@ mypthread.o: mypthread.c
 test: test.c mypthread.o
 	$(CC) $(CFLAGS) test.c mypthread.o -o test
 
+sort: sort.c mypthread.o
+	$(CC) $(CFLAGS) sort.c mypthread.o -o sort
+
 
 clean :
-	@rm -f test
+	@rm -f test sort
 	@rm -f mypthread.o
