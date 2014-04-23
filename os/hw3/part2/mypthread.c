@@ -12,9 +12,9 @@ struct itimerval timer;
 
 void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void *args)
 {
-    static int tid = 1; //First thread is for main
     static char init = 0;
     _mypthread_t *main_thread, *thread;
+    int i;
 
     in_lib = 1;
 
@@ -44,7 +44,16 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
     }
 
 
-    *threadID = tid++;
+    //Find first open slot
+    for(i = 0; i < 512; ++i)
+    {
+        if(threads[i] == NULL)
+        {
+            *threadID = i;
+            break;
+        }
+    }
+
     thread = thread_init(*threadID);
 
     makecontext(&(thread->context), f, 1, args);
