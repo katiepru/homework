@@ -6,6 +6,7 @@ Queue *run_queue;
 int curr_tid;
 char in_lib = 0;
 struct itimerval timer;
+int thread_len = 512;
 
 
 //Thread user-facing functions
@@ -21,7 +22,7 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
     if(!init)
     {
         init = 1;
-        threads = calloc(512, sizeof(_mypthread_t *));
+        threads = calloc(thread_len, sizeof(_mypthread_t *));
 
         //Init run queue
         run_queue = queue_init();
@@ -45,12 +46,19 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
 
 
     //Find first open slot
-    for(i = 0; i < 512; ++i)
+    for(i = 0; i < thread_len; ++i)
     {
         if(threads[i] == NULL)
         {
             *threadID = i;
             break;
+        }
+        if(i == thread_len - 1)
+        {
+            //Did not find one
+            thread_len *= 2;
+            threads = realloc(threads, thread_len);
+            *threadID = i+1;
         }
     }
 

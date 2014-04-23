@@ -29,9 +29,9 @@ int main(int argc, char *argv[])
     mypthread_mutex_init(&mutex, NULL);
     mypthread_t thread1, thread2;
     printf("Creatinf first thread\n");
-    mypthread_create(&thread1, func, NULL);
+    mypthread_create(&thread1, NULL, func, NULL);
     printf("Creating second thread\n");
-    mypthread_create(&thread2, func2, NULL);
+    mypthread_create(&thread2, NULL, func2, NULL);
 
     printf("Joining %d\n", thread1);
     mypthread_join(thread1, NULL);
