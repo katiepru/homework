@@ -71,7 +71,9 @@ int mypthread_mutex_trylock(mypthread_mutex_t *);
 //Function definitions - internal use
 void scheduler();
 _mypthread_t *thread_init(mypthread_t);
+void thread_destroy(mypthread_t);
 void timer_handler(int);
+void cleanup();
 
 //Function definitions - queue
 Queue *queue_init();

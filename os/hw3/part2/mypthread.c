@@ -25,6 +25,8 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
         init = 1;
         threads = calloc(thread_len, sizeof(_mypthread_t *));
 
+        atexit(cleanup);
+
         //Init run queue
         run_queue = queue_init(); //Register timer handler
         signal(SIGVTALRM, timer_handler);
@@ -45,22 +47,22 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
 
 
     //Find first open slot
-   // for(i = 0; i < thread_len; ++i)
-   // {
-   //     if(threads[i] == NULL)
-   //     {
-   //         *threadID = i;
-   //         break;
-   //     }
-   //     if(i == thread_len - 1)
-   //     {
-   //         //Did not find one
-   //         thread_len *= 2;
-   //         threads = realloc(threads, thread_len);
-   //         *threadID = i+1;
-   //     }
-   // }
-   *threadID = tid++;
+    // for(i = 0; i < thread_len; ++i)
+    // {
+    //     if(threads[i] == NULL)
+    //     {
+    //         *threadID = i;
+    //         break;
+    //     }
+    //     if(i == thread_len - 1)
+    //     {
+    //         //Did not find one
+    //         thread_len *= 2;
+    //         threads = realloc(threads, thread_len);
+    //         *threadID = i+1;
+    //     }
+    // }
+    *threadID = tid++;
 
     thread = thread_init(*threadID);
 
@@ -151,7 +153,6 @@ int mypthread_mutex_lock(mypthread_mutex_t *mutex)
     in_lib = 1;
     while((*mutex)->locked)
     {
-        {
         threads[running_thread]->status = WAITING;
         enqueue((*mutex)->waiting_threads, threadnode_init(running_thread));
         mypthread_yield();
@@ -230,6 +231,13 @@ _mypthread_t *thread_init(mypthread_t threadID)
     return ret;
 }
 
+void thread_destroy(mypthread_t thread)
+{
+    ucontext_t context = threads[thread]->context;
+    free(context.uc_stack.ss_sp);
+    free(threads[thread]);
+}
+
 void timer_handler(int signum)
 {
     if(in_lib)
@@ -238,6 +246,17 @@ void timer_handler(int signum)
     }
     in_lib = 1;
     scheduler();
+}
+
+void cleanup()
+{
+    int i;
+    for(i = 0; i < thread_len; ++i)
+    {
+        if(threads[i] == NULL) break;
+        thread_destroy(i);
+    }
+    queue_destroy(run_queue);
 }
 
 
