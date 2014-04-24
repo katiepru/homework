@@ -133,7 +133,7 @@ int mypthread_mutex_unlock(mypthread_mutex_t *mutex)
     (*mutex)->tid_locked_by = -1;
 
     next_runner = dequeue((*mutex)->waiting_threads);
-    if((next_runner != NULL) && (threads[next_runner->thread]->status != KILLED))
+    if((next_runner != NULL))
     {
         threads[next_runner->thread]->status = RUNNABLE;
         push(run_queue, next_runner);
@@ -151,6 +151,7 @@ int mypthread_mutex_lock(mypthread_mutex_t *mutex)
     in_lib = 1;
     while((*mutex)->locked)
     {
+        {
         threads[running_thread]->status = WAITING;
         enqueue((*mutex)->waiting_threads, threadnode_init(running_thread));
         mypthread_yield();
@@ -182,7 +183,7 @@ void scheduler()
     ThreadNode *enqueued, *dequeued;
 
     //Enter current thread into run queue
-    if(threads[curr]->status != KILLED)
+    if(threads[curr]->status == RUNNING)
     {
         threads[curr]->status = RUNNABLE;
         enqueued = threadnode_init(curr);
