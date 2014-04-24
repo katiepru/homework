@@ -74,30 +74,30 @@ void *sort(void *args)
 
     while(!done)
     {
-        /*        if(start_ind % 2 == 1)
-                  {
-                  mypthread_mutex_lock(right);
-                  mypthread_mutex_lock(left);
-
-                  if(arr[start_ind] < arr[start_ind+1])
-                  {
-                  tmp = arr[start_ind];
-                  arr[start_ind] = arr[start_ind+1];
-                  arr[start_ind+1] = tmp;
-                  }
-
-                  } else
-                  {*/
-        mypthread_mutex_lock(left);
-        mypthread_mutex_lock(right);
-
-        if(arr[start_ind] < arr[start_ind+1])
+        if(start_ind % 2 == 1)
         {
-            tmp = arr[start_ind];
-            arr[start_ind] = arr[start_ind+1];
-            arr[start_ind+1] = tmp;
+            mypthread_mutex_lock(right);
+            mypthread_mutex_lock(left);
+
+            if(arr[start_ind] < arr[start_ind+1])
+            {
+                tmp = arr[start_ind];
+                arr[start_ind] = arr[start_ind+1];
+                arr[start_ind+1] = tmp;
+            }
+
+        } else
+        {
+            mypthread_mutex_lock(left);
+            mypthread_mutex_lock(right);
+
+            if(arr[start_ind] < arr[start_ind+1])
+            {
+                tmp = arr[start_ind];
+                arr[start_ind] = arr[start_ind+1];
+                arr[start_ind+1] = tmp;
+            }
         }
-        // }
         mypthread_mutex_unlock(right);
         mypthread_mutex_unlock(left);
     }
@@ -129,7 +129,7 @@ void *check(void *args)
         prev = arr[i];
         mypthread_mutex_unlock(&(mutexes[i]));
 
-       if(bad)
+        if(bad)
         {
             mypthread_exit((void *)(size_t)15);
         }
