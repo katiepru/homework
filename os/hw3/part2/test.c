@@ -10,7 +10,7 @@ void *func(void *args)
     mypthread_yield();
     printf("unlocking mutex in func\n");
     mypthread_mutex_unlock(&mutex);
-    mypthread_exit(NULL);
+    mypthread_exit((void *)(size_t)0xdeadbeef);
     return NULL;
 }
 
@@ -26,6 +26,7 @@ void *func2(void *args)
 
 int main(int argc, char *argv[])
 {
+    void *ret = (void *)(size_t)0xaaaaaa;
     mypthread_mutex_init(&mutex, NULL);
     mypthread_t thread1, thread2;
     printf("Creatinf first thread\n");
@@ -34,7 +35,8 @@ int main(int argc, char *argv[])
     mypthread_create(&thread2, NULL, func2, NULL);
 
     printf("Joining %d\n", thread1);
-    mypthread_join(thread1, NULL);
+    mypthread_join(thread1, &ret);
+    printf("Got ret %p\n", ret);
 
     printf("Joining %d\n", thread2);
     mypthread_join(thread2, NULL);

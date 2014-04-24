@@ -88,7 +88,8 @@ void mypthread_join(mypthread_t thread, void **ret)
         mypthread_yield();
     }
 
-    ret = &(threads[thread]->retval);
+    if(ret != NULL)
+        *ret = threads[thread]->retval;
     in_lib = 0;
 }
 
@@ -256,6 +257,7 @@ void cleanup()
         if(threads[i] == NULL) break;
         thread_destroy(i);
     }
+    free(threads);
     queue_destroy(run_queue);
 }
 
