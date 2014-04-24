@@ -13,6 +13,7 @@
 
 enum ThreadState {
     RUNNING,
+    RUNNABLE,
     WAITING,
     KILLED,
     NEW
@@ -20,16 +21,23 @@ enum ThreadState {
 
 typedef enum ThreadState ThreadState;
 
-//#define RUNNING  1
-//#define WAITING  2
-//#define KILLED   3
-
 #define STACK_SIZE 16384
 
 //Typedefs
 
 typedef int mypthread_t;
 typedef void *(*thread_func)(void *);
+
+typedef struct ThreadNode {
+    mypthread_t thread;
+    struct ThreadNode *next;
+} ThreadNode;
+
+typedef struct Queue {
+    ThreadNode *front;
+    ThreadNode *back;
+    int length;
+} Queue;
 
 typedef struct _mypthread_t {
     int tid;
@@ -42,20 +50,10 @@ typedef struct _mypthread_t {
 typedef struct _mypthread_mutex_t {
     char locked;
     int tid_locked_by;
+    Queue *waiting_threads;
 } _mypthread_mutex_t;
 
 typedef struct _mypthread_mutex_t * mypthread_mutex_t;
-
-typedef struct ThreadNode {
-    mypthread_t thread;
-    struct ThreadNode *next;
-} ThreadNode;
-
-typedef struct Queue {
-    ThreadNode *front;
-    ThreadNode *back;
-    int length;
-} Queue;
 
 //Function definitions - user facing
 void mypthread_create(mypthread_t *thread, char *garbage, thread_func, void *args);

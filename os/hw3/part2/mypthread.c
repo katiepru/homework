@@ -14,6 +14,7 @@ int thread_len = 512;
 void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void *args)
 {
     static char init = 0;
+    static int tid = 1;
     _mypthread_t *main_thread, *thread;
     int i;
 
@@ -25,16 +26,14 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
         threads = calloc(thread_len, sizeof(_mypthread_t *));
 
         //Init run queue
-        run_queue = queue_init();
-
-        //Register timer handler
+        run_queue = queue_init(); //Register timer handler
         signal(SIGVTALRM, timer_handler);
 
         //Init timer
         timer.it_value.tv_sec = 0 ;
-        timer.it_value.tv_usec = 10000;
+        timer.it_value.tv_usec = 100;
         timer.it_interval.tv_sec = 0;
-        timer.it_interval.tv_usec = 10000 ;
+        timer.it_interval.tv_usec = 100;
         setitimer(ITIMER_VIRTUAL, &timer, NULL);
 
         //Create main thread
@@ -46,21 +45,22 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
 
 
     //Find first open slot
-    for(i = 0; i < thread_len; ++i)
-    {
-        if(threads[i] == NULL)
-        {
-            *threadID = i;
-            break;
-        }
-        if(i == thread_len - 1)
-        {
-            //Did not find one
-            thread_len *= 2;
-            threads = realloc(threads, thread_len);
-            *threadID = i+1;
-        }
-    }
+   // for(i = 0; i < thread_len; ++i)
+   // {
+   //     if(threads[i] == NULL)
+   //     {
+   //         *threadID = i;
+   //         break;
+   //     }
+   //     if(i == thread_len - 1)
+   //     {
+   //         //Did not find one
+   //         thread_len *= 2;
+   //         threads = realloc(threads, thread_len);
+   //         *threadID = i+1;
+   //     }
+   // }
+   *threadID = tid++;
 
     thread = thread_init(*threadID);
 
@@ -105,6 +105,7 @@ int mypthread_mutex_init(mypthread_mutex_t *mutex, char *garbage)
     if(*mutex == NULL) return 1;
     (*mutex)->locked = 0;
     (*mutex)->tid_locked_by = -1;
+    (*mutex)->waiting_threads = queue_init();
     in_lib = 0;
     return 0;
 }
@@ -114,6 +115,7 @@ int mypthread_mutex_destroy(mypthread_mutex_t *mutex)
 {
     in_lib = 1;
     if((*mutex)->locked) return 1;
+    queue_destroy((*mutex)->waiting_threads);
     free(*mutex);
     in_lib = 0;
     return 0;
@@ -122,11 +124,23 @@ int mypthread_mutex_destroy(mypthread_mutex_t *mutex)
 //Unlock a mutex
 int mypthread_mutex_unlock(mypthread_mutex_t *mutex)
 {
+    ThreadNode *next_runner;
+
     in_lib = 1;
     if(!(*mutex)->locked) return 1;
     if((*mutex)->tid_locked_by != running_thread) return 2;
     (*mutex)->locked = 0;
     (*mutex)->tid_locked_by = -1;
+
+    next_runner = dequeue((*mutex)->waiting_threads);
+    if((next_runner != NULL) && (threads[next_runner->thread]->status != KILLED))
+    {
+        threads[next_runner->thread]->status = RUNNABLE;
+        push(run_queue, next_runner);
+    }
+
+    scheduler();
+
     in_lib = 0;
     return 0;
 }
@@ -137,6 +151,8 @@ int mypthread_mutex_lock(mypthread_mutex_t *mutex)
     in_lib = 1;
     while((*mutex)->locked)
     {
+        threads[running_thread]->status = WAITING;
+        enqueue((*mutex)->waiting_threads, threadnode_init(running_thread));
         mypthread_yield();
     }
     (*mutex)->locked = 1;
@@ -168,7 +184,7 @@ void scheduler()
     //Enter current thread into run queue
     if(threads[curr]->status != KILLED)
     {
-        threads[curr]->status = WAITING;
+        threads[curr]->status = RUNNABLE;
         enqueued = threadnode_init(curr);
         enqueue(run_queue, enqueued);
     }
@@ -183,7 +199,7 @@ void scheduler()
             return;
         }
         next_runner = dequeued->thread;
-    } while(threads[next_runner]->status != WAITING);
+    } while(threads[next_runner]->status != RUNNABLE);
 
     running_thread = next_runner;
     threads[running_thread]->status = RUNNING;
@@ -199,16 +215,16 @@ _mypthread_t *thread_init(mypthread_t threadID)
     threads[threadID] = ret;
     ret->tid = threadID;
     ret->retval = NULL;
-    ret->status = WAITING;
+    ret->status = RUNNABLE;
     if(getcontext(&(ret->context)) == -1)
     {
         fprintf(stderr, "getcontext failed\n");
-        exit(5);
+        return NULL;
     }
     stack = malloc(STACK_SIZE*sizeof(char));
     ret->context.uc_stack.ss_sp = stack;
     ret->context.uc_stack.ss_size = STACK_SIZE;
-    //FIXME: Successor
+    ret->context.uc_link = NULL;
 
     return ret;
 }
