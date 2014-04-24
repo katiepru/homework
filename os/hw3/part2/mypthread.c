@@ -16,7 +16,6 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
     static char init = 0;
     static int tid = 1;
     _mypthread_t *main_thread, *thread;
-    int i;
 
     in_lib = 1;
 
@@ -66,7 +65,7 @@ void mypthread_create(mypthread_t *threadID, char *garabage, thread_func f, void
 
     thread = thread_init(*threadID);
 
-    makecontext(&(thread->context), f, 1, args);
+    makecontext(&(thread->context), (void *)f, 1, args);
     push(run_queue, threadnode_init(*threadID));
     scheduler();
 }

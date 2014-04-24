@@ -1,7 +1,7 @@
 CC = gcc
-CFLAGS = -ggdb -Wall
+CFLAGS = -ggdb
 
-all : test
+all : test sort
 
 mypthread.o: mypthread.c
 	$(CC) $(CFLAGS) -c mypthread.c
