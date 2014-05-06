@@ -1,0 +1,34 @@
+Kaitlin Poskaitis
+Assignment 8a
+
+1.
+  a.) ADoc would better match the query than Bdoc.
+      This is because dot products of ADoc and Q and Bdoc and Q will be the
+      same, but BDoc will be twice as long as Adoc. Algebraically, this can be
+      shown as follows, where d = dot product of ADoc or BDoc and Q.
+      ADoc: d/len(Q)*len(ADOC) = cos(theta1)
+      BDoc: d/len(Q)*2*len(ADoc) = cos(theta2)
+      Because cos(theta2) is smaller than cos(theta1), ADoc will be a
+      better match, assuming that Q contains at least 1 term in ADoc.
+      Otherwise they both will not match as the dot products will be 0.
+
+  b.) Let TF1 be the term frequency vector of the terms in Q in ADoc.
+      Let TF2 be the term frequency vector of the terms in Q in BDoc.
+      TF2 can be obtained from TF1 by multiplying every entry in TF1 by 2.
+      This means that the dot product of TF2 and Q will be greater than
+      or equal to that of TF1 and Q.
+      These dot products are only equal when they equal 0, otherwise the
+      former will always be larger.
+      Specifically, the former must be twice as large as the latter because
+      every entry in the summation is mulitplied by 2.
+      Let d = dot product of TF1 and Q
+      cosine(theta1) = d/len(Q)*len(ADoc)
+      cosine(theta(2) = 2d/Len(Q)*2*len(ADoc)
+      Therefore, theta1=theta2, so they are equally weighted.
+
+  c.) Let TF1 and TF2 be the same as in the previous problem.
+      IDF = [log(2/2), log(2/2)...]
+      IDF = [0, 0, 0, ...]
+      Therefore, neither document will be shown to match because
+      wk is going to be a vector of all 0s, as derrived from IDF[j]*TF[j].
+
