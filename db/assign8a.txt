@@ -32,3 +32,18 @@ Assignment 8a
       Therefore, neither document will be shown to match because
       wk is going to be a vector of all 0s, as derrived from IDF[j]*TF[j].
 
+
+2. The relevant documents are d3, d7, d8, d11, and d12.
+   This was found by using m for each point (k/5, k/m).
+
+3. 
+    a.) Expections of values
+        - I expect B and C to be the most valuable because they have the
+          most links to them
+        - A and D should be about the same value because they have the
+          same link structure
+    b.) M = [1/2   1/2   0     0
+             0     0     1/2   0
+             0     1     0     0
+             0     0     1/2   1/2]
+
