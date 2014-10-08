@@ -26,7 +26,7 @@ public class BufferPool {
 
     private Hashtable<PageId, Page> pool;
     private int currentPages;
-    private int maxPages;
+    private int numPages;
     
 
     /**
