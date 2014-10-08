@@ -1,6 +1,7 @@
 package simpledb;
 
 import java.io.*;
+import java.util.Hashtable;
 
 /**
  * BufferPool manages the reading and writing of pages into memory from
@@ -22,6 +23,10 @@ public class BufferPool {
     int replace_policy = DEFAULT_POLICY;
     int _numhits=0;
     int _nummisses=0;
+
+    private Hashtable<PageId, Page> pool;
+    private int currentPages;
+    private int maxPages;
     
 
     /**
@@ -30,7 +35,9 @@ public class BufferPool {
      * @param numPages number of pages in this buffer pool
      */
     public BufferPool(int numPages) {
-        //IMPLEMENT THIS
+        this.pool = new Hashtable<PageId, Page>(numPages);
+        this.currentPages = 0;
+        this.numPages = numPages;
     }
 
   
@@ -51,8 +58,15 @@ public class BufferPool {
      */
     public synchronized Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException, IOException {
-	//IMPLEMENT THIS
-	return null;
+
+        DbFile f = Database.getCatalog().getDbFile(pid.tableid());
+        Page p = f.readPage(pid);
+        if(currentPages < this.numPages) {
+            this.pool.put(pid, p);
+        } else {
+            throw new DbException("Too many pages");
+        }
+	return p;
 }
 
     /**
