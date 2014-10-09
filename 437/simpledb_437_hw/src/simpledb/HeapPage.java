@@ -244,9 +244,12 @@ public class HeapPage implements Page {
      * Returns the number of empty slots on this page.
      */
     public int getNumEmptySlots() {
-        int tuplesPerPage = (BufferPool.PAGE_SIZE*8) / ((_td.getSize()*8)+1);
-        int headersize = (int)Math.ceil(tuplesPerPage/8); 
-	return 0;
+        int emptySlots = 0;
+        for(int i = 0; i < this.numSlots; i++) {
+            if(!getSlot(i))
+                emptySlots++;
+        }
+        return emptySlots;
     }
     /**
      * Returns true if associated slot on this page is filled.
@@ -267,6 +270,15 @@ public class HeapPage implements Page {
     private void setSlot(int i, boolean value) {
         if(this.getSlot(i) == value)
             return;
+        int headerInd = i/32;
+        int currInt = this.header[headerInd];
+        int bitwise = 1;
+        i -= 32 * headerInd;
+        bitwise = bitwise << i;
+        if(value)
+            header[headerInd] = currInt | bitwise;
+        else
+            header[headerInd] = currInt ^ bitwise;
     }
 
     /**
