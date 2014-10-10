@@ -2,6 +2,8 @@ package simpledb;
 
 import java.io.*;
 import java.util.Hashtable;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 /**
  * BufferPool manages the reading and writing of pages into memory from
@@ -25,6 +27,7 @@ public class BufferPool {
     int _nummisses=0;
 
     private Hashtable<PageId, Page> pool;
+    private Deque<PageId> queue;
     private int currentPages;
     private int numPages;
     
@@ -38,6 +41,7 @@ public class BufferPool {
         this.pool = new Hashtable<PageId, Page>(numPages);
         this.currentPages = 0;
         this.numPages = numPages;
+        this.queue = new ArrayDeque<PageId>(numPages);
     }
 
   
@@ -59,15 +63,35 @@ public class BufferPool {
     public synchronized Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException, IOException {
 
+        if(this.pool.containsKey(pid)) {
+            _numhits++;
+            while(this.queue.removeFirstOccurrence(pid));
+            this.queue.addLast(pid);
+
+            return this.pool.get(pid);
+        }
+
         DbFile f = Database.getCatalog().getDbFile(pid.tableid());
         Page p = f.readPage(pid);
-        if(currentPages < this.numPages) {
+        _nummisses++;
+
+        if(this.currentPages < this.numPages) {
             this.pool.put(pid, p);
+            this.currentPages++;
         } else {
-            throw new DbException("Too many pages");
+            PageId evict = this.evictPage();
+            if(evict == null) {
+                return p;
+            }
+            this.pool.remove(evict);
+            this.pool.put(pid, p);
         }
-	return p;
-}
+            while(this.queue.removeFirstOccurrence(pid));
+            this.queue.addLast(pid);
+
+
+	    return p;
+    }
 
     /**
      * Releases the lock on a page.
@@ -78,9 +102,7 @@ public class BufferPool {
      * @param tid the ID of the transaction requesting the unlock
      * @param pid the ID of the page to unlock
      */
-    public synchronized void releasePage(TransactionId tid, PageId pid) {
-        // no need to implement this
-       
+    public synchronized void releasePage(TransactionId tid, PageId pid) { // no need to implement this }
     }
 
     /**
@@ -174,9 +196,17 @@ public class BufferPool {
     /**
      * Discards a page from the buffer pool. Return index of discarded page
      */
-    private  synchronized int evictPage() throws DbException {
-	//IMPLEMENT THIS
-	return 0;
+    private synchronized PageId evictPage() throws DbException {
+
+        if(this.replace_policy == MRU_POLICY) {
+            return this.queue.removeLast();
+        } else if(this.replace_policy == LRU_POLICY) {
+            return this.queue.removeFirst();
+        } else {
+            //throw new DbException("No eviction policy set");
+            return null;
+        }
+
     }
 
     public int getNumHits(){
