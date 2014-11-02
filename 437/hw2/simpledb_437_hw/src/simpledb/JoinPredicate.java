@@ -21,7 +21,9 @@ public class JoinPredicate {
      * @see Predicate
      */
     public JoinPredicate(int field1, Predicate.Op op, int field2) {
-	//IMPLEMENT THIS
+        this._leftField = field1;
+        this._rightField = field2;
+        this._op = op;
     }
 
     /**
@@ -30,9 +32,9 @@ public class JoinPredicate {
      * @return true if the tuples satisfy the predicate.
      */
     public boolean filter(Tuple t1, Tuple t2) {
-	//IMPLEMENT THIS
-	return false;
-	
+        Field f1 = t1.getField(this._leftField);
+        Field f2 = t2.getField(this._rightField);
+        return f1.compare(this._op, f2);
     }
 
     public Field getLeftField(Tuple t){
