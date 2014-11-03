@@ -259,7 +259,7 @@ public class HeapPage implements Page {
         int currInt = this.header[headerInd];
         i -= 32 * headerInd;
         currInt = currInt >>> i;
-	    return (currInt % 2 == 1);
+	    return (currInt % 2 != 0);
 	}
         
 

@@ -21,12 +21,12 @@ public class Join extends AbstractDbIterator {
     private int _joinType = 0;
     private int _numMatches =0;
     private int _numComp=0;
-  
+
     public static final int SNL = 0;
-    public static final int PNL = 1;    
-    public static final int BNL = 2;    
-    public static final int SMJ = 3;    
-    public static final int HJ = 4;    
+    public static final int PNL = 1;
+    public static final int BNL = 2;
+    public static final int SMJ = 3;
+    public static final int HJ = 4;
     /**
      * Constructor.  Accepts to children to join and the predicate
      * to join them on
@@ -39,21 +39,15 @@ public class Join extends AbstractDbIterator {
         this._predicate = p;
         this._outerRelation = child1;
         this._innerRelation = child2;
-
     }
 
     public void setJoinAlgorithm(int joinAlgo){
-	_joinType = joinAlgo;
+        _joinType = joinAlgo;
     }
     /**
      * @see simpledb.TupleDesc#combine(TupleDesc, TupleDesc) for possible implementation logic.
      */
     public TupleDesc getTupleDesc() {
-        if(this.tupleDesc == null) {
-            TupleDesc td1 = this._outerRecent.getTupleDesc();
-            TupleDesc td2 = this._innerRecent.getTupleDesc();
-            this.tupleDesc = TupleDesc.combine(td1, td2);
-        }
         return this.tupleDesc;
     }
 
@@ -61,16 +55,32 @@ public class Join extends AbstractDbIterator {
         throws DbException, NoSuchElementException, TransactionAbortedException, IOException {
         this._outerRelation.open();
         this._innerRelation.open();
+
+        Tuple outer = this._outerRelation.next();
+        this._outerRelation.rewind();
+        Tuple inner = this._innerRelation.next();
+        this._innerRelation.rewind();
+
+        TupleDesc td1 = outer.getTupleDesc();
+        TupleDesc td2 = inner.getTupleDesc();
+
+        this.tupleDesc = TupleDesc.combine(td1, td2);
     }
 
     public void close() {
         this._outerRelation.close();
         this._innerRelation.close();
+        this._outerRecent=null;
+        this._innerRecent=null;
     }
 
     public void rewind() throws DbException, TransactionAbortedException, IOException {
         this._outerRelation.rewind();
         this._innerRelation.rewind();
+        this._outerRecent=null;
+        this._innerRecent=null;
+        this._numMatches=0;
+        this._numComp=0;
     }
 
     /**
@@ -92,62 +102,63 @@ public class Join extends AbstractDbIterator {
      * @see JoinPredicate#filter
      */
     protected Tuple readNext() throws TransactionAbortedException, DbException {
-	switch(_joinType){
-	case SNL: return SNL_readNext();
-	case PNL: return PNL_readNext();
-	case BNL: return BNL_readNext();
-	case SMJ: return SMJ_readNext();
-	case HJ: return HJ_readNext();
-	default: return SNL_readNext();
-	}
+        try {
+            switch(_joinType){
+                case SNL: return SNL_readNext();
+                case PNL: return PNL_readNext();
+                case BNL: return BNL_readNext();
+                case SMJ: return SMJ_readNext();
+                case HJ: return HJ_readNext();
+                default: return SNL_readNext();
+            }
+        } catch(IOException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
-    protected Tuple SNL_readNext() throws TransactionAbortedException, DbException {
+    protected Tuple SNL_readNext() throws TransactionAbortedException, DbException, IOException {
         Tuple ret = null;
 
-        if(this._outerRecent == null)
+        if(this._outerRecent == null && this._outerRelation.hasNext())
             this._outerRecent = this._outerRelation.next();
-        if(this._innerRecent == null)
-            this._innerRecent = this._innerRelation.next();
 
-        do {
-            do {
+        while(this._outerRecent != null) {
+            while(this._innerRelation.hasNext()) {
+                Tuple inner = this._innerRelation.next();
                 this._numComp++;
-                if(this._predicate.filter(this._outerRecent, this._innerRecent)) {
+                if(this._predicate.filter(this._outerRecent, inner)) {
                     this._numMatches++;
-                    ret =  this.joinTuple(this._outerRecent, this._innerRecent, this.tupleDesc);
+                    return this.joinTuple(this._outerRecent, inner, this.getTupleDesc());
                 }
-                this._innerRecent = this._innerRelation.next();
-                if(ret != null)
-                    return ret;
-            } while(this._innerRecent != null);
-            this._outerRecent = this._outerRelation.next();
-        } while(this._outerRecent != null);
-	    return null;
+            }
+            this._innerRelation.rewind();
+            this._outerRecent = (this._outerRelation.hasNext()) ? this._outerRelation.next() : null;
+        }
+        return null;
     }
 
 
     protected Tuple PNL_readNext() throws TransactionAbortedException, DbException {
-	//IMPLEMENT THIS (EXTRA CREDIT ONLY)
-	return null;
+        //IMPLEMENT THIS (EXTRA CREDIT ONLY)
+        return null;
     }
 
 
     protected Tuple BNL_readNext() throws TransactionAbortedException, DbException {
-	//no need to implement this
-	return null;
+        //no need to implement this
+        return null;
     }
 
 
     protected Tuple SMJ_readNext() throws TransactionAbortedException, DbException {
-	
-	//IMPLEMENT THIS. YOU CAN ASSUME THE JOIN PREDICATE IS ALWAYS =
-	return null;
+
+        //IMPLEMENT THIS. YOU CAN ASSUME THE JOIN PREDICATE IS ALWAYS =
+        return null;
     }
 
     protected Tuple HJ_readNext() throws TransactionAbortedException, DbException {
-	//no need to implement this
-	return null;
+        //no need to implement this
+        return null;
     }
 
 
@@ -169,9 +180,9 @@ public class Join extends AbstractDbIterator {
     }
 
     public int getNumMatches(){
-	return _numMatches;
+        return _numMatches;
     }
     public int getNumComp(){
-	return _numComp;
+        return _numComp;
     }
 }
