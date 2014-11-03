@@ -32,6 +32,8 @@ public class JoinPredicate {
      * @return true if the tuples satisfy the predicate.
      */
     public boolean filter(Tuple t1, Tuple t2) {
+        if(t1 == null || t2 == null)
+            return false;
         Field f1 = t1.getField(this._leftField);
         Field f2 = t2.getField(this._rightField);
         return f1.compare(this._op, f2);
