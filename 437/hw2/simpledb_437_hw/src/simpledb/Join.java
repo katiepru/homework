@@ -16,6 +16,8 @@ public class Join extends AbstractDbIterator {
     private Tuple _outerRecent=null;
     private Tuple _innerRecent=null;
 
+    private TupleDesc tupleDesc = null;
+
     private int _joinType = 0;
     private int _numMatches =0;
     private int _numComp=0;
@@ -37,6 +39,7 @@ public class Join extends AbstractDbIterator {
         this._predicate = p;
         this._outerRelation = child1;
         this._innerRelation = child2;
+
     }
 
     public void setJoinAlgorithm(int joinAlgo){
@@ -46,9 +49,12 @@ public class Join extends AbstractDbIterator {
      * @see simpledb.TupleDesc#combine(TupleDesc, TupleDesc) for possible implementation logic.
      */
     public TupleDesc getTupleDesc() {
-        TupleDesc td1 = this._outerRecent.getTupleDesc();
-        TupleDesc td2 = this._innerRecent.getTupleDesc();
-        return TupleDesc.combine(td1, td2);
+        if(this.tupleDesc == null) {
+            TupleDesc td1 = this._outerRecent.getTupleDesc();
+            TupleDesc td2 = this._innerRecent.getTupleDesc();
+            this.tupleDesc = TupleDesc.combine(td1, td2);
+        }
+        return this.tupleDesc;
     }
 
     public void open()
@@ -97,8 +103,27 @@ public class Join extends AbstractDbIterator {
     }
 
     protected Tuple SNL_readNext() throws TransactionAbortedException, DbException {
-	//IMPLEMENT THIS 
-	return null;
+        Tuple ret = null;
+
+        if(this._outerRecent == null)
+            this._outerRecent = this._outerRelation.next();
+        if(this._innerRecent == null)
+            this._innerRecent = this._innerRelation.next();
+
+        do {
+            do {
+                this._numComp++;
+                if(this._predicate.filter(this._outerRecent, this._innerRecent)) {
+                    this._numMatches++;
+                    ret =  this.joinTuple(this._outerRecent, this._innerRecent, this.tupleDesc);
+                }
+                this._innerRecent = this._innerRelation.next();
+                if(ret != null)
+                    return ret;
+            } while(this._innerRecent != null);
+            this._outerRecent = this._outerRelation.next();
+        } while(this._outerRecent != null);
+	    return null;
     }
 
 
