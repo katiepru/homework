@@ -152,8 +152,20 @@ public class Join extends AbstractDbIterator {
 
 
     private Tuple joinTuple(Tuple outer, Tuple inner, TupleDesc tupledesc){
-	//IMPLEMENT THIS
-	return null;
+        if(outer == null || inner == null || tupledesc == null)
+            return null;
+        Tuple t = new Tuple(tupledesc);
+        int curr = 0;
+        for (int i = 0; i < outer.getTupleDesc().numFields(); i++) {
+            t.setField(curr, outer.getField(i));
+            curr++;
+        }
+        for (int i = 0; i < inner.getTupleDesc().numFields(); i++) {
+            t.setField(curr, inner.getField(i));
+            curr++;
+        }
+        return t;
+
     }
 
     public int getNumMatches(){
