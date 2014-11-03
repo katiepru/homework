@@ -34,7 +34,9 @@ public class Join extends AbstractDbIterator {
      * @param child2 Iterator for the right(inner) relation to join
      */
     public Join(JoinPredicate p, DbIterator child1, DbIterator child2) {
-	//IMPLEMENT THIS
+        this._predicate = p;
+        this._outerRelation = child1;
+        this._innerRelation = child2;
     }
 
     public void setJoinAlgorithm(int joinAlgo){
@@ -44,23 +46,25 @@ public class Join extends AbstractDbIterator {
      * @see simpledb.TupleDesc#combine(TupleDesc, TupleDesc) for possible implementation logic.
      */
     public TupleDesc getTupleDesc() {
-	//IMPLEMENT THIS
-	return null;
+        TupleDesc td1 = this._outerRecent.getTupleDesc();
+        TupleDesc td2 = this._innerRecent.getTupleDesc();
+        return TupleDesc.combine(td1, td2);
     }
 
     public void open()
         throws DbException, NoSuchElementException, TransactionAbortedException, IOException {
-		//IMPLEMENT THIS
-
+        this._outerRelation.open();
+        this._innerRelation.open();
     }
 
     public void close() {
-//IMPLEMENT THIS
-
+        this._outerRelation.close();
+        this._innerRelation.close();
     }
 
     public void rewind() throws DbException, TransactionAbortedException, IOException {
-//IMPLEMENT THIS
+        this._outerRelation.rewind();
+        this._innerRelation.rewind();
     }
 
     /**
