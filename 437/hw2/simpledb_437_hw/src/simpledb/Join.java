@@ -1,6 +1,7 @@
 package simpledb;
 import java.util.*;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * The Join operator implements the relational join operation.
@@ -22,6 +23,10 @@ public class Join extends AbstractDbIterator {
     private int _numMatches =0;
     private int _numComp=0;
 
+    private ArrayList<Tuple> SMJCurrMatches;
+    private Tuple SMJOuterCurr = null;
+    private int SMJCurrInd = 0;
+
     public static final int SNL = 0;
     public static final int PNL = 1;
     public static final int BNL = 2;
@@ -39,6 +44,8 @@ public class Join extends AbstractDbIterator {
         this._predicate = p;
         this._outerRelation = child1;
         this._innerRelation = child2;
+
+        this.SMJCurrMatches = new ArrayList<Tuple>();
     }
 
     public void setJoinAlgorithm(int joinAlgo){
@@ -159,12 +166,38 @@ public class Join extends AbstractDbIterator {
             this._innerRecent = this._innerRelation.next();
 
         while(this._outerRecent != null) {
+
+            if(this.SMJCurrMatches.size() > this.SMJCurrInd) {
+                if(!(this.SMJOuterCurr == this._outerRecent)) {
+                    if(this._predicate.filter(this._outerRecent, this.SMJCurrMatches.get(this.SMJCurrInd))) {
+                        this._numMatches++;
+                        Tuple cached = this.SMJCurrMatches.get(this.SMJCurrInd);
+                        this.SMJCurrInd++;
+                        ret = this.joinTuple(this._outerRecent, cached, this.getTupleDesc());
+                        return ret;
+                    } else {
+                        this.SMJCurrMatches.clear();
+                        this.SMJOuterCurr = null;
+                        this.SMJCurrInd = 0;
+                    }
+                }
+            } else if(this.SMJCurrInd > 0) {
+                this.SMJCurrInd = 0;
+                if(this._outerRelation.hasNext()) {
+                    this._outerRecent = this._outerRelation.next();
+                    continue;
+                }
+            }
+
             while(this._innerRecent != null) {
                 this._numComp++;
+
 
                 if(this._predicate.filter(this._outerRecent, this._innerRecent)) {
                     this._numMatches++;
                     ret = this.joinTuple(this._outerRecent, this._innerRecent, this.getTupleDesc());
+                    this.SMJOuterCurr = this._outerRecent;
+                    this.SMJCurrMatches.add(this._innerRecent);
                     if(this._innerRelation.hasNext())
                         this._innerRecent = this._innerRelation.next();
                     else
