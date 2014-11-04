@@ -165,6 +165,11 @@ public class Join extends AbstractDbIterator {
                 if(this._predicate.filter(this._outerRecent, this._innerRecent)) {
                     this._numMatches++;
                     ret = this.joinTuple(this._outerRecent, this._innerRecent, this.getTupleDesc());
+                    if(this._innerRelation.hasNext())
+                        this._innerRecent = this._innerRelation.next();
+                    else
+                        this._innerRecent = null;
+                    return ret;
                 }
 
                 Field leftField = this._predicate.getLeftField(this._outerRecent);
@@ -179,7 +184,7 @@ public class Join extends AbstractDbIterator {
             if(this._outerRelation.hasNext())
                 this._outerRecent = this._outerRelation.next();
             else
-                break;
+                return null;
         }
         return null;
     }
