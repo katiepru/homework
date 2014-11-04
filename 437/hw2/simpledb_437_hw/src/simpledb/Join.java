@@ -150,9 +150,37 @@ public class Join extends AbstractDbIterator {
     }
 
 
-    protected Tuple SMJ_readNext() throws TransactionAbortedException, DbException {
-
+    protected Tuple SMJ_readNext() throws TransactionAbortedException, DbException, IOException {
         //IMPLEMENT THIS. YOU CAN ASSUME THE JOIN PREDICATE IS ALWAYS =
+        Tuple ret = null;
+        if(this._outerRecent == null && this._outerRelation.hasNext())
+            this._outerRecent = this._outerRelation.next();
+        if(this._innerRecent == null && this._innerRelation.hasNext())
+            this._innerRecent = this._innerRelation.next();
+
+        while(this._outerRecent != null) {
+            while(this._innerRecent != null) {
+                this._numComp++;
+
+                if(this._predicate.filter(this._outerRecent, this._innerRecent)) {
+                    this._numMatches++;
+                    ret = this.joinTuple(this._outerRecent, this._innerRecent, this.getTupleDesc());
+                }
+
+                Field leftField = this._predicate.getLeftField(this._outerRecent);
+                Field rightField = this._predicate.getRightField(this._innerRecent);
+                if(leftField.compare(Predicate.Op.LESS_THAN, rightField))
+                    break;
+                if(this._innerRelation.hasNext())
+                    this._innerRecent = this._innerRelation.next();
+                else
+                    return null;
+            }
+            if(this._outerRelation.hasNext())
+                this._outerRecent = this._outerRelation.next();
+            else
+                break;
+        }
         return null;
     }
 
