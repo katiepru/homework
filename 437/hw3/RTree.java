@@ -17,6 +17,13 @@ public class RTree {
 
     private Tuple[] tuples;
 
+    public Tuple[] rangeSearch(int minX, int minY, int maxX, int maxY) {
+        ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
+        BoundingBox search = new BoundingBox(minX, minY, maxX, maxY);
+        this.rangeSearch(search, tupleList, this.root);
+        return tupleList.toArray(new Tuple[0]);
+    }
+
     public Tuple pointSearch(int x, int y) {
         return this.pointSearch(this.root, x, y);
     }
@@ -40,6 +47,23 @@ public class RTree {
                 return t;
         }
         return null;
+    }
+
+    private void rangeSearch(BoundingBox search, ArrayList<Tuple> tupleList, RNode root) {
+        if(root.isLeaf) {
+            for(int i = 0; i < root.length; i++) {
+                Tuple t = (Tuple) root.getItem(i);
+                if(search.contains(t.minX(), t.minY()))
+                    tupleList.add(t);
+            }
+            return;
+        }
+        for(int i = 0; i < root.length; i++) {
+            BoundingBox curr = (BoundingBox) root.getItem(i);
+            if(!search.intersects(curr))
+                continue;
+            rangeSearch(search, tupleList, curr.child);
+        }
     }
 
     private void buildBottomUp(RNode[] currLevel) {

@@ -20,6 +20,14 @@ public class BoundingBox implements RNodeContents {
         return false;
     }
 
+    public boolean intersects(BoundingBox b) {
+        if (this.maxX() < b.minX()) return false;
+        if (this.minX() > b.maxX()) return false;
+        if (this.maxY() < b.minY()) return false;
+        if (this.minY() > b.maxY()) return false;
+        return true;
+    }
+
     @Override
     public int size() {
         return 5*4;
