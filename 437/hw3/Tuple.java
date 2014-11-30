@@ -1,4 +1,4 @@
-public class Tuple implements Comparable<Tuple> {
+public class Tuple implements RNodeContents, Comparable<Tuple> {
 
     public int field1;
     public int field2;
@@ -44,5 +44,30 @@ public class Tuple implements Comparable<Tuple> {
         long l1 = this.getHilbertValue();
         long l2 = x.getHilbertValue();
         return (int) (l1 - l2);
+    }
+
+    @Override
+    public int size() {
+        return 4+4+this.field3.length();
+    }
+
+    @Override
+    public int minX() {
+        return this.field1;
+    }
+
+    @Override
+    public int minY() {
+        return this.field2;
+    }
+
+    @Override
+    public int maxX() {
+        return this.field1;
+    }
+
+    @Override
+    public int maxY() {
+        return this.field2;
     }
 }
