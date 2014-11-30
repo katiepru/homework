@@ -2,19 +2,22 @@ public class RNode {
 
     private RNodeContents[] contents;
     private int start, end;
-    private boolean isLeaf;
+    public int length;
+    public boolean isLeaf;
 
     public RNode(RNodeContents[] contents, int start, int end, boolean isLeaf) {
         this.contents = contents;
         this.start = start;
         this.end = end;
+        this.length = end-start;
         this.isLeaf = isLeaf;
     }
 
     public RNodeContents getItem(int i) {
-        if(i > end || i < start)
+        if(i < 0 || i >= end-start) {
             return null;
-        return this.contents[i];
+        }
+        return this.contents[start + i];
     }
 
     public int minX() {
@@ -31,7 +34,7 @@ public class RNode {
         int maxX = this.contents[start].maxX();
         for(int i = start + 1; i < end; i++) {
             int thismax = this.contents[i].maxX();
-            if(thismax < maxX)
+            if(thismax > maxX)
                 maxX = thismax;
         }
         return maxX;
@@ -51,7 +54,7 @@ public class RNode {
         int maxY = this.contents[start].maxY();
         for(int i = start + 1; i < end; i++) {
             int thismax = this.contents[i].maxY();
-            if(thismax < maxY)
+            if(thismax > maxY)
                 maxY = thismax;
         }
         return maxY;

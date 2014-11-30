@@ -1,7 +1,7 @@
 public class BoundingBox implements RNodeContents {
 
     private int maxX, maxY, minX, minY;
-    private RNode child;
+    public RNode child;
 
     public BoundingBox(int minX, int minY, int maxX, int maxY) {
         this.minX = minX;

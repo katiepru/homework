@@ -17,6 +17,31 @@ public class RTree {
 
     private Tuple[] tuples;
 
+    public Tuple pointSearch(int x, int y) {
+        return this.pointSearch(this.root, x, y);
+    }
+
+    private Tuple pointSearch(RNode root, int x, int y) {
+        if(root.isLeaf) {
+            for(int i = 0; i < root.length; i++) {
+                Tuple t = (Tuple) root.getItem(i);
+                if(t.minX() == x && t.minY() == y)
+                    return t;
+            }
+            return null;
+        }
+        for(int i = 0; i < root.length; i++) {
+            BoundingBox b = (BoundingBox) root.getItem(i);
+            if(!b.contains(x, y))
+                continue;
+            System.out.println(b.child);
+            Tuple t = this.pointSearch(b.child, x, y);
+            if(t != null)
+                return t;
+        }
+        return null;
+    }
+
     private void buildBottomUp(RNode[] currLevel) {
         BoundingBox[] boxes = new BoundingBox[currLevel.length];
         for(int i = 0; i < boxes.length; i++) {
