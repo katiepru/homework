@@ -14,12 +14,16 @@ public class RTree {
     private RNode[] leaves;
     private RNode root;
 
+    private int numPages = 0;
+
     private Tuple[] tuples;
 
     public Tuple[] rangeSearch(int minX, int minY, int maxX, int maxY) {
         ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
         BoundingBox search = new BoundingBox(minX, minY, maxX, maxY);
         this.rangeSearch(search, tupleList, this.root);
+        System.out.println("Number of accessed pages: " + this.numPages);
+        this.numPages = 0;
         return tupleList.toArray(new Tuple[0]);
     }
 
@@ -27,6 +31,8 @@ public class RTree {
         ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
         BoundingBox search = new BoundingBox(x, y, x, y);
         this.rangeSearch(search, tupleList, this.root);
+        System.out.println("Number of accessed pages: " + this.numPages);
+        this.numPages = 0;
         return tupleList.toArray(new Tuple[0]);
     }
 
@@ -52,6 +58,7 @@ public class RTree {
     } */
 
     private void rangeSearch(BoundingBox search, ArrayList<Tuple> tupleList, RNode root) {
+        this.numPages++;
         if(root.isLeaf) {
             for(int i = 0; i < root.length; i++) {
                 Tuple t = (Tuple) root.getItem(i);
