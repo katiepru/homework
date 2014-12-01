@@ -38,7 +38,7 @@ public class RTree {
         ArrayList<Tuple> result = new ArrayList<Tuple>();
         result.add(maxT);
         maxEquation(a, b, this.root, result);
-        System.out.println("Number of accessed pages: " + this.numPages);
+        System.out.println("Number of accessed pages: " + this.numPages + 1);
         this.numPages = 0;
         return result.toArray(new Tuple[0]);
     }
