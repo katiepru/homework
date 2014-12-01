@@ -20,6 +20,23 @@ public class RTreeSearch {
         }
     }
 
+    public static double readDouble() {
+        while(true) {
+            try {
+                double i = in.nextDouble();
+                return i;
+            } catch(InputMismatchException e) {
+                System.out.println("Bad double. Enter again");
+            }
+        }
+    }
+
+    public static void printArr(Tuple[] arr) {
+        for(Tuple t : arr) {
+            System.out.println(t);
+        }
+    }
+
     public static void pointQuery(RTree r) {
         int x, y;
         System.out.println("Enter x coordinate");
@@ -29,7 +46,7 @@ public class RTreeSearch {
 
         Tuple[] result = r.pointSearch(x, y);
         System.out.println("Number of results: " + result.length);
-        System.out.println(Arrays.toString(result));
+        printArr(result);
     }
 
     public static void rangeQuery(RTree r) {
@@ -47,7 +64,21 @@ public class RTreeSearch {
 
         Tuple[] result = r.rangeSearch(minX, minY, maxX, maxY);
         System.out.println("Number of results: " + result.length);
-        System.out.println(Arrays.toString(result));
+        printArr(result);
+    }
+
+    public static void maxEquation(RTree r) {
+        double a, b;
+        do {
+            System.out.println("Enter a");
+            a = readDouble();
+            System.out.println("Enter b");
+            b = readDouble();
+        } while((a+b != 1) || (a < 0) || (b < 0));
+
+        Tuple[] result = r.maxEquation(a, b);
+        System.out.println("Number of results: " + result.length);
+        printArr(result);
     }
 
     public static void main(String[] args) throws IOException {
@@ -67,11 +98,12 @@ public class RTreeSearch {
         String menu = "Choose an option:\n"
             + "1. Point query\n"
             + "2. Range query\n"
-            + "3. Exit";
+            + "3. Maximize equation\n"
+            + "4. Exit";
         do {
             System.out.println(menu);
             option = readInt();
-            while(option < 1 || option > 3) {
+            while(option < 1 || option > 4) {
                 System.out.println("Invalid option, choose again.");
                 option = readInt();
             }
@@ -81,8 +113,10 @@ public class RTreeSearch {
                          break;
                 case(2): rangeQuery(r);
                          break;
+                case(3): maxEquation(r);
+                         break;
             }
 
-        } while(option != 3);
+        } while(option != 4);
     }
 }

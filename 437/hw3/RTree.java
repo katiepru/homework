@@ -18,6 +18,31 @@ public class RTree {
 
     private Tuple[] tuples;
 
+    private static double getEqVal(double a, double b, Tuple t) {
+        return a*t.maxX() + b*t.maxY();
+    }
+
+    public Tuple[] maxEquation(double a, double b) {
+        // Go through last page and find maximizing value
+        RNode lastLeaf = leaves[leaves.length-1];
+        double maxVal = 0;
+        Tuple maxT = null;
+        for(int i = 0; i < lastLeaf.length; i++) {
+            RNodeContents tuple = lastLeaf.getItem(i);
+            double val = getEqVal(a, b, (Tuple) tuple);
+            if(val > maxVal) {
+                maxVal = val;
+                maxT = (Tuple) tuple;
+            }
+        }
+        ArrayList<Tuple> result = new ArrayList<Tuple>();
+        result.add(maxT);
+        maxEquation(a, b, this.root, result);
+        System.out.println("Number of accessed pages: " + this.numPages);
+        this.numPages = 0;
+        return result.toArray(new Tuple[0]);
+    }
+
     public Tuple[] rangeSearch(int minX, int minY, int maxX, int maxY) {
         ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
         BoundingBox search = new BoundingBox(minX, minY, maxX, maxY);
@@ -56,6 +81,31 @@ public class RTree {
         }
         return null;
     } */
+
+    public void maxEquation(double a, double b, RNode root, ArrayList<Tuple> result) {
+        this.numPages++;
+        if(root.isLeaf) {
+            for(int i = 0; i < root.length; i++) {
+                Tuple t = (Tuple) root.getItem(i);
+                double val = getEqVal(a, b, t);
+                double maxVal = getEqVal(a, b, result.get(0));
+                if(val == maxVal && t != result.get(0))
+                    result.add(t);
+                else if(val > maxVal) {
+                    result.clear();
+                    result.add(t);
+                }
+            }
+            return;
+        }
+        double maxVal = getEqVal(a, b, result.get(0));
+        for(int i = 0; i < root.length; i++) {
+            BoundingBox c = (BoundingBox) root.getItem(i);
+            if((a*c.maxX() + b*c.maxY()) >= maxVal) {
+                maxEquation(a, b, c.child, result);
+            }
+        }
+    }
 
     private void rangeSearch(BoundingBox search, ArrayList<Tuple> tupleList, RNode root) {
         this.numPages++;
