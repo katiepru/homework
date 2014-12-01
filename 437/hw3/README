@@ -1,0 +1,32 @@
+Kaitlin Poskaitis
+Project 3 - R Tree
+
+1. Compilation
+   - Run ./build.sh
+2. Running
+   - java RTreeSearch
+   - Need to give a data file as input. Format of file should be x,y on each line.
+   - Choose (1) point query, (2) range query, or (3) exit.
+   - For a point query, just enter an x and y and it will print out all results.
+   - For range query, enter a minX, maxX, minY, and maxY and it will print out all results.
+3. Implementation
+   a. Loading tuples from file
+      - Reads in the data file line by line and parses out the x and y value for each tuple.
+      - Randomly generates a 500 character string as the 3rd field and initializes the tuple with this.
+      - End up with an array of Tuple objects, then sort by hilbert value (BITS_PER_DIM = 32).
+   b. Bulk Loading
+      - Determine how many tuples can fit on a page (4096/(4+4+5000)).
+      - Create RNodes for leaves with tuples.
+         - Pass in the main array, a start index, and an end index to avoid copying parts of the array.
+      - Recursively go up the tree and create internal nodes.
+         - Each internal node can hold 4096/20 bounding boxes (w/ pointers to children).
+         - Each bounding box bounds its child.
+         - Do this until only 1 internal node is created at the level.
+   c. Point query
+      - For the current node, starting at the root of the tree, find any bounding boxes
+        that can contain the point, and recurse into its child.
+      - If we hit a leaf node, go through each tuple and add it to the output if it matches.
+   d. Range query
+      - Same as point query, but check that bounding boxes intersect target bounding box.
+   e. Counting pages
+      - Every time I access a new node, I increment the count by 1.
