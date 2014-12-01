@@ -11,7 +11,7 @@ public class Tuple implements RNodeContents, Comparable<Tuple> {
     }
 
     public String toString() {
-        return field1 + ", " + field2 + ", " + field3;
+        return "(" + field1 + ", " + field2 + ", " + field3 + ")";
     }
 
     public long getHilbertValue() {

@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class RTree {
 
-    private static final String dataset = "project3dataset30K.txt";
     private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int PGSIZE = 4096;
     private static Random rnd = new Random();
@@ -24,11 +23,14 @@ public class RTree {
         return tupleList.toArray(new Tuple[0]);
     }
 
-    public Tuple pointSearch(int x, int y) {
-        return this.pointSearch(this.root, x, y);
+    public Tuple[] pointSearch(int x, int y) {
+        ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
+        BoundingBox search = new BoundingBox(x, y, x, y);
+        this.rangeSearch(search, tupleList, this.root);
+        return tupleList.toArray(new Tuple[0]);
     }
 
-    private Tuple pointSearch(RNode root, int x, int y) {
+    /*private Tuple pointSearch(RNode root, int x, int y) {
         if(root.isLeaf) {
             for(int i = 0; i < root.length; i++) {
                 Tuple t = (Tuple) root.getItem(i);
@@ -47,7 +49,7 @@ public class RTree {
                 return t;
         }
         return null;
-    }
+    } */
 
     private void rangeSearch(BoundingBox search, ArrayList<Tuple> tupleList, RNode root) {
         if(root.isLeaf) {
@@ -108,15 +110,9 @@ public class RTree {
         return sb.toString();
     }
 
-    private void tuplesFromFile(String filename) throws IOException {
+    private void tuplesFromFile(String filename) throws IOException, FileNotFoundException {
         ArrayList<Tuple> tuplesList = new ArrayList<Tuple>();
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(filename));
-        } catch(FileNotFoundException e) {
-            System.out.println("Warning: Dataset not found " + dataset);
-            return;
-        }
+        BufferedReader br = new BufferedReader(new FileReader(filename));
         for(String line; (line = br.readLine()) != null; ) {
             if(line.equals(""))
                 break;
@@ -130,8 +126,8 @@ public class RTree {
         Arrays.sort(this.tuples);
     }
 
-    public RTree() throws IOException {
-        this.tuplesFromFile(dataset);
+    public RTree(String filename) throws IOException {
+        this.tuplesFromFile(filename);
         this.bulkLoad();
     }
 
