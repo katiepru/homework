@@ -30,3 +30,10 @@ Project 3 - R Tree
       - Same as point query, but check that bounding boxes intersect target bounding box.
    e. Counting pages
       - Every time I access a new node, I increment the count by 1.
+   f. Maximizing an equation
+      - Assumption: a and b are both positive
+      - First: Find tuple in last leaf that maximized equation for that set of tuples and store the
+        computed value of the equation.
+      - Next: Traverse tree, but do not follow any bounding boxes where the best point (maxX and maxY
+        for that box) still produces a smaller result than the current max. Add any tuples to arraylist
+        if the equation comes out to the same value, and clear the arraylist if we find one that is greater.
