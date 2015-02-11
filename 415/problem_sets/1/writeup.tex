@@ -1,0 +1,107 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{sectsty}
+\usepackage{indentfirst}
+\usepackage{qtree}
+\usepackage{listings}
+\sectionfont{\large}
+
+\title{\bf Kaitlin Poskaitis - Homework 1}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{ILOC Programming}
+
+Register-register model:
+\lstinputlisting{prob1_reg.i}
+This resulted in 22 instructions and 26 cycles.
+
+\vspace{5mm}
+
+Memory-memory model:
+\lstinputlisting{prob1_mem.i}
+This resulted in 60 instructions and 171 cycles.
+
+\section{Feasible Registers for ILOC}
+The number of physical registers that need to be in the feasible set for ILOC is
+2.  This is because the largest number of register sources that any instruction
+has is 2. We are able to reuse one of these 2 registers in the feasible set.
+
+\noindent Example is f1 and f2 are the feasible set:\\
+mult f1, f2 =$>$ f1
+
+\section{Top Down Register Allocation}
+\subsection{}
+\lstinputlisting{prob3_virt.i}
+
+\vspace{5mm}
+\subsection{}
+\noindent r1:  2-10\\
+r2:  3-4\\
+r3:  4-6\\
+r4:  5-8\\
+r5:  6-8\\
+r6:  7-7\\
+r7:  8-9\\
+r8:  9-9\\
+r9:  10-10\\
+r10: 11-11\\
+MAX\_LIVE is 4
+
+\subsection{}
+\subsubsection{}
+We have 3 registers total, with 2 in the feasible set.
+The heuristic is to spill registers with the fewest uses until we only need 1.
+
+\noindent Total uses:\\
+r1:  2\\
+r2:  2\\
+r3:  1\\
+r4:  2\\
+r5:  3\\
+r6:  1\\
+r7:  1\\
+r8:  1\\
+r9:  1\\
+r10: 1\\
+
+\noindent r3 and r4 will be feasible set.
+r5 (renamed to r1) will not be spilled.
+
+\lstinputlisting{prob3_nomax.i}
+
+\subsubsection{}
+We again have 3 registers total, with 1 in the feasible set.
+We need to consider the live ranges of each virtual register.
+They are as followed:
+
+\noindent1.\\
+2.  r1\\
+3.  r1,r2\\
+4.  r1,r2,r3\\
+5.  r1,r3,r4\\
+6.  r1,r3,r4,r5\\
+7.  r1,r4,r5,r6\\
+8.  r1,r4,r5,r7\\
+9.  r1,r7,r8\\
+10. r1,r9\\
+11. r10\\
+
+\noindent We need to spill some registers such that no line exceeds 2 active registers.
+To start, the lines with the largest amount of live registers will be considered
+first.  The registers with the least number of uses will be spilled, and ties
+will be resolved by picking the register with the largest live range.
+
+\noindent Starting at line 7, r4, r6, and r1 will be spilled.\\
+r7 will be spilled to cover line 8.\\
+r3 will be spilled to cover the rest.\\
+This is enough to only use 2 active registers.
+
+\lstinputlisting{prob3_live.i}
+
+
+\end{document}
