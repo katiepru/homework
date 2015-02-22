@@ -65,6 +65,7 @@ class Instruction:
                 if reg.num == regnum:
                     if not isphys:
                         reg.live_range[1] = linenum - 1
+                        reg.uses.append(linenum)
                     return reg
             if isphys:
                 ret = PRegister(regnum)

@@ -10,7 +10,7 @@ class Program:
         self.spilloff = -4
 
         with open(filename, "r") as f:
-            linenum = 1
+            linenum = 0
             for line in f:
                 if line.startswith("//") or line.isspace():
                     continue
@@ -104,53 +104,88 @@ class Program:
         while linenum < len(self.instrs):
             line = self.instrs[linenum]
             curr_vregs = line.get_regs()
-            i = 1
-            spillcode = []
-            for reg in curr_vregs[0] + curr_vregs[1]:
-                if isinstance(reg, PRegister):
+            feas_num = 1
+
+            insert_instrs = []
+            for dst in curr_vregs[1]:
+                if isinstance(dst, PRegister):
                     continue
-                if reg.spilloff >= 0:
-                    if reg.preg is None:
-                        preg = self.get_available_preg(orig_linenum)
-                        if preg is None:
-                            farthest_use = self.get_farthest_preg(orig_linenum)
-                            print "spilling %d for line %s" % (farthest_use.vreg.num, str(line))
-                            # Spill farthest
-                            spillcode += Program.spillreg(self.spilloff,
-                                                      farthest_use,
-                                                      self.pregs[1])
-                            for s in spillcode:
-                                self.instrs.insert(linenum, s)
-                                linenum += 1
-                            reg.preg = farthest_use
-                            reg.preg.vreg = reg
-                            farthest_use.vreg.spilloff = self.spilloff
-                            self.spilloff -= 4
-                        else:
-                            reg.preg = preg
-                            preg.vreg = reg
-
-                if reg.spilloff < 0 and (reg in curr_vregs[0] or "store" in line.opcode):
-                    print "Loading %d spilloff %d for line %s" % (reg.num,
-                            reg.spilloff, str(line))
-                    # Load spilled register
-                    insert = Program.loadreg(reg.spilloff, self.pregs[i])
-                    reg.preg = self.pregs[i]
-                    i += 1
-                    for ins in insert:
-                        self.instrs.insert(linenum, ins)
-                        linenum += 1
-
-                # Replace vreg with preg
-                if line.src[0] == reg:
-                    line.src[0] = reg.preg
-                elif len(line.src) > 1 and line.src[1] == reg:
-                    line.src[1] = reg.preg
+                if "store" in line.opcode:
+                    # Load if needed
+                    if dst.spilloff < 0:
+                        i = Program.loadreg(dst.spilloff,
+                                self.pregs[feas_num])
+                        insert_instrs += i
+                        dst.preg = self.pregs[feas_num]
+                        dst.preg.vreg = dst
+                    # Replace vreg with preg
+                    for i in range(0, len(line.dst)):
+                        if line.dst[i] == dst:
+                            line.dst[i] = dst.preg
                 else:
-                    line.dst[0] = reg.preg
+                    dst_preg = self.get_available_preg(orig_linenum)
+                    if dst_preg is None:
+                        # Need to spill something
+                        spill_preg = self.get_far_preg(orig_linenum)
+                        i = Program.spillreg(self.spilloff, spill_preg,
+                                self.pregs[feas_num])
+                        insert_instrs += i
+                        spill_preg.vreg.spilloff = self.spilloff
+                        self.spilloff -= 4
+                        feas_num += 1
+                        spill_preg.vreg.preg = None
+                        spill_preg.vreg = dst
+                        dst_preg = spill_preg
+                    # Replace with preg
+                    dst_preg.vreg = dst
+                    dst.preg = dst_preg
+                    for i in range(0, len(line.dst)):
+                        if line.dst[i] == dst:
+                            line.dst[i] = dst_preg
+                            break
+
+            for src in curr_vregs[0]:
+                if isinstance(src, PRegister):
+                    continue
+                if src.spilloff < 0:
+                    # Load into feasible set
+                    i = Program.loadreg(src.spilloff, self.pregs[feas_num])
+                    src.preg = self.pregs[feas_num]
+                    feas_num += 1
+                    insert_instrs += i
+                # Replace vreg with preg
+                for i in range(0, len(line.src)):
+                    if line.src[i] == src:
+                        line.src[i] = src.preg
+
+            for insert in insert_instrs:
+                self.instrs.insert(linenum, insert)
+                linenum += 1
 
             linenum += 1
             orig_linenum += 1
+
+
+    def get_available_preg(self, linenum):
+        for preg in self.pregs[3:]:
+            if not preg.vreg:
+                return preg
+            while len(preg.vreg.uses) > 0 and preg.vreg.uses[0] < linenum:
+                preg.vreg.uses.pop(0)
+            if len(preg.vreg.uses) == 0:
+                preg.vreg = None
+                return preg
+        return None
+
+    def get_far_preg(self, linenum):
+        ret = self.pregs[3]
+        for preg in self.pregs[3:]:
+            while len(preg.vreg.uses) == 0 and preg.vreg.uses[0] < linenum:
+                preg.vreg.uses.pop(0)
+            if preg.vreg.uses[0] > ret.vreg.uses[0]:
+                ret = preg
+        return ret
+
 
     def gen_code_from_mapping(self, v2p):
         linenum = 1
@@ -197,26 +232,6 @@ class Program:
                         linenum += 1
                 else:
                     line.dst[0] = v2p[dst_reg]
-
-    def get_farthest_preg(self, linenum):
-        farthest = self.pregs[3]
-        for reg in self.pregs[3:]:
-            if not reg.vreg:
-                continue
-            if reg.vreg.uses[0] <= linenum:
-                reg.vreg.uses.pop(0)
-            if len(reg.vreg.uses) == 0:
-                return reg
-            if reg.vreg.uses[0] > farthest.vreg.uses[0]:
-                farthest = reg
-        return farthest
-
-    def get_available_preg(self, linenum):
-        for reg in self.pregs[3:]:
-            if not reg.vreg or len(reg.vreg.uses) == 0:
-                return reg
-        return None
-
 
     @staticmethod
     def not_spilled(active, mapping):
