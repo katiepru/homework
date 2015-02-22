@@ -13,6 +13,9 @@ class VRegister(Register):
         self.occurances = 1
         self.preg = None
         self.spilloff = 0
+        self.uses = []
 
 class PRegister(Register):
-    pass
+    def __init__(self, num):
+        super(PRegister, self).__init__(num)
+        self.vreg = None
