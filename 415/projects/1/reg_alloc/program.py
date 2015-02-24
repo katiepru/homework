@@ -60,35 +60,50 @@ class Program:
 
         live_regs = []
         for i in range(0, len(self.instrs)):
-            live_regs[i] = []
+            live_regs.append((i, []))
             for reg in self.vregs:
                 if i in range(reg.live_range[0], reg.live_range[1] + 1):
-                    live_regs[i].push(reg)
+                    live_regs[i][1].append(reg)
 
-        live_regs.sort(reverse=True, key=lambda l: len(l))
+        live_regs.sort(reverse=True, key=lambda l: len(l[1]))
         v2p = {}
         spilloff = -4
 
         for line in live_regs:
+            line = line[1]
             if len(line) <= numregs - feasible_set:
                 break
-            while not_spilled(line, v2p) > numregs - feasible_set:
+            while Program.not_spilled(line, v2p) > numregs - feasible_set:
                 # Need to spill. Pick reg with most occurances
                 # If tied, pick longest live range
-                spillreg = VRegister(-1)
+                spillreg = line[0]
                 for reg in line:
                     if reg in v2p:
                         continue
-                    if reg.occurances > spillreg.occurance:
+                    if reg.occurances <= spillreg.occurances:
                         spillreg = reg
                     elif reg.occurances == spillreg.occurances:
                         if reg.live_range[1] - reg.live_range[0] > spillreg.live_range[1] - spillreg.live_range[0]:
                             spillreg = reg
                 v2p[spillreg] = spilloff
+                spillreg.spilloff = spilloff
                 spilloff -= 4
+
+        for l in live_regs:
+            line = l[1]
+            linenum = l[0]
+            for reg in line:
+                if reg.spilloff >= 0 and not reg in v2p:
+                    preg = self.get_available_preg_td(linenum)
+                    if preg is None:
+                        print "FUCK"
+                    preg.vreg = reg
+                    reg.preg = preg
+                    v2p[reg] = preg
 
         # Allocate registers
         self.gen_code_from_mapping(v2p)
+
 
     def bottom_up(self, numregs):
         feasible_set = 3
@@ -164,6 +179,16 @@ class Program:
 
             linenum += 1
             orig_linenum += 1
+
+
+    def get_available_preg_td(self, linenum):
+        for preg in self.pregs[3:]:
+            if not preg.vreg:
+                return preg
+            v = preg.vreg
+            if not linenum in range(v.live_range[0], v.live_range[1] + 1):
+                return preg
+        return None
 
 
     def get_available_preg(self, linenum):

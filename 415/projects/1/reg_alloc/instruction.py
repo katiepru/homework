@@ -72,6 +72,7 @@ class Instruction:
             else:
                 ret = VRegister(regnum)
                 ret.live_range[0] = linenum
+                ret.live_range[1] = linenum
                 ret.uses.append(linenum)
                 regs.append(ret)
         else:
