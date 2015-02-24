@@ -101,6 +101,10 @@ class Program:
                     reg.preg = preg
                     v2p[reg] = preg
 
+        # Add loading the base register
+        load_base = "loadI 1024 => %s" % str(self.pregs[0])
+        self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
+
         # Allocate registers
         self.gen_code_from_mapping(v2p)
 
