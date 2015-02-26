@@ -1,0 +1,63 @@
+digraph finite_state_machine {
+    rankdir=S;
+    size="8,5"
+    node [shape = doublecircle];
+    node [shape = circle];
+
+    S_00    ->  S_015       [ label = "r" ];
+    S_00    ->  S_150       [ label = "s" ];
+
+    S_150   ->  S_300       [ label = "s" ];
+    S_150   ->  S_1515      [ label = "r" ];
+
+    S_015   ->  S_1515      [ label = "s" ];
+    S_015   ->  S_030       [ label = "r" ];
+
+    S_300   ->  S_3015      [ label = "r" ];
+    S_300   ->  S_400       [ label = "s" ];
+
+    S_030   ->  S_1530      [ label = "s" ];
+    S_030   ->  S_040       [ label = "r" ];
+
+    S_400   ->  S_g         [ label = "s" ];
+    S_400   ->  S_4015      [ label = "r" ];
+
+    S_040   ->  S_g         [ label = "r" ];
+    S_040   ->  S_1540      [ label = "s" ];
+
+    S_1515  ->  S_3015      [ label = "s" ];
+    S_1515  ->  S_1530      [ label = "r" ];
+
+    S_3030  ->  S_4030      [ label = "s" ];
+    S_3030  ->  S_3040      [ label = "r" ];
+
+    S_1530  ->  S_3030      [ label = "s" ];
+    S_1530  ->  S_1540      [ label = "r" ];
+
+    S_1540  ->  S_g         [ label = "r" ];
+    S_1540  ->  S_3040      [ label = "s" ];
+
+    S_3015  ->  S_3030      [ label = "r" ];
+    S_3015  ->  S_4030      [ label = "s" ];
+
+    S_3040  ->  S_g         [ label = "r" ];
+    S_3040  ->  S_d         [ label = "s" ];
+
+    S_4015  ->  S_g         [ label = "s" ];
+    S_4015  ->  S_4030      [ label = "r" ];
+
+    S_4030  ->  S_g         [ label = "s" ];
+    S_4030  ->  S_d         [ label = "r" ];
+
+    S_d     ->  S_advS      [ label = "s" ];
+    S_d     ->  S_advR      [ label = "r" ];
+
+    S_advS  ->  S_g         [ label = "s" ];
+    S_advS  ->  S_d         [ label = "r" ];
+
+    S_advR  ->  S_g         [ label = "r" ];
+    S_advR  ->  S_d         [ label = "s" ];
+
+
+}
+

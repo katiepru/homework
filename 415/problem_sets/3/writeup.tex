@@ -1,0 +1,133 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.75in]{geometry}
+%\usepackage{sectsty}
+%\usepackage{indentfirst}
+%\usepackage{qtree}
+%\usepackage{listings}
+%\sectionfont{\large}
+
+\title{\bf Kaitlin Poskaitis - Homework 1}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{DFA}
+
+\section{NFA and DFA}
+\subsection{Tennis DFA}
+
+See attached
+
+
+\subsection{Minimal DFA}
+\indent Start:\\
+$\left\{
+    { S00, S015, S150, S030, S1515, S300, S040, S1530, S3015, S400, S1540,
+    S3030, S4015, S3040, S4030, Sd, SadvR, SadvS}
+\right\}$\\
+$\left\{
+    {Sg}
+\right\}$
+
+\vspace{5mm}
+
+First Iteration\\
+$\left\{
+    { S00, S015, S150, S030, S1515, S300, S1530, S3015,
+    S3030, Sd}
+\right\}$\\
+$\left\{
+    { S040, S400, S1540,
+    S4015, S3040, S4030, SadvR, SadvS}
+\right\}$\\
+$\left\{
+    {Sg}
+\right\}$
+
+\vspace{5mm}
+
+Second Iteration\\
+$\left\{
+    { S00, S015, S150, S1515}
+\right\}$\\
+$\left\{
+    { S030, S300, S1530, S3015, S3030, Sd}
+\right\}$\\
+$\left\{
+    { 400,S4015}
+\right\}$\\
+$\left\{
+    { S040 S1540}
+\right\}$\\
+$\left\{
+    {SadvR, S3040}
+\right\}$\\
+$\left\{
+    { SadvS, 4030}
+\right\}$\\
+$\left\{
+    {Sg}
+\right\}$
+
+\vspace{5mm}
+
+Final Iteration:\\
+$\left\{
+    {S00}
+\right\}$
+$\left\{
+    {S150}
+\right\}$
+$\left\{
+    {S015}
+\right\}$
+$\left\{
+    {S300}
+\right\}$
+$\left\{
+    {S1515}
+\right\}$
+$\left\{
+    {S030}
+\right\}$
+$\left\{
+    {S400}
+\right\}$
+$\left\{
+    {S3015}
+\right\}$
+$\left\{
+    {S1530}
+\right\}$
+$\left\{
+    {S040}
+\right\}$
+$\left\{
+    {S4015}
+\right\}$
+$\left\{
+    {S1540}
+\right\}$\\
+$\left\{
+    {Sd, S3030}
+\right\}$
+$\left\{
+    {SadvS, S4030}
+\right\}$
+$\left\{
+    {SadvR, S3040}
+\right\}$
+$\left\{
+    {Sg}
+\right\}$
+
+
+
+\section{NFA and DFA}
+
+
+
+\end{document}
