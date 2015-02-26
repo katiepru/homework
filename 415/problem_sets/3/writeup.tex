@@ -128,6 +128,30 @@ $\left\{
 
 \section{NFA and DFA}
 
+\subsection{}
 
+See attached
+
+\subsection{NFA to DFA}
+\begin{tabular}{| c | c | c | c | c | c |}
+    \hline
+    & NFA States & a & b & c & d\\
+    \hline
+    s1 & S0 & none & none & S1, S5, S2, S6 & none\\
+    \hline
+    s2 & S1, S5, S2, S6 & S3 & none & none & S7\\
+    \hline
+    s3 & S3 & none & S4, S2, S6 & none & none\\
+    \hline
+    s4 & S4, S2, S6 & s3 & none & none & none\\
+    \hline
+    s5 & S7 & none & none & none & none\\
+    \hline
+\end{tabular}
+
+See attached for graph
+
+\subsection{Is it minimal}
+Yes. No state encodes the same information.
 
 \end{document}
