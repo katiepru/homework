@@ -113,7 +113,7 @@ class Program:
 
 
     def bottom_up(self, numregs):
-        feasible_set = 3
+        feasible_set = 2
         for i in range(0, numregs):
             self.pregs.append(PRegister(i))
 
@@ -123,69 +123,82 @@ class Program:
 
         linenum = 1
         orig_linenum = 0
+
         while linenum < len(self.instrs):
             line = self.instrs[linenum]
-            curr_vregs = line.get_regs()
-            feas_num = 1
 
-            insert_instrs = []
-            for dst in curr_vregs[1]:
-                if isinstance(dst, PRegister):
-                    continue
-                if "store" in line.opcode:
-                    # Load if needed
-                    if dst.spilloff < 0:
-                        i = Program.loadreg(dst.spilloff,
-                                self.pregs[feas_num])
-                        insert_instrs += i
-                        dst.preg = self.pregs[feas_num]
-                        dst.preg.vreg = dst
-                    # Replace vreg with preg
-                    for i in range(0, len(line.dst)):
-                        if line.dst[i] == dst:
-                            line.dst[i] = dst.preg
-                else:
-                    dst_preg = self.get_available_preg(orig_linenum)
-                    if dst_preg is None:
+            curr_regs = line.get_regs()
+
+            # Ensure all sources are loaded
+            src_regs = curr_regs[0]
+            if line.opcode == "store":
+                src_regs += curr_regs[1]
+
+            insert = []
+            for reg in src_regs:
+                if isinstance(reg, PRegister):
+                        continue
+                if not reg.preg:
+                    # Need to load, see if there are any available registers
+                    preg = self.get_available_preg()
+                    if not preg:
                         # Need to spill something
-                        spill_preg = self.get_far_preg(orig_linenum)
-                        i = Program.spillreg(self.spilloff, spill_preg,
-                                self.pregs[feas_num])
-                        insert_instrs += i
-                        spill_preg.vreg.spilloff = self.spilloff
-                        self.spilloff -= 4
-                        feas_num += 1
-                        spill_preg.vreg.preg = None
-                        spill_preg.vreg = dst
-                        dst_preg = spill_preg
-                    # Replace with preg
-                    dst_preg.vreg = dst
-                    dst.preg = dst_preg
-                    for i in range(0, len(line.dst)):
-                        if line.dst[i] == dst:
-                            line.dst[i] = dst_preg
-                            break
-
-            for src in curr_vregs[0]:
-                if isinstance(src, PRegister):
-                    continue
-                if src.spilloff < 0:
-                    # Load into feasible set
-                    i = Program.loadreg(src.spilloff, self.pregs[feas_num])
-                    src.preg = self.pregs[feas_num]
-                    feas_num += 1
-                    insert_instrs += i
-                # Replace vreg with preg
+                        preg = self.get_far_preg(orig_linenum + 1)
+                        insert += self.spillreg_bu(preg)
+                        preg.vreg = None
+                    if reg.spilloff <= 0:
+                        insert += Program.loadreg(reg.spilloff, preg)
+                    preg.vreg = reg
+                    reg.preg = preg
                 for i in range(0, len(line.src)):
-                    if line.src[i] == src:
-                        line.src[i] = src.preg
+                    if line.src[i] == reg:
+                        line.src[i] = reg.preg
+                if line.opcode == "store":
+                    if line.dst[0] == reg:
+                        line.dst[0] = reg.preg
 
-            for insert in insert_instrs:
-                self.instrs.insert(linenum, insert)
+            for reg in src_regs:
+                if reg.live_range[1] <= orig_linenum:
+                    reg.preg.vreg = None
+
+            # Insert any code before instr
+            for i in insert:
+                self.instrs.insert(linenum, i)
                 linenum += 1
+
+            insert = []
+            # Figure out where to put output
+            if not line.opcode == "store" and len(line.dst) > 0:
+                reg = line.dst[0]
+                if not isinstance(line.dst[0], PRegister):
+                    preg = self.get_available_preg()
+                    if not preg:
+                        # Need to spill another
+                        preg = self.get_far_preg(orig_linenum)
+                        insert += self.spillreg_bu(preg)
+                        preg.vreg = reg
+                    reg.preg = preg
+                    line.dst[0] = reg.preg
+                    preg.vreg = reg
 
             linenum += 1
             orig_linenum += 1
+
+            # Insert any code after instr
+            for i in insert:
+                self.instrs.insert(linenum, i)
+                linenum += 1
+
+
+    def spillreg_bu(self, preg):
+        if preg.vreg.spilloff <= 0:
+            spilloff = preg.vreg.spilloff
+        else:
+            spilloff = self.spilloff
+            preg.vreg.spilloff = spilloff
+            self.spilloff -= 4
+        preg.vreg.preg = None
+        return Program.spillreg(spilloff, preg, self.pregs[1])
 
 
     def get_available_preg_td(self, reg):
@@ -201,20 +214,20 @@ class Program:
         return None
 
 
-    def get_available_preg(self, linenum):
-        for preg in self.pregs[3:]:
+    def get_available_preg(self):
+        for preg in self.pregs[2:]:
             if not preg.vreg:
                 return preg
-            while len(preg.vreg.uses) > 0 and preg.vreg.uses[0] < linenum:
-                preg.vreg.uses.pop(0)
-            if len(preg.vreg.uses) == 0:
-                preg.vreg = None
-                return preg
+            #while len(preg.vreg.uses) > 0 and preg.vreg.uses[0] < linenum:
+            #    preg.vreg.uses.pop(0)
+            #if len(preg.vreg.uses) == 0:
+            #    preg.vreg = None
+            #    return preg
         return None
 
     def get_far_preg(self, linenum):
-        ret = self.pregs[3]
-        for preg in self.pregs[3:]:
+        ret = self.pregs[2]
+        for preg in self.pregs[2:]:
             while len(preg.vreg.uses) == 0 and preg.vreg.uses[0] < linenum:
                 preg.vreg.uses.pop(0)
             if preg.vreg.uses[0] > ret.vreg.uses[0]:

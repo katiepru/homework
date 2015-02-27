@@ -12,7 +12,7 @@ class VRegister(Register):
         self.live_range = [-1, -1]
         self.occurances = 1
         self.preg = None
-        self.spilloff = 0
+        self.spilloff = 1
         self.uses = []
 
 class PRegister(Register):
