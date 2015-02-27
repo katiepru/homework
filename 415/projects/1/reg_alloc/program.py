@@ -44,11 +44,11 @@ class Program:
         self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
 
         v2p = {}
-        for i in range(0, numregs - feasible_set + 1):
-            v2p[self.vregs[i]] = PRegister(i + feasible_set)
+        for i in range(0, numregs - feasible_set):
+            v2p[self.vregs[i]] = self.pregs[i + feasible_set]
 
         spilloff = -4
-        for i in range(numregs - feasible_set + 1, len(self.vregs)):
+        for i in range(numregs - feasible_set, len(self.vregs)):
             v2p[self.vregs[i]] = spilloff
             spilloff -= 4
 
@@ -69,7 +69,7 @@ class Program:
 
         live_regs.sort(reverse=True, key=lambda l: len(l[1]))
         v2p = {}
-        spilloff = -4
+        spilloff = 0
 
         for line in live_regs:
             line = line[1]
@@ -91,14 +91,15 @@ class Program:
                 spillreg.spilloff = spilloff
                 spilloff -= 4
 
-        for l in live_regs:
-            line = l[1]
-            linenum = l[0]
-            for reg in line:
+        for line in self.instrs:
+            regs = line.get_regs()
+            for reg in regs[0] + regs[1]:
+                if isinstance(reg, PRegister):
+                    continue
                 if reg.spilloff >= 0 and not reg in v2p:
-                    preg = self.get_available_preg_td(linenum)
+                    preg = self.get_available_preg_td(reg)
                     if preg is None:
-                        print "FUCK"
+                        print "ERROR"
                     preg.vreg = reg
                     reg.preg = preg
                     v2p[reg] = preg
@@ -187,12 +188,15 @@ class Program:
             orig_linenum += 1
 
 
-    def get_available_preg_td(self, linenum):
+    def get_available_preg_td(self, reg):
         for preg in self.pregs[3:]:
             if not preg.vreg:
                 return preg
             v = preg.vreg
-            if not linenum in range(v.live_range[0], v.live_range[1] + 1):
+            vr = range(v.live_range[0], v.live_range[1] + 1)
+            rr = range(reg.live_range[0], reg.live_range[1] + 1)
+
+            if not set(vr) & set(rr):
                 return preg
         return None
 
@@ -219,52 +223,67 @@ class Program:
 
 
     def gen_code_from_mapping(self, v2p):
-        for k, v in v2p.iteritems():
-            print "%s => %s" % (str(k), str(v))
+        # print mappings
+
         linenum = 1
-        while linenum < len(self.instrs):
+        for orig_linenum in range(1, len(self.instrs)):
             line = self.instrs[linenum]
-            curr_vregs = line.get_regs()
+
             feas_num = 1
-            for src_vreg in curr_vregs[0]:
-                if not isinstance(v2p[src_vreg], Register):
-                    if isinstance(src_vreg, VRegister):
-                        # Load
-                        insert = Program.loadreg(v2p[src_vreg],
-                                                self.pregs[feas_num])
-                        for i in insert:
-                            self.instrs.insert(linenum, i)
-                            linenum += 1
+            curr_regs = line.get_regs()
 
-                        # Replace vreg with feas reg
-                        if isinstance(line.src[0], Register) and line.src[0].num == src_vreg.num:
-                            line.src[0] = self.pregs[feas_num]
-                        else:
-                            line.src[1] = self.pregs[feas_num]
+            src_regs = curr_regs[0]
+            if line.opcode == "store":
+                src_regs += curr_regs[1]
 
-                        feas_num += 1
+            # Load any src regs that are not in registers
+            insert = []
+            for reg in src_regs:
+                if isinstance(reg, PRegister):
+                    continue
+                if not isinstance(v2p[reg], Register):
+                    # Need to load
+                    insert += Program.loadreg(v2p[reg], self.pregs[feas_num])
+                    reg.preg = self.pregs[feas_num]
+                    feas_num += 1
                 else:
-                    # Replace vreg with preg
-                    if isinstance(line.src[0], Register) and line.src[0].num == src_vreg.num:
-                        line.src[0] = v2p[src_vreg]
-                    else:
-                        line.src[1] = v2p[src_vreg]
+                    reg.preg = v2p[reg]
 
-            # Skip over line
+            # Insert load code
+            for i in insert:
+                self.instrs.insert(linenum, i)
+                linenum += 1
+
+            # Replace src regs with pregs
+            for r in range(0, len(line.src)):
+                reg = line.src[r]
+                if not isinstance(reg, VRegister):
+                    continue
+                line.src[r] = reg.preg
+
+            # Replace dst regs with pregs, or feas
+            spill = False
+            if len(line.dst) > 0:
+                dst = line.dst[0]
+                if isinstance(dst, VRegister):
+                    if isinstance(v2p[dst], Register):
+                        dst.preg = v2p[dst]
+                    if dst.preg:
+                        line.dst[0] = dst.preg
+                    else:
+                        line.dst[0] = self.pregs[1]
+                        spill = True
+
             linenum += 1
 
-            if len(curr_vregs[1]) == 1 and isinstance(curr_vregs[1][0], VRegister):
-                dst_reg = curr_vregs[1][0]
-                # Check if we need to store output
-                if not isinstance(v2p[dst_reg], Register) and isinstance(dst_reg, VRegister) and not line.opcode.startswith("store"):
-                    line.dst[0] = self.pregs[2]
-                    # Store
-                    insert = Program.spillreg(v2p[dst_reg], self.pregs[2], self.pregs[1])
-                    for i in insert:
-                        self.instrs.insert(linenum, i)
-                        linenum += 1
-                else:
-                    line.dst[0] = v2p[dst_reg]
+            # Spill if needed
+            if spill:
+                insert = Program.spillreg(v2p[dst], line.dst[0], self.pregs[2])
+                for i in insert:
+                    self.instrs.insert(linenum, i)
+                    linenum += 1
+
+
 
     @staticmethod
     def not_spilled(active, mapping):
