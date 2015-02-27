@@ -7,7 +7,7 @@ class Program:
         self.instrs = []
         self.vregs = []
         self.pregs = []
-        self.spilloff = -4
+        self.spilloff = 0
 
         with open(filename, "r") as f:
             linenum = 0
@@ -19,14 +19,16 @@ class Program:
                 linenum += 1
 
     def allocate_registers(self, algo, numregs):
-        if numregs > len(self.regs):
-            return self.ret_original()
+        numregs = int(numregs)
+        algo = int(algo)
+        if numregs > len(self.vregs):
+            return self.top_down1(numregs)
         if algo == 0:
             return self.top_down1(numregs)
         elif algo == 1:
             return self.top_down2(numregs)
         elif algo == 2:
-            return self.bottum_up(numregs)
+            return self.bottom_up(numregs)
         else:
             raise ValueError("Invalid algorithm %d" % algo)
 
@@ -38,7 +40,7 @@ class Program:
         self.vregs.sort(reverse=True, key=lambda r: r.occurances)
 
         # Add loading the base register
-        load_base = "loadI 1024 => %s" % str(self.pregs[0])
+        load_base = "loadI 1020 => %s" % str(self.pregs[0])
         self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
 
         v2p = {}
@@ -102,7 +104,7 @@ class Program:
                     v2p[reg] = preg
 
         # Add loading the base register
-        load_base = "loadI 1024 => %s" % str(self.pregs[0])
+        load_base = "loadI 1020 => %s" % str(self.pregs[0])
         self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
 
         # Allocate registers
@@ -115,7 +117,7 @@ class Program:
             self.pregs.append(PRegister(i))
 
         # Add loading the base register
-        load_base = "loadI 1024 => %s" % str(self.pregs[0])
+        load_base = "loadI 1020 => %s" % str(self.pregs[0])
         self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
 
         linenum = 1
@@ -217,6 +219,8 @@ class Program:
 
 
     def gen_code_from_mapping(self, v2p):
+        for k, v in v2p.iteritems():
+            print "%s => %s" % (str(k), str(v))
         linenum = 1
         while linenum < len(self.instrs):
             line = self.instrs[linenum]
@@ -252,7 +256,7 @@ class Program:
             if len(curr_vregs[1]) == 1 and isinstance(curr_vregs[1][0], VRegister):
                 dst_reg = curr_vregs[1][0]
                 # Check if we need to store output
-                if not isinstance(v2p[dst_reg], Register) and isinstance(dst_reg, VRegister):
+                if not isinstance(v2p[dst_reg], Register) and isinstance(dst_reg, VRegister) and not line.opcode.startswith("store"):
                     line.dst[0] = self.pregs[2]
                     # Store
                     insert = Program.spillreg(v2p[dst_reg], self.pregs[2], self.pregs[1])
