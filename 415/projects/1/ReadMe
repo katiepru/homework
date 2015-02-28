@@ -1,0 +1,16 @@
+Files
+=====
+
+./alloc - parses the arguments and runs the program
+./reg_alloc/__init__.py     -   Used for python module declaration.
+                                Constructs Program object and run allocator.
+./reg_alloc/program.py      -   Contains initializer to parse file to load program.
+                                Contains different allocation algorithms.
+./reg_alloc/register.py     -   Contains register classes for virtual and physical registers.
+./reg_alloc/instruction.py  -   Contains instruction class for modeling lines of a program.
+./reg_alloc/tests           -   Contains test blocks
+./test.sh                   -   Contains script to run test blocks
+
+How to run
+==========
+./alloc <numregs> <algo> <filename>
