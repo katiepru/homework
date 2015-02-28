@@ -1,5 +1,8 @@
 from reg_alloc.instruction import Instruction
 from reg_alloc.register import Register, PRegister, VRegister
+import logging
+
+logging.basicConfig()
 
 class Program:
 
@@ -8,6 +11,8 @@ class Program:
         self.vregs = []
         self.pregs = []
         self.spilloff = 0
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
 
         with open(filename, "r") as f:
             linenum = 0
@@ -20,17 +25,16 @@ class Program:
 
     def allocate_registers(self, algo, numregs):
         numregs = int(numregs)
-        algo = int(algo)
         if numregs > len(self.vregs):
             return self.top_down1(numregs)
-        if algo == 0:
+        if algo == "s":
             return self.top_down1(numregs)
-        elif algo == 1:
+        elif algo == "t":
             return self.top_down2(numregs)
-        elif algo == 2:
+        elif algo == "b":
             return self.bottom_up(numregs)
         else:
-            raise ValueError("Invalid algorithm %d" % algo)
+            raise ValueError("Invalid algorithm %s" % algo)
 
     def top_down1(self, numregs):
         feasible_set = 3
@@ -44,11 +48,12 @@ class Program:
         self.instrs.insert(0, Instruction(load_base, 0, [], isphys=True))
 
         v2p = {}
-        for i in range(0, numregs - feasible_set):
+        min_num = min(numregs-feasible_set, len(self.vregs))
+        for i in range(0, min_num):
             v2p[self.vregs[i]] = self.pregs[i + feasible_set]
 
         spilloff = -4
-        for i in range(numregs - feasible_set, len(self.vregs)):
+        for i in range(min_num, len(self.vregs)):
             v2p[self.vregs[i]] = spilloff
             spilloff -= 4
 
@@ -126,6 +131,7 @@ class Program:
 
         while linenum < len(self.instrs):
             line = self.instrs[linenum]
+            self.logger.debug("LINE: %s", str(line))
 
             curr_regs = line.get_regs()
 
@@ -143,11 +149,15 @@ class Program:
                     preg = self.get_available_preg()
                     if not preg:
                         # Need to spill something
-                        preg = self.get_far_preg(orig_linenum + 1)
+                        preg = self.get_far_preg(orig_linenum)
+                        self.logger.debug('spilling %s for %s', str(preg.vreg),
+                                str(reg))
                         insert += self.spillreg_bu(preg)
                         preg.vreg = None
                     if reg.spilloff <= 0:
                         insert += Program.loadreg(reg.spilloff, preg)
+                    self.logger.debug("Mapping preg %s to %s", str(preg),
+                            str(reg))
                     preg.vreg = reg
                     reg.preg = preg
                 for i in range(0, len(line.src)):
@@ -158,7 +168,11 @@ class Program:
                         line.dst[0] = reg.preg
 
             for reg in src_regs:
-                if reg.live_range[1] <= orig_linenum:
+                if isinstance(reg, PRegister):
+                        continue
+                if reg.live_range[1] < orig_linenum and reg.preg:
+                    self.logger.debug("Done using vreg %s, preg %s", str(reg),
+                            str(reg.preg))
                     reg.preg.vreg = None
 
             # Insert any code before instr
@@ -172,32 +186,39 @@ class Program:
                 reg = line.dst[0]
                 if not isinstance(line.dst[0], PRegister):
                     preg = self.get_available_preg()
+                    self.logger.debug("Got preg %s for vreg %s",
+                            str(preg), str(reg))
                     if not preg:
                         # Need to spill another
                         preg = self.get_far_preg(orig_linenum)
                         insert += self.spillreg_bu(preg)
-                        preg.vreg = reg
+                        preg.vreg = None
                     reg.preg = preg
                     line.dst[0] = reg.preg
                     preg.vreg = reg
+                    self.logger.debug("Mapping preg %s to %s", str(preg),
+                            str(reg))
 
-            linenum += 1
-            orig_linenum += 1
 
             # Insert any code after instr
             for i in insert:
                 self.instrs.insert(linenum, i)
                 linenum += 1
 
+            linenum += 1
+            orig_linenum += 1
+
 
     def spillreg_bu(self, preg):
-        if preg.vreg.spilloff <= 0:
-            spilloff = preg.vreg.spilloff
-        else:
-            spilloff = self.spilloff
-            preg.vreg.spilloff = spilloff
-            self.spilloff -= 4
         preg.vreg.preg = None
+        if preg.vreg.spilloff <= 0:
+            self.logger.debug('%s already spilled, not generating spill',
+                    str(preg.vreg))
+            return []
+
+        spilloff = self.spilloff
+        preg.vreg.spilloff = spilloff
+        self.spilloff -= 4
         return Program.spillreg(spilloff, preg, self.pregs[1])
 
 
@@ -228,8 +249,10 @@ class Program:
     def get_far_preg(self, linenum):
         ret = self.pregs[2]
         for preg in self.pregs[2:]:
-            while len(preg.vreg.uses) == 0 and preg.vreg.uses[0] < linenum:
+            while len(preg.vreg.uses) != 0 and preg.vreg.uses[0] < linenum:
                 preg.vreg.uses.pop(0)
+            if len(preg.vreg.uses) == 0:
+                return preg
             if preg.vreg.uses[0] > ret.vreg.uses[0]:
                 ret = preg
         return ret
