@@ -1,6 +1,7 @@
 from reg_alloc.instruction import Instruction
 from reg_alloc.register import Register, PRegister, VRegister
 import logging
+import sys
 
 logging.basicConfig()
 
@@ -14,14 +15,18 @@ class Program:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-        with open(filename, "r") as f:
-            linenum = 0
-            for line in f:
-                if line.startswith("//") or line.isspace():
-                    continue
-                i = Instruction(line, linenum, self.vregs)
-                self.instrs.append(i)
-                linenum += 1
+        try:
+            with open(filename, "r") as f:
+                linenum = 0
+                for line in f:
+                    if line.startswith("//") or line.isspace():
+                        continue
+                    i = Instruction(line, linenum, self.vregs)
+                    self.instrs.append(i)
+                    linenum += 1
+        except:
+            print "Cannot open file"
+            sys.exit(1)
 
     def allocate_registers(self, algo, numregs):
         numregs = int(numregs)
