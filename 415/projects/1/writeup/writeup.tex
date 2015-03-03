@@ -4,6 +4,7 @@
 \usepackage{indentfirst}
 \usepackage{qtree}
 \usepackage{listings}
+\usepackage{csvsimple}
 \sectionfont{\large}
 
 \title{\bf Kaitlin Poskaitis - Project 1 Report}
@@ -14,12 +15,62 @@
 
 \maketitle
 
-
 \section*{Algorithms Used}
 
     \subsection{Naive Top Down Allocator}
+    The naive top down allocator uses a fairly simple algorithm to do the
+    register allocation. The heuristic it uses is the number of times each
+    register is used. This is calculated for each virtual register when the file
+    is initially parsed. Simply put, it sorts the list of virtual registers used
+    in the program based on the number of times they are used in the program,
+    and allocates the most frequently used ones to the physical registers.
+    Everything else gets spilled. If there are ties, the winner is arbitrarily
+    chosen based on the particular order of the sorted list. All virtual
+    registers that are not allocated physical registers are spilled to an
+    address in the form $r0 - 4c$ where $r0$ contains 1020 and $c$ is between 0
+    and 254. All physical register assignments are permanent, meaning that
+    if a virtual register is assigned to physical register r1, another virtual
+    register will never be assigned to r1.
 
     \subsection{Top Down Allocator Based on Live Ranges}
+    The more complex version of the simple top down allocator uses the notion of
+    live ranges to (hopefully) more efficiently allocate and assign physical
+    registers to the program. The live range of a virtual register is defined as
+    the range of line numbers in the original program such that the register has
+    been written to and will be used again. For example, if r1 is written to on
+    line 3, used once in line 5, and used for the last time in line 7, its live
+    range would be 3-6. These live ranges are calculated when the program file
+    is initially parsed.
+
+    The actual allocation leverages these live ranges to know when it is safe to
+    reuse registers. It follows a similar set of rules from the simple version
+    of the algorithm. Specifically, once a virtual register is assigned a
+    physical register, it stays in that register for the entirety of its live
+    range. Also, if a register is spilled, it will never be assigned a physical
+    register. Any physical register that it uses will be part of the feasible
+    set.
+
+    The actual allocation algorithm goes as follows: first, determine which
+    registers are live at each line in the program and put these in a list. Sort
+    the resulting list of lists in descending order by the length of the sub
+    lists. Then, for each sub list in the main list, determine how many virtual
+    registers are not spilled. If that number is greater than the number of
+    allocatable registers, spill as many registers as needed to get these
+    numbers to equal. In order to decide which registers to spill, spill the
+    ones with the fewest number of occurrences first. If there are ties, spill
+    the one with the longer live range, as this is likely to resolve other spill
+    conflicts farther along. Once the number of live and not spilled registers
+    on that line is less than or equal to the number of allocatable registers,
+    move on to the next sub list. Note that this does not decide which virtual
+    registers to allocate physical registers, rather which virtual registers to
+    not allocate physical registers to. This can result in some lines not fully
+    utilizing all allocatable registers, but does guarantee if something is
+    spilled, it is not used more than something that is allocated in an
+    overlapping live range.
+
+    Once it is decided which registers to spill, it is then possible to do the
+    register assignment.
+
 
     \subsection{Bottom Up Allocator}
 
@@ -30,6 +81,13 @@
 
 
 \section*{Performance Test Data}
+
+    \subsection*{Table 1: Allocator Execution Performance}
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \bfseries Block & \bfseries Algo & \bfseries Alloc Time
+        \csvreader[head to column names]{times.csv}{}
+        {\\\hline\block & \algo & \alloctime}
+    \end{tabular}
 
 
 
