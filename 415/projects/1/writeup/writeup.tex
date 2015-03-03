@@ -2,7 +2,6 @@
 \usepackage[margin=1.0in]{geometry}
 \usepackage{sectsty}
 \usepackage{indentfirst}
-\usepackage{qtree}
 \usepackage{listings}
 \usepackage{csvsimple}
 \sectionfont{\large}
@@ -31,6 +30,13 @@
     and 254. All physical register assignments are permanent, meaning that
     if a virtual register is assigned to physical register r1, another virtual
     register will never be assigned to r1.
+
+    Once the register assignments are computed, assign the rest of the virtual
+    register a spill address. Using these mappings, the code can be generated.
+    This is done by going through the list of instructions line by line,
+    checking if we need to load any of the input virtual registers (if they are
+    spilled), change the virtual registers to the physical registers that
+    contain their values, and spill the result if it needs to be.
 
     \subsection{Top Down Allocator Based on Live Ranges}
     The more complex version of the simple top down allocator uses the notion of
@@ -69,7 +75,15 @@
     overlapping live range.
 
     Once it is decided which registers to spill, it is then possible to do the
-    register assignment.
+    register assignment. In order to do this, I go through the instructions line
+    by line and see which virtual registers are not yet allocated a physical
+    register that should be. Check the list of physical registers for one that
+    is available, meaning either it is unassigned or the virtual register it was
+    assigned to is outside of its live range, and use one that fits this
+    criteria.
+
+    Once the spill addresses and register assignments are computed, use this
+    mapping to generate the code as per the simple top down allocator.
 
 
     \subsection{Bottom Up Allocator}
