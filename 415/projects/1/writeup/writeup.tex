@@ -166,5 +166,24 @@
 
 \section{Performance Test Analysis}
 
+    \subsection{Observations}
+    As a whole, it seems as though each allocator had very similar run times,
+    differing by a few milliseconds at most. This suggests that all of the
+    algorithms have a low enough complexity to be useful, and none approach the
+    complexity of the NP complete solution. This is expected since relatively
+    simple heuristics were used, but is still good news.
+
+    When examining the performance of each algorithm, it does seem that the
+    simple top down allocator performs consistently and significantly worse than
+    the other two. This is also expected, as this is an example of a heuristic
+    that is a bit too simple. When comparing the more complex top down allocator
+    the bottom up allocator, it seems as those they follow similar patterns,
+    but the bottom up allocator also always seems to out perform the top down
+    allocator, often by a factor of a hundred cycles. In fact, the complex top
+    down allocator never out performs the bottom up allocators in any of the
+    test cases. This is pretty significant, as it shows that, assuming the
+    report blocks were a good sample, it is likely that bottom
+    up register allocation is the better of the three we examined.
+
 
 \end{document}
