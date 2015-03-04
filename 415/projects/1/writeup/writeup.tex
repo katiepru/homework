@@ -154,9 +154,12 @@
 
     \subsection*{Table 1: Allocator Execution Performance}
     \begin{longtable}{|l|c|c|c|c|c|}
-        \bfseries Block & \bfseries Algo & \bfseries Alloc Time
+        \hline \bfseries Block & \bfseries Algo & \bfseries Registers & \bfseries
+        Alloc Time & \bfseries Instructions Added & \bfseries Cycles Added
         \csvreader[head to column names]{times.csv}{}
-        {\\\hline\block & \algo & \alloctime}
+        {\\\hline\block & \algo & \registers &  \alloctime & \addedinstructions &
+            \addedcycles}
+        \\\hline
     \end{longtable}
 
 
