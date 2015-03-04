@@ -4,6 +4,7 @@
 \usepackage{indentfirst}
 \usepackage{listings}
 \usepackage{csvsimple}
+\usepackage{longtable}
 \sectionfont{\large}
 
 \title{\bf Kaitlin Poskaitis - Project 1 Report}
@@ -14,7 +15,7 @@
 
 \maketitle
 
-\section*{Algorithms Used}
+\section{Algorithms Used}
 
     \subsection{Naive Top Down Allocator}
     The naive top down allocator uses a fairly simple algorithm to do the
@@ -114,22 +115,53 @@
 
 
 
-\section*{Performance Testing Overview}
+\section{Performance Testing Overview}
+
+    \subsection{Methods Used}
+    In order to test the performance of each algorithm, several metrics will be
+    used. First, in order to ensure that the allocator itself does not add too
+    much overhead to the compilation process, its execution will be times for
+    each of the report blocks with 5, 10, and 20 registers. Since register
+    allocation and assignment is an NP complete problem, this time is used to
+    make sure that the heuristics used do not add too much complexity such that
+    actually using them is infeasible.
+
+    Next, in order to test the performance of the generated code, both
+    instruction count and cycle count will be used. Instruction count will refer
+    to to total number of instructions added by the allocator, which can give an
+    approximate idea of how often registers were spilled and/or loaded. However,
+    about half of these instructions will be much more costly than the other
+    half, so to get a better measure of code performance, the best way is to run
+    it and count the cycles. The load and store operations will add the most
+    cycles, as accessing memory is much slower than accessing registers.
+    Checking which algorithm generally results in fewer additional cycles will
+    show which algorithm is better in most cases.
+
+    \subsection{Hypotheses}
+    I predict that the complex top down algorithm will almost always outperform
+    the simple top down algorithm because taking live ranges into consideration
+    will allow for register reuse. I also predict that the performance of the
+    complex top down relative to the bottom up algorithm will vary greatly based
+    on the program, but that they will be generally similar. This is because the
+    live range top down will not perform as well when many virtual registers
+    have very long live ranges, resulting in a similar scenario to the naive
+    algorithm.
+
+    \newpage
 
 
-
-\section*{Performance Test Data}
+\section{Performance Test Data}
 
     \subsection*{Table 1: Allocator Execution Performance}
-    \begin{tabular}{|l|c|c|c|c|c|}
+    \begin{longtable}{|l|c|c|c|c|c|}
         \bfseries Block & \bfseries Algo & \bfseries Alloc Time
         \csvreader[head to column names]{times.csv}{}
         {\\\hline\block & \algo & \alloctime}
-    \end{tabular}
+    \end{longtable}
 
 
 
-\section*{Performance Test Analysis}
+\section{Performance Test Analysis}
 
 
 \end{document}
