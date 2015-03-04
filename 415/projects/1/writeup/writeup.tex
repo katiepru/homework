@@ -87,6 +87,30 @@
 
 
     \subsection{Bottom Up Allocator}
+    The bottom up allocator works very differently from either of the top down
+    allocators, but is in itself not a difficult algorithm. Essentially, the
+    idea behind this algorithm is to have all virtual registers for a
+    particular instruction loaded into an allocatable register. In order to make
+    room if they are all full, the virtual register with the farthest next use
+    will be spilled to the next available spill address (in the same form as the
+    top down allocators.
+
+    To detail the algorithm further, first ensure that all source virtual
+    registers are loaded into physical registers. If not, they need to be loaded
+    into a register from their spill locations. If there are available
+    registers, meaning that they have not been assigned or are currently
+    assigned to a virtual register that has exited its live range. If there are
+    not any available physical registers by this metric, then one needs to get
+    spilled for each source virtual register that is not yet loaded. In order to
+    do this, the program iterates over all physical allocatable registers and
+    determines the one containing the virtual register with the farthest next
+    use. The lines that the virtual registers are used on are in a list called
+    VRegister.uses. Once we have ensured that all sources are loaded, we need to
+    find an allocatable physical register to put the written result into, if
+    there is one. This is done by the same process as is discussed above, but we
+    are able to reuse physical registers used by this instruction's sources if
+    needed. Finally, the virtual registers in the line are replaced by the
+    physical registers that contain those values.
 
 
 
