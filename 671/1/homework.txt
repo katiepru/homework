@@ -1,0 +1,9 @@
+Kaitlin Poskaitis
+
+1. See ghmm_tfbs.py
+
+2. From looking at a graph of the probabilities of the sequence being each
+length, it seems as though  geometric distibution is followed once l=4,
+but is irregular before that. Because of this, I chose to do special cases
+for l=1 through l=3. The HMM is shown in the file prob2_hmm.pdf. All states
+shown other than END have tied emissions.
