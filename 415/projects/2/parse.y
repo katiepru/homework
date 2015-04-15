@@ -100,20 +100,25 @@ stmt    : ifstmt {}
 cmpdstmt: BEG stmtlist END {}
 	;
 
-ifstmt :  ifhead
-          THEN stmt
+ifstmt :  ifhead 
+          THEN stmt {
+                        emit(NOLABEL, BR, $1.nextLabel, EMPTY, EMPTY);
+                        emit($1.label, NOP, EMPTY, EMPTY, EMPTY);
+                    }
   	  ELSE
           stmt
           FI    {
-                    int labelT = NextLabel();
-                    int labelF = NextLabel();
-                    emit(NOLABEL, CBR, $1.targetRegister, labelT, labelF);
-                    //emit 1 instr, make sure label is gone
+                    emit($1.nextLabel, NOP, EMPTY, EMPTY, EMPTY);
                 }
 	;
 
 ifhead : IF condexp {
-                        $$.targetRegister = $2.targetRegister;
+                        int trueL = NextLabel();
+                        $$.label = NextLabel();
+                        $$.nextLabel = NextLabel();
+
+                        emit(NOLABEL, CBR, $2.targetRegister, trueL, $$.label);
+                        emit(trueL, NOP, EMPTY, EMPTY, EMPTY);
                     }
         ;
 
