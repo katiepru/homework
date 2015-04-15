@@ -21,8 +21,8 @@ char *CommentBuffer;
 %token BEG END ASG
 %token EQ NEQ LT LEQ AND OR TRUE FALSE
 %token ELSE
-%token WHILE FOR
-%token <token> ID ICONST
+%token FOR
+%token <token> ID ICONST WHILE
 
 %type <targetReg> exp
 %type <targetReg> lhs ifhead condexp
@@ -141,9 +141,16 @@ fstmt	: FOR ctrlexp DO
           ENDFOR {emit($2.nextLabel, NOP, EMPTY, EMPTY, EMPTY);}
 	;
 
-wstmt	: WHILE  {  }
-          condexp {  }
-          DO stmt  {  }
+wstmt	: WHILE  { $1.num = NextLabel();
+                   emit($1.num, NOP, EMPTY, EMPTY, EMPTY);
+                 }
+          condexp { int whileLabel = NextLabel();
+                    $3.nextLabel = NextLabel();
+                    emit(NOLABEL, CBR, $3.targetRegister, whileLabel, $3.nextLabel);
+                    emit(whileLabel, NOP, EMPTY, EMPTY, EMPTY);
+                  }
+          DO stmt  { emit(NOLABEL, BR, $1.num, EMPTY, EMPTY);
+                     emit($3.nextLabel, NOP, EMPTY, EMPTY, EMPTY);}
           ENDWHILE
 	;
 
