@@ -28,7 +28,7 @@ char *CommentBuffer;
 %type <targetReg> lhs ifhead condexp
 
 %type <targetReg> stmt stmtlist
-%type <targetReg> ifstmt fstmt wstmt astmt writestmt cmpdstmt
+%type <targetReg> ifstmt fstmt wstmt astmt writestmt cmpdstmt ctrlexp
 
 %start program
 
@@ -45,7 +45,7 @@ program : {emitComment("Assign STATIC_AREA_ADDRESS to register \"r0\"");
            PROG ID ';' block PERIOD { }
 	;
 
-block	: variables cmpdstmt { $2.label = NOLABEL }
+block	: variables cmpdstmt {}
 	;
 
 variables: /* empty */
@@ -84,22 +84,20 @@ stype	: INT {  }
         | BOOL {  }
 	;
 
-stmtlist : stmtlist ';' stmt { $1.label = $$.label;
-                               $3.label = $1.nextLabel;}
+stmtlist : stmtlist ';' stmt {}
 	| stmt { }
     | error { yyerror("***Error: ';' expected or illegal statement \n");}
 	;
 
-stmt    : ifstmt { $1.label = $$.label;
-                   $$.nextLabel = $1.nextLabel }
-	| fstmt { $1.label = $$.label }
-	| wstmt {  $1.label = $$.label }
-	| astmt {  $1.label = $$.label }
-	| writestmt {  $1.label = $$.label }
-	| cmpdstmt {  $1.label = $$.label }
+stmt    : ifstmt {}
+	| fstmt {}
+	| wstmt {}
+	| astmt {}
+	| writestmt {}
+	| cmpdstmt {}
 	;
 
-cmpdstmt: BEG stmtlist END { $2.label = $$.label }
+cmpdstmt: BEG stmtlist END {}
 	;
 
 ifstmt :  ifhead
@@ -111,7 +109,6 @@ ifstmt :  ifhead
                     int labelF = NextLabel();
                     emit(NOLABEL, CBR, $1.targetRegister, labelT, labelF);
                     //emit 1 instr, make sure label is gone
-                    $$.nextLabel = NextLabel();
                 }
 	;
 
@@ -133,8 +130,15 @@ writestmt: PRINT '(' exp ')' { int newOffset = NextOffset(1); /* call generates 
 	;
 
 fstmt	: FOR ctrlexp DO
-          stmt {  }
-          ENDFOR
+          stmt {
+                   int r1 = NextRegister();
+                   int r2 = NextRegister();
+                   emit(NOLABEL, LOADAI, 0, $2.offset, r1);
+                   emit(NOLABEL, ADDI, r1, 1, r2);
+                   emit(NOLABEL, STOREAI, r2, 0, $2.offset);
+                   emit(NOLABEL, BR, $2.label, EMPTY, EMPTY);
+               }
+          ENDFOR {emit($2.nextLabel, NOP, EMPTY, EMPTY, EMPTY);}
 	;
 
 wstmt	: WHILE  {  }
@@ -254,7 +258,36 @@ exp	: exp '+' exp		{
 	;
 
 
-ctrlexp	: ID ASG ICONST ',' ICONST {   }
+ctrlexp	: ID ASG ICONST ',' ICONST
+                        {
+                            $$.label = NextLabel();
+                            int forLabel = NextLabel();
+                            int addr1 = NextRegister();
+                            int addr2 = NextRegister();
+                            int min = NextRegister();
+                            int max = NextRegister();
+
+                            emitComment("Initialize ind. variable");
+                            SymTabEntry *s = lookup($1.str);
+                            if(s == NULL)
+                                printf("\n*** ERROR ***: Variable %s not declared.\n", $1.str);
+                            $$.offset = s->offset;
+                            emit(NOLABEL, LOADI, s->offset, addr1, EMPTY);
+                            emit(NOLABEL, ADD, 0, addr1, addr2);
+                            emit(NOLABEL, LOADI, $3.num, min, EMPTY);
+                            emit(NOLABEL, LOADI, $5.num, max, EMPTY);
+                            emit(NOLABEL, STORE, min, addr2, EMPTY);
+
+                            emitComment("Generate control code for \"FOR\"");
+                            int loadVal = NextRegister();
+                            int compRes = NextRegister();
+                            emit($$.label, LOADAI, 0, s->offset, loadVal);
+                            emit(NOLABEL, CMPLE, loadVal, max, compRes);
+                            $$.nextLabel = NextLabel();
+                            emit(NOLABEL, CBR, compRes, forLabel, $$.nextLabel);
+                            emit(forLabel, NOP, EMPTY, EMPTY, EMPTY);
+
+                        }
         ;
 
 

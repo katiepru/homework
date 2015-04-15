@@ -14,9 +14,9 @@ typedef enum type_expression {TYPE_INT=0, TYPE_BOOL, TYPE_ERROR} Type_Expression
 typedef struct {
         Type_Expression type;
         int targetRegister;
+        int offset;
         int label;
         int nextLabel;
-        int offset;
         } regInfo;
 
 typedef struct {
