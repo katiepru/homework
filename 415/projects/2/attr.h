@@ -17,11 +17,18 @@ typedef struct {
         int offset;
         int label;
         int nextLabel;
+        char *vars[50];
         } regInfo;
 
 typedef struct {
+    char *vars[100];
+    int numVars;
+} varInfo;
+
+typedef struct {
     Type_Expression type;
-} varType;
+    int len;
+} varTypeInfo;
 
 #endif
 

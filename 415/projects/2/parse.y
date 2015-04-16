@@ -13,6 +13,8 @@ char *CommentBuffer;
 
 %union {tokentype token;
         regInfo targetReg;
+        varInfo varList;
+        varTypeInfo varType;
        }
 
 %token PROG PERIOD VAR
@@ -29,6 +31,10 @@ char *CommentBuffer;
 
 %type <targetReg> stmt stmtlist
 %type <targetReg> ifstmt fstmt wstmt astmt writestmt cmpdstmt ctrlexp
+
+%type <varList> idlist
+
+%type <varType> type stype
 
 %start program
 
@@ -57,31 +63,51 @@ vardcls	: vardcls vardcl ';' { }
 	| error ';' { yyerror("***Error: illegal variable declaration\n");}
 	;
 
-vardcl	: idlist ':' type {  }
+vardcl	: idlist ':' type { int i;
+                            SymTabEntry *s;
+                            for(i=0; i<$1.numVars; i++){
+                                s = lookup($1.vars[i]);
+                                s->type = $3.type;
+                                s->size = $3.len;
+                            }
+                          }
 	;
 
 idlist	: idlist ',' ID {
+                            int vars = $1.numVars;
+                            int i;
+                            $$.numVars = $1.numVars + 1;
                             if(lookup($3.str) != NULL)
                                 printf("Variable %s already declared.\n", $3.str);
-                            else
+                            else {
                                 insert($3.str, TYPE_INT, 1, NextOffset(1));
+                                for(i=0; i < vars; i++) {
+                                    $$.vars[i] = $1.vars[i];
+                                }
+                                $$.vars[i] = $3.str;
+                            }
                         }
         | ID		    {
+                            $$.numVars = 1;
                             if(lookup($1.str) != NULL)
                                 printf("Variable %s already declared.\n", $1.str);
-                            else
+                            else {
                                 insert($1.str, TYPE_INT, 1, NextOffset(1));
+                                $$.vars[0] = $1.str;
+                            }
                         }
 	;
 
 
-type	: ARRAY '[' ICONST ']' OF stype {  }
+type	: ARRAY '[' ICONST ']' OF stype { $$.len = $3.num;
+                                          $$.type = $6.type
+                                        }
 
-        | stype {  }
+        | stype { $$.len = -1; $$.type = $1.type;}
 	;
 
-stype	: INT {  }
-        | BOOL {  }
+stype	: INT {$$.type = TYPE_INT;}
+        | BOOL {$$.type = TYPE_BOOL}
 	;
 
 stmtlist : stmtlist ';' stmt {}
