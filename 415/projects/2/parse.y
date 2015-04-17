@@ -69,6 +69,10 @@ vardcl	: idlist ':' type { int i;
                                 s = lookup($1.vars[i]);
                                 s->type = $3.type;
                                 s->size = $3.len;
+                                if($3.len > -1)
+                                    s->offset = NextOffset($3.len);
+                                else
+                                    s->offset = NextOffset(1);
                             }
                           }
 	;
@@ -80,7 +84,7 @@ idlist	: idlist ',' ID {
                             if(lookup($3.str) != NULL)
                                 printf("Variable %s already declared.\n", $3.str);
                             else {
-                                insert($3.str, TYPE_INT, 1, NextOffset(1));
+                                insert($3.str, TYPE_INT, 1, 0);
                                 for(i=0; i < vars; i++) {
                                     $$.vars[i] = $1.vars[i];
                                 }
@@ -92,7 +96,7 @@ idlist	: idlist ',' ID {
                             if(lookup($1.str) != NULL)
                                 printf("Variable %s already declared.\n", $1.str);
                             else {
-                                insert($1.str, TYPE_INT, 1, NextOffset(1));
+                                insert($1.str, TYPE_INT, 1, 0);
                                 $$.vars[0] = $1.str;
                             }
                         }
@@ -211,7 +215,25 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                     }
 
 
-    |  ID '[' exp ']' { }
+    |  ID '[' exp ']' {
+                        int newReg1 = NextRegister();
+                        int newReg2 = NextRegister();
+                        int newReg3 = NextRegister();
+                        int newReg4 = NextRegister();
+                        int newReg5 = NextRegister();
+
+                        $$.targetRegister = newReg5;
+                        $$.type = TYPE_INT;
+
+                        SymTabEntry *e = lookup($1.str);
+                        if(e == NULL)
+                            printf("Var not found FIXME\n");
+                        emit(NOLABEL, LOADI, 4, newReg1, EMPTY);
+                        emit(NOLABEL, MULT, $3.targetRegister, newReg1, newReg2);
+                        emit(NOLABEL, ADDI, 0, e->offset, newReg3);
+                        emit(NOLABEL, ADD, newReg3, newReg2, newReg4);
+                        $$.targetRegister = newReg4;
+                      }
     ;
 
 
@@ -267,7 +289,20 @@ exp	: exp '+' exp		{
 				            emit(NOLABEL, LOADAI, 0, id->offset, newReg);
 	                    }
 
-        | ID '[' exp ']'	{   }
+        | ID '[' exp ']'	{
+                                int newReg1 = NextRegister();
+                                int newReg2 = NextRegister();
+                                int newReg3 = NextRegister();
+                                int newReg4 = NextRegister();
+                                SymTabEntry *e = lookup($1.str);
+                                if(e == NULL)
+                                    printf("Var not found FIXME\n");
+                                emit(NOLABEL, LOADI, 4, newReg1, EMPTY);
+                                emit(NOLABEL, MULT, $3.targetRegister, newReg1, newReg2);
+                                emit(NOLABEL, ADDI, 0, e->offset, newReg3);
+                                emit(NOLABEL, LOADAO, newReg3, newReg2, newReg4);
+                                $$.targetRegister = newReg4;
+                            }
  
 
 
