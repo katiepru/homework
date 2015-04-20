@@ -82,7 +82,7 @@ idlist	: idlist ',' ID {
                             int i;
                             $$.numVars = $1.numVars + 1;
                             if(lookup($3.str) != NULL)
-                                printf("Variable %s already declared.\n", $3.str);
+                                printf("\n ***ERROR***: Variable %s already declared.\n", $3.str);
                             else {
                                 insert($3.str, TYPE_INT, 1, 0);
                                 for(i=0; i < vars; i++) {
@@ -94,7 +94,7 @@ idlist	: idlist ',' ID {
         | ID		    {
                             $$.numVars = 1;
                             if(lookup($1.str) != NULL)
-                                printf("Variable %s already declared.\n", $1.str);
+                                printf("***ERROR***: Variable %s already declared.\n", $1.str);
                             else {
                                 insert($1.str, TYPE_INT, 1, 0);
                                 $$.vars[0] = $1.str;
@@ -193,9 +193,12 @@ wstmt	: WHILE  { $1.num = NextLabel();
 astmt : lhs ASG exp {
  				        if (! ((($1.type == TYPE_INT) && ($3.type == TYPE_INT)) ||
 				               (($1.type == TYPE_BOOL) && ($3.type == TYPE_BOOL)))) {
-				            printf("*** ERROR ***: Assignment types do not match.\n");
+				            printf(ASSIGNMENT_TYPES);
 				        }
 
+                        if($1.is_arr == 1) {
+                            printf(NOT_SCALAR, $1.vars[0]);
+                        }
 
 				        emit(NOLABEL, STORE, $3.targetRegister, $1.targetRegister, EMPTY);
                     }
@@ -206,9 +209,13 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         int newReg2 = NextRegister();
 
                         $$.targetRegister = newReg2;
-                        $$.type = TYPE_INT;
+
+                        $$.vars[0] = $1.str;
+
 
                         SymTabEntry *e = lookup($1.str);
+                        $$.type = e->type;
+                        $$.is_arr = e->size >= 0 ? 1 : 0;
 				        emit(NOLABEL, LOADI, e->offset, newReg1, EMPTY);
 				        emit(NOLABEL, ADD, 0, newReg1, newReg2);
 
@@ -223,11 +230,19 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         int newReg5 = NextRegister();
 
                         $$.targetRegister = newReg5;
-                        $$.type = TYPE_INT;
+                        $$.type = $3.type;
+                        $$.vars[0] = $1.str;
 
                         SymTabEntry *e = lookup($1.str);
-                        if(e == NULL)
-                            printf("Var not found FIXME\n");
+                        if(e == NULL) {
+                            printf(UNDECLARED, $1.str);
+                        }
+                        if(e->size <0) {
+                            printf(NOT_ARRAY, $1.str);
+                        }
+                        if($3.type != TYPE_INT || $3.is_arr == 1) {
+                            printf(ARR_IND);
+                        }
                         emit(NOLABEL, LOADI, 4, newReg1, EMPTY);
                         emit(NOLABEL, MULT, $3.targetRegister, newReg1, newReg2);
                         emit(NOLABEL, ADDI, 0, e->offset, newReg3);
@@ -239,10 +254,11 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
 
 exp	: exp '+' exp		{
                             int newReg = NextRegister();
-                            //if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
-    				        //    printf("*** ERROR ***: Operator types must be integer.\n");
-                            //}
-                            //$$.type = $1.type;
+                            if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
+    				            printf(OP_INT);
+                            }
+                            $$.type = $1.type;
+                            $$.is_arr = 0;
 
                             emit(NOLABEL,
                                  ADD,
@@ -253,18 +269,30 @@ exp	: exp '+' exp		{
                         }
 
         | exp '-' exp		{ int newReg = NextRegister();
+                              if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
+    				              printf(OP_INT);
+                              }
                               $$.type = $1.type;
+                              $$.is_arr = 0;
                               emit(NOLABEL, SUB , $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
                             }
 
         | exp '*' exp		{ int newReg = NextRegister();
+                              if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
+    				              printf(OP_INT);
+                              }
+                              $$.is_arr = 0;
                               $$.type = $1.type;
                               emit(NOLABEL, MULT, $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
                             }
 
         | exp AND exp		{ int newReg = NextRegister();
+                              if (! (($1.type == TYPE_BOOL) && ($3.type == TYPE_BOOL))) {
+    				              printf(OP_BOOL);
+                              }
+                              $$.is_arr = 0;
                               $$.type = $1.type;
                               emit(NOLABEL, AND_INSTR, $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
@@ -272,6 +300,10 @@ exp	: exp '+' exp		{
 
 
         | exp OR exp       	{ int newReg = NextRegister();
+                              if (! (($1.type == TYPE_BOOL) && ($3.type == TYPE_BOOL))) {
+    				              printf(OP_BOOL);
+                              }
+                              $$.is_arr = 0;
                               $$.type = $1.type;
                               emit(NOLABEL, OR_INSTR, $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
@@ -281,11 +313,12 @@ exp	: exp '+' exp		{
         | ID			{ /* BOGUS  - needs to be fixed */
 	                        int newReg = NextRegister();
                             SymTabEntry *id = lookup($1.str);
-                            if(id == NULL)
-                                printf("Variable %s not declared.\n", $1.str);
-
+                            if(id == NULL) {
+                                printf(UNDECLARED, $1.str);
+                            }
 	                        $$.targetRegister = newReg;
-				            $$.type = TYPE_INT;
+				            $$.type = id->type;
+                            $$.is_arr = id->size >=0 ? 1 : 0;
 				            emit(NOLABEL, LOADAI, 0, id->offset, newReg);
 	                    }
 
@@ -295,8 +328,18 @@ exp	: exp '+' exp		{
                                 int newReg3 = NextRegister();
                                 int newReg4 = NextRegister();
                                 SymTabEntry *e = lookup($1.str);
-                                if(e == NULL)
-                                    printf("Var not found FIXME\n");
+                                if(e == NULL) {
+                                    printf(UNDECLARED, $1.str);
+                                }
+
+                                if($3.type != TYPE_INT || $3.is_arr) {
+                                    printf(ARR_IND, $1.str);
+                                }
+                                if(e->size < 0) {
+                                    printf(NOT_ARRAY, $1.str);
+                                }
+                                $$.type = e->type;
+                                $$.is_arr = 0;
                                 emit(NOLABEL, LOADI, 4, newReg1, EMPTY);
                                 emit(NOLABEL, MULT, $3.targetRegister, newReg1, newReg2);
                                 emit(NOLABEL, ADDI, 0, e->offset, newReg3);
@@ -310,6 +353,7 @@ exp	: exp '+' exp		{
                                 int newReg = NextRegister();
 	                            $$.targetRegister = newReg;
 				                $$.type = TYPE_INT;
+                                $$.is_arr = 0;
 				                emit(NOLABEL, LOADI, $1.num, newReg, EMPTY);
                             }
 
@@ -317,6 +361,7 @@ exp	: exp '+' exp		{
                                 int newReg = NextRegister(); /* TRUE is encoded as value '1' */
 	                            $$.targetRegister = newReg;
 				                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
 				                emit(NOLABEL, LOADI, 1, newReg, EMPTY);
                             }
 
@@ -324,6 +369,7 @@ exp	: exp '+' exp		{
                                 int newReg = NextRegister(); /* TRUE is encoded as value '0' */
 	                            $$.targetRegister = newReg;
 				                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
 				                emit(NOLABEL, LOADI, 0, newReg, EMPTY);
                             }
 
@@ -342,8 +388,12 @@ ctrlexp	: ID ASG ICONST ',' ICONST
 
                             emitComment("Initialize ind. variable");
                             SymTabEntry *s = lookup($1.str);
-                            if(s == NULL)
-                                printf("\n*** ERROR ***: Variable %s not declared.\n", $1.str);
+                            if(s == NULL) {
+                                printf(FOR_UNDECLARED, $1.str);
+                            }
+                            if(s->type != TYPE_INT || s->size >= 0) {
+                                printf(FOR_NONINT, $1.str);
+                            }
                             $$.offset = s->offset;
                             emit(NOLABEL, LOADI, s->offset, addr1, EMPTY);
                             emit(NOLABEL, ADD, 0, addr1, addr2);
@@ -366,54 +416,66 @@ ctrlexp	: ID ASG ICONST ',' ICONST
 
 condexp	: exp NEQ exp		{
                                 int newReg = NextRegister();
-                                if($1.type != $3.type)
-                                    printf("\n*** ERROR ***: == or != operator with different types.\n");
+                                if($1.type != $3.type) {
+                                    printf(EQ_DIFF);
+                                }
                                 $$.type = $1.type;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPNE, $1.targetRegister, $3.targetRegister, newReg);
                             }
 
         | exp EQ exp		{
                                 int newReg = NextRegister();
-                                if($1.type != $3.type)
-                                    printf("\n*** ERROR ***: == or != operator with different types.\n");
+                                if($1.type != $3.type || $1.is_arr == 1 || $1.is_arr == 1) {
+                                    printf(EQ_DIFF);
+                                }
                                 $$.type = $1.type;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPEQ, $1.targetRegister, $3.targetRegister, newReg);
                             }
 
         | exp LT exp		{
                                 int newReg = NextRegister();
-                                if($1.type != TYPE_INT || $3.type != TYPE_INT)
-                                    printf("\n*** ERROR ***: Operand type must be integer.\n");
-                                $$.type = $1.type;
+                                if($1.type != TYPE_INT || $3.type != TYPE_INT || $1.is_arr || $3.is_arr) {
+                                    printf(REL_ILL);
+                                }
+                                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPLT, $1.targetRegister, $3.targetRegister, newReg);
                             }
 
         | exp LEQ exp		{
                                 int newReg = NextRegister();
-                                if($1.type != TYPE_INT || $3.type != TYPE_INT)
-                                    printf("\n*** ERROR ***: Operand type must be integer.\n");
-                                $$.type = $1.type;
+                                if($1.type != TYPE_INT || $3.type != TYPE_INT || $1.is_arr || $3.is_arr) {
+                                    printf(REL_ILL);
+                                }
+                                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPLE, $1.targetRegister, $3.targetRegister, newReg);
                             }
 
 	| exp GT exp		    {
                                 int newReg = NextRegister();
-                                if($1.type != TYPE_INT || $3.type != TYPE_INT)
-                                    printf("\n*** ERROR ***: Operand type must be integer.\n");
-                                $$.type = $1.type;
+                                if($1.type != TYPE_INT || $3.type != TYPE_INT || $1.is_arr || $3.is_arr) {
+                                    printf(REL_ILL);
+                                }
+                                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPGT, $1.targetRegister, $3.targetRegister, newReg);
                             }
 
 	| exp GEQ exp		    {
                                 int newReg = NextRegister();
-                                if($1.type != TYPE_INT || $3.type != TYPE_INT)
-                                    printf("\n*** ERROR ***: Operand type must be integer.\n");
-                                $$.type = $1.type;
+                                if($1.type != TYPE_INT || $3.type != TYPE_INT || $1.is_arr || $3.is_arr) {
+                                    printf(REL_ILL);
+                                }
+                                $$.type = TYPE_BOOL;
+                                $$.is_arr = 0;
                                 $$.targetRegister = newReg;
                                 emit(NOLABEL, CMPGE, $1.targetRegister, $3.targetRegister, newReg);
                             }
