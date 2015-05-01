@@ -19,6 +19,7 @@ typedef struct {
         int label;
         int nextLabel;
         char *vars[50];
+        int foo;
         } regInfo;
 
 typedef struct {

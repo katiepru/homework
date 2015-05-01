@@ -122,7 +122,7 @@ stmtlist : stmtlist ';' stmt {}
 stmt    : ifstmt {}
 	| fstmt {}
 	| wstmt {}
-	| astmt {}
+	| astmt { $$.foo = 107;}
 	| writestmt {}
 	| cmpdstmt {}
 	;
@@ -172,6 +172,7 @@ fstmt	: FOR ctrlexp DO
                    emit(NOLABEL, ADDI, r1, 1, r2);
                    emit(NOLABEL, STOREAI, r2, 0, $2.offset);
                    emit(NOLABEL, BR, $2.label, EMPTY, EMPTY);
+                   printf("\n\nFOo is %d\n\n", $4.foo);
                }
           ENDFOR {emit($2.nextLabel, NOP, EMPTY, EMPTY, EMPTY);}
 	;
@@ -236,6 +237,7 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         SymTabEntry *e = lookup($1.str);
                         if(e == NULL) {
                             printf(UNDECLARED, $1.str);
+                            return;
                         }
                         if(e->size <0) {
                             printf(NOT_ARRAY, $1.str);
@@ -315,6 +317,7 @@ exp	: exp '+' exp		{
                             SymTabEntry *id = lookup($1.str);
                             if(id == NULL) {
                                 printf(UNDECLARED, $1.str);
+                                return;
                             }
 	                        $$.targetRegister = newReg;
 				            $$.type = id->type;
@@ -330,6 +333,7 @@ exp	: exp '+' exp		{
                                 SymTabEntry *e = lookup($1.str);
                                 if(e == NULL) {
                                     printf(UNDECLARED, $1.str);
+                                    return;
                                 }
 
                                 if($3.type != TYPE_INT || $3.is_arr) {
@@ -390,6 +394,7 @@ ctrlexp	: ID ASG ICONST ',' ICONST
                             SymTabEntry *s = lookup($1.str);
                             if(s == NULL) {
                                 printf(FOR_UNDECLARED, $1.str);
+                                return;
                             }
                             if(s->type != TYPE_INT || s->size >= 0) {
                                 printf(FOR_NONINT, $1.str);
