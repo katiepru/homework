@@ -197,7 +197,7 @@ fstmt	: FOR {
                         printf("Var: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
                    }
                    printf("\nChecking dep...\n");
-                   char dep = depTest($3.cdeps, $5.deps[0], $5.deps[1]);
+                   char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
                    printf("Result is %d\n\n", dep);
                    if(dep == 0) {
                        emitFoundNoDependenciesAndWillVectorize();
@@ -310,6 +310,7 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
 
 exp	: exp '+' exp		{
                             int newReg = NextRegister();
+                            int i, j, in;
                             if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
     				            printf(OP_INT);
                             }
@@ -322,6 +323,34 @@ exp	: exp '+' exp		{
                                  $3.targetRegister,
                                  newReg);
                             $$.targetRegister = newReg;
+
+                            for(i=0; i < $1.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$1.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($1.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $1.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
+
+                            for(i=0; i < $3.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$3.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($3.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $3.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
 
                             if($1.deps[$1.dnum].hasA && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
                                 $$.deps[$$.dnum].a = $1.deps[$1.dnum].a;
@@ -343,11 +372,40 @@ exp	: exp '+' exp		{
                         }
 
         | exp '-' exp		{ int newReg = NextRegister();
+                              int i, j, in;
                               if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
     				              printf(OP_INT);
                               }
                               $$.type = $1.type;
                               $$.is_arr = 0;
+
+                            for(i=0; i < $1.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$1.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($1.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $1.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
+
+                            for(i=0; i < $3.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$3.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($3.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $3.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
 
                               emit(NOLABEL, SUB , $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
@@ -366,6 +424,7 @@ exp	: exp '+' exp		{
                             }
 
         | exp '*' exp		{ int newReg = NextRegister();
+                              int i, j, in;
                               if (! (($1.type == TYPE_INT) && ($3.type == TYPE_INT))) {
     				              printf(OP_INT);
                               }
@@ -373,6 +432,34 @@ exp	: exp '+' exp		{
                               $$.type = $1.type;
                               emit(NOLABEL, MULT, $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
+
+                            for(i=0; i < $1.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$1.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($1.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $1.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
+
+                            for(i=0; i < $3.dnum; i++) {
+                                in = 0;
+                                for(j=0; j < $$.dnum; j++) {
+                                    if(eq(&$3.deps[i], &$$.deps[j]) == 0) {
+                                        in = 1;
+                                        break;
+                                    }
+                                }
+                               if($3.deps[i].complete == 1 && in == 0) {
+                                   $$.deps[$$.dnum] = $3.deps[i];
+                                   $$.dnum++;
+                               }
+                            }
 
                               if($1.deps[$1.dnum].hasC && $3.deps[$3.dnum].indname != 0) {
                                   $$.deps[$$.dnum].a = $1.deps[$1.dnum].c;

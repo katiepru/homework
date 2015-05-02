@@ -37,7 +37,7 @@ extern
 void emitFoundDependenciesAndWillNotVectorize();
 
 extern
-char depTest(ctrldeps ind, depInfo lhs, depInfo rhs);
+char depTest(ctrldeps ind, depInfo lhs, depInfo *rhs, int nrhs);
 
 extern
 char zivTest(ctrldeps ind, depInfo lhs, depInfo rhs);

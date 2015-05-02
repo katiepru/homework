@@ -52,6 +52,9 @@ typedef struct {
     int len;
 } varTypeInfo;
 
+extern
+char eq(depInfo *a, depInfo *b);
+
 // Error messages
 
 #define FOR_UNDECLARED "\n*** ERROR ***: Induction variable %s not declared.\n"

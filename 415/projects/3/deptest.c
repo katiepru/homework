@@ -57,29 +57,40 @@ void emitFoundDependenciesAndWillNotVectorize()
 
 
 /* Checks if there is possible dependence preventing vectorization*/
-char depTest(ctrldeps ind, depInfo lhs, depInfo rhs)
+char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
 {
+    int i;
+    char res, dep;
+    depInfo rhs;
 
-    printf("Ind.indname = %s\n", ind.indname);
-    //Check that they use the same variable
-    if((lhs.indname && strcmp(lhs.indname, ind.indname) != 0) ||
-       (rhs.indname && strcmp(rhs.indname,ind.indname) != 0)) {
-        printf("Returning here\n\n\n");
-        return 1;
+    dep = 0;
+    for(i = 0; i < nrhs; i++) {
+        rhs = rhss[i];
+
+        //Check that they use the same variable
+        if((lhs.indname && strcmp(lhs.indname, ind.indname) != 0) ||
+           (rhs.indname && strcmp(rhs.indname,ind.indname) != 0)) {
+            emitAssumeTrueDependence(lhs.varname);
+            dep = 1;
+            continue;
+        }
+
+        //Check if one or both sides are missing vars. Run ZIV Test
+        if(lhs.indname == 0) {
+            emitAssumeOutputDependence(lhs.varname);
+            return 1;
+        }
+
+        //Run ZIV test
+        if(rhs.indname == 0) {
+            res = zivTest(ind, lhs, rhs);
+        } else {
+            res = sivTest(ind, lhs, rhs);
+        }
+        if(res == 1)
+            dep = 1;
     }
-
-    //Check if one or both sides are missing vars. Run ZIV Test
-    if(lhs.indname == 0) {
-        emitAssumeOutputDependence(lhs.varname);
-        return 1;
-    }
-
-    //Run ZIV test
-    if(rhs.indname == 0) {
-        return zivTest(ind, lhs, rhs);
-    }
-
-    return sivTest(ind, lhs, rhs);
+    return dep;
 }
 
 
