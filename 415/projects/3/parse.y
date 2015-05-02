@@ -199,6 +199,10 @@ fstmt	: FOR {
                    }
                    printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
+                   if($5.dnum == 0) {
+                      emitComment("Not an array assignment\n");
+                      dep = 1;
+                   }
                    printf("Result is %d\n\n", dep);
                    if(dep == 0) {
                        emitFoundNoDependenciesAndWillVectorize();

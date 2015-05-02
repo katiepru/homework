@@ -138,7 +138,7 @@ char sivTest(ctrldeps ind, depInfo lhs, depInfo rhs) {
     if((double) res != div)
         return 0;
 
-    if(res < 0)
+    if(res <= 0)
         return 0;
 
     if(res > (ind.ub - ind.lb))
