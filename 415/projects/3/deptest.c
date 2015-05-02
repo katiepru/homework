@@ -63,6 +63,13 @@ char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
     char res, dep;
     depInfo rhs;
 
+    //Check LHS is missing vars
+    if(lhs.indname == 0 || strcmp(lhs.indname, ind.indname) != 0) {
+        emitAssumeOutputDependence(lhs.varname);
+        return 1;
+    }
+
+
     dep = 0;
     for(i = 0; i < nrhs; i++) {
         rhs = rhss[i];
@@ -79,12 +86,6 @@ char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
             emitAssumeTrueDependence(lhs.varname);
             dep = 1;
             continue;
-        }
-
-        //Check if one or both sides are missing vars. Run ZIV Test
-        if(lhs.indname == 0) {
-            emitAssumeOutputDependence(lhs.varname);
-            return 1;
         }
 
         //Run ZIV test
