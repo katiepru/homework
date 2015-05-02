@@ -189,19 +189,11 @@ fstmt	: FOR {
                    emit(NOLABEL, STOREAI, r2, 0, $3.offset);
                    emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
-                   int i;
-                   for(i=1; i < $5.dnum; i++) {
-                        depInfo d = $5.deps[i];
-                            printf("\n\nVar: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
-                            printf("Var: hasA: %d hasC: %d Complete: %d\n\n", d.hasA, d.hasC, d.complete);
-                   }
-                   printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
                    if($5.dnum == 0 || $5.deps[0].complete == -1) {
                       emitComment("Not an array assignment\n");
                       dep = 1;
                    }
-                   printf("Result is %d\n\n", dep);
                    if(dep == 0) {
                        emitFoundNoDependenciesAndWillVectorize();
                        emit($3.vLabel, VECTON, EMPTY, EMPTY, EMPTY);
