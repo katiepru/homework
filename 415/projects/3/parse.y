@@ -194,7 +194,10 @@ fstmt	: FOR {
                    int i;
                    for(i=0; i < $5.dnum; i++) {
                         depInfo d = $5.deps[i];
-                        printf("Var: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
+                        if(d.complete == 1) {
+                            printf("Var: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
+                            printf("Var: hasA: %d hasC: %d\n\n", d.hasA, d.hasC);
+                        }
                    }
                    printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
@@ -352,23 +355,21 @@ exp	: exp '+' exp		{
                                }
                             }
 
-                            if($1.deps[$1.dnum].hasA && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
+                            if($1.deps[$1.dnum].complete != -1 && $3.deps[$3.dnum].complete != -1 && $1.deps[$1.dnum].hasA && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
                                 $$.deps[$$.dnum].a = $1.deps[$1.dnum].a;
                                 $$.deps[$$.dnum].hasA = 1;
                                 $$.deps[$$.dnum].indname = $1.deps[$1.dnum].indname;
                                 $$.deps[$$.dnum].c = $3.deps[$3.dnum].c;
                                 $$.deps[$$.dnum].hasC = 1;
-                            } else if($1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
+                            } else if($1.deps[$1.dnum].complete != -1 && $3.deps[$3.dnum].complete != -1 && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
                                 $$.deps[$$.dnum].indname = $1.deps[$1.dnum].indname;
                                 $$.deps[$$.dnum].c = $3.deps[$3.dnum].c;
                                 $$.deps[$$.dnum].hasC = 1;
                                 $$.deps[$$.dnum].hasA = 0;
                             }
-                            /*else {
-                                $$.deps[$$.dnum].hasA = 0;
-                                $$.deps[$$.dnum].indname = 0;
-                                $$.deps[$$.dnum].hasC = 0;
-                            }*/
+                            else {
+                                $$.deps[$$.dnum].complete = -1;
+                            }
                         }
 
         | exp '-' exp		{ int newReg = NextRegister();
@@ -407,20 +408,24 @@ exp	: exp '+' exp		{
                                }
                             }
 
+                            if($1.deps[$1.dnum].complete != -1 && $3.deps[$3.dnum].complete != -1 && $1.deps[$1.dnum].hasA && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
+                                $$.deps[$$.dnum].a = $1.deps[$1.dnum].a;
+                                $$.deps[$$.dnum].hasA = 1;
+                                $$.deps[$$.dnum].indname = $1.deps[$1.dnum].indname;
+                                $$.deps[$$.dnum].c = -1*$3.deps[$3.dnum].c;
+                                $$.deps[$$.dnum].hasC = 1;
+                            } else if($1.deps[$1.dnum].complete != -1 && $3.deps[$3.dnum].complete != -1 && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
+                                $$.deps[$$.dnum].indname = $1.deps[$1.dnum].indname;
+                                $$.deps[$$.dnum].c = -1*$3.deps[$3.dnum].c;
+                                $$.deps[$$.dnum].hasC = 1;
+                                $$.deps[$$.dnum].hasA = 0;
+                            }
+                            else {
+                                $$.deps[$$.dnum].complete = -1;
+                            }
+
                               emit(NOLABEL, SUB , $1.targetRegister, $3.targetRegister, newReg);
                               $$.targetRegister = newReg;
-                              if($1.deps[$1.dnum].hasA && $1.deps[$1.dnum].indname != 0 && $3.deps[$3.dnum].hasC) {
-                                  $$.deps[$$.dnum].a = $1.deps[$1.dnum].a;
-                                  $$.deps[$$.dnum].hasA = 1;
-                                  $$.deps[$$.dnum].indname = $1.deps[$1.dnum].indname;
-                                  $$.deps[$$.dnum].c = -1*$3.deps[$3.dnum].c;
-                                  $$.deps[$$.dnum].hasC = 1;
-                              }
-                              /*else {
-                                  $$.deps[$$.dnum].hasA = 0;
-                                  $$.deps[$$.dnum].indname = 0;
-                                  $$.deps[$$.dnum].hasC = 0;
-                              }*/
                             }
 
         | exp '*' exp		{ int newReg = NextRegister();
@@ -461,15 +466,13 @@ exp	: exp '+' exp		{
                                }
                             }
 
-                              if($1.deps[$1.dnum].hasC && $3.deps[$3.dnum].indname != 0) {
+                              if($1.deps[$1.dnum].complete != -1 && $3.deps[$3.dnum].complete != -1 && $1.deps[$1.dnum].hasC && $3.deps[$3.dnum].indname != 0) {
                                   $$.deps[$$.dnum].a = $1.deps[$1.dnum].c;
                                   $$.deps[$$.dnum].indname = $3.deps[$3.dnum].indname;
                                   $$.deps[$$.dnum].hasA = 1;
                                   $$.deps[$$.dnum].hasC = 0;
                               } else {
-                                  $$.deps[$$.dnum].hasC = 0;
-                                  $$.deps[$$.dnum].hasA = 0;
-                                  $$.deps[$$.dnum].indname = 0;
+                                  $$.deps[$$.dnum].complete = -1;
                               }
                             }
 
@@ -536,10 +539,19 @@ exp	: exp '+' exp		{
                                 emit(NOLABEL, LOADAO, newReg3, newReg2, newReg4);
                                 $$.targetRegister = newReg4;
 
-                                if(!($3.deps[0].hasA && $3.deps[0].indname == 0)) {
+                                if($3.deps[0].complete == -1 || $3.dnum > 0) {
+                                    $$.deps[$$.dnum].complete = -1;
+                                    $$.deps[$$.dnum].varname = $1.str;
+                                    $$.dnum++;
+                                } else
+                                if((!($3.deps[0].hasA && $3.deps[0].indname == 0)) && ($3.deps[0].hasA || $3.deps[0].hasC || $3.deps[0].indname != 0)) {
                                     $$.deps[$$.dnum] = $3.deps[0];
                                     $$.deps[$$.dnum].varname = $1.str;
                                     $$.deps[$$.dnum].complete = 1;
+                                    $$.dnum++;
+                                } else {
+                                    $$.deps[$$.dnum].complete = -1;
+                                    $$.deps[$$.dnum].varname = $1.str;
                                     $$.dnum++;
                                 }
 

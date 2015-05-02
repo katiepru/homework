@@ -67,6 +67,12 @@ char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
     for(i = 0; i < nrhs; i++) {
         rhs = rhss[i];
 
+        if(rhs.complete == -1) {
+            emitAssumeTrueDependence(lhs.varname);
+            dep = 1;
+            continue;
+        }
+
         //Check that they use the same variable
         if((lhs.indname && strcmp(lhs.indname, ind.indname) != 0) ||
            (rhs.indname && strcmp(rhs.indname,ind.indname) != 0)) {
