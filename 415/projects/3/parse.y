@@ -197,7 +197,7 @@ fstmt	: FOR {
                    }
                    printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
-                   if($5.dnum == 0) {
+                   if($5.dnum == 0 || $5.deps[0].complete == -1) {
                       emitComment("Not an array assignment\n");
                       dep = 1;
                    }
@@ -241,14 +241,16 @@ astmt : lhs ASG exp {
                         }
 
                         $$.deps[0] = $1.deps[0];
-                        j = 1;
-                        for(i=1; i <= $3.dnum; i++) {
-                            if(strcmp($3.deps[i-1].varname, $$.deps[0].varname) == 0) {
-                                $$.deps[j] = $3.deps[i-1];
-                                j++;
+                        if($$.deps[0].complete == 1) {
+                            j = 1;
+                            for(i=1; i <= $3.dnum; i++) {
+                                if(strcmp($3.deps[i-1].varname, $$.deps[0].varname) == 0) {
+                                    $$.deps[j] = $3.deps[i-1];
+                                    j++;
+                                }
                             }
+                            $$.dnum = j;
                         }
-                        $$.dnum = j;
 
 				        emit(NOLABEL, STORE, $3.targetRegister, $1.targetRegister, EMPTY);
                     }
@@ -261,6 +263,7 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         $$.targetRegister = newReg2;
 
                         $$.vars[0] = $1.str;
+                        $$.deps[0].complete = -1;
 
 
                         SymTabEntry *e = lookup($1.str);

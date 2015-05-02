@@ -64,9 +64,13 @@ char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
     depInfo rhs;
 
     //Check LHS is missing vars
-    if(lhs.indname == 0 || strcmp(lhs.indname, ind.indname) != 0) {
-        emitAssumeOutputDependence(lhs.varname);
+    if(lhs.indname == 0 ) {
+        emitFoundOutputDependence(lhs.varname);
         return 1;
+    }
+
+    if( strcmp(lhs.indname, ind.indname) != 0) {
+        emitAssumeOutputDependence(lhs.varname);
     }
 
 
