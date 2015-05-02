@@ -192,12 +192,10 @@ fstmt	: FOR {
                    emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
                    int i;
-                   for(i=0; i < $5.dnum; i++) {
+                   for(i=1; i < $5.dnum; i++) {
                         depInfo d = $5.deps[i];
-                        if(d.complete == 1) {
-                            printf("Var: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
-                            printf("Var: hasA: %d hasC: %d\n\n", d.hasA, d.hasC);
-                        }
+                            printf("\n\nVar: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
+                            printf("Var: hasA: %d hasC: %d Complete: %d\n\n", d.hasA, d.hasC, d.complete);
                    }
                    printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], &$5.deps[1], $5.dnum - 1);
@@ -335,7 +333,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($1.deps[i].complete == 1 && in == 0) {
+                               if(($1.deps[i].complete == 1 || $1.deps[i].complete == -1) && in == 0) {
                                    $$.deps[$$.dnum] = $1.deps[i];
                                    $$.dnum++;
                                }
@@ -349,7 +347,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($3.deps[i].complete == 1 && in == 0) {
+                               if(($3.deps[i].complete == 1 || $3.deps[i].complete == -1) && in == 0) {
                                    $$.deps[$$.dnum] = $3.deps[i];
                                    $$.dnum++;
                                }
@@ -388,7 +386,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($1.deps[i].complete == 1 && in == 0) {
+                               if(($1.deps[i].complete == 1 || $1.deps[i].complete == -1)  && in == 0) {
                                    $$.deps[$$.dnum] = $1.deps[i];
                                    $$.dnum++;
                                }
@@ -402,7 +400,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($3.deps[i].complete == 1 && in == 0) {
+                               if(($3.deps[i].complete == 1 || $3.deps[i].complete == -1) && in == 0) {
                                    $$.deps[$$.dnum] = $3.deps[i];
                                    $$.dnum++;
                                }
@@ -446,7 +444,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($1.deps[i].complete == 1 && in == 0) {
+                               if(($1.deps[i].complete == 1 || $1.deps[i].complete == -1) && in == 0) {
                                    $$.deps[$$.dnum] = $1.deps[i];
                                    $$.dnum++;
                                }
@@ -460,7 +458,7 @@ exp	: exp '+' exp		{
                                         break;
                                     }
                                 }
-                               if($3.deps[i].complete == 1 && in == 0) {
+                               if(($3.deps[i].complete == 1 || $3.deps[i].complete == -1) && in == 0) {
                                    $$.deps[$$.dnum] = $3.deps[i];
                                    $$.dnum++;
                                }
