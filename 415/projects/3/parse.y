@@ -26,7 +26,7 @@ char *CommentBuffer;
 %token BEG END ASG
 %token EQ NEQ LT LEQ AND OR TRUE FALSE
 %token ELSE
-%token FOR
+%token <token> FOR
 %token <token> ID ICONST WHILE
 
 %type <targetReg> exp
@@ -178,27 +178,35 @@ writestmt: PRINT '(' exp ')' { int newOffset = NextOffset(1); /* call generates 
                              }
 	;
 
-fstmt	: FOR ctrlexp DO
+fstmt	: FOR {
+                $1.num = NextLabel();
+                emit(NOLABEL, BR, $1.num, EMPTY, EMPTY);
+              } ctrlexp DO
           stmt {
                    int r1 = NextRegister();
                    int r2 = NextRegister();
 
-                   emit(NOLABEL, LOADAI, 0, $2.offset, r1);
+                   emit(NOLABEL, LOADAI, 0, $3.offset, r1);
                    emit(NOLABEL, ADDI, r1, 1, r2);
-                   emit(NOLABEL, STOREAI, r2, 0, $2.offset);
-                   emit(NOLABEL, BR, $2.label, EMPTY, EMPTY);
+                   emit(NOLABEL, STOREAI, r2, 0, $3.offset);
+                   emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
                    int i;
-                   for(i=0; i < $4.dnum; i++) {
-                        depInfo d = $4.deps[i];
+                   for(i=0; i < $5.dnum; i++) {
+                        depInfo d = $5.deps[i];
                         printf("Var: %s\na: %d\ni: %s\nc: %d\n\n", d.varname, d.a, d.indname, d.c);
                    }
                    printf("\nChecking dep...\n");
-                   char dep = depTest($2.cdeps, $4.deps[0], $4.deps[1]);
+                   char dep = depTest($3.cdeps, $5.deps[0], $5.deps[1]);
                    printf("Result is %d\n\n", dep);
+                   if(dep == 0)
+                       emit($1.num, VECTON, EMPTY, EMPTY, EMPTY);
+                   else
+                       emit($1.num, NOP, EMPTY, EMPTY, EMPTY);
+                   emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
           }
-          ENDFOR {emit($2.nextLabel, NOP, EMPTY, EMPTY, EMPTY);}
+          ENDFOR {emit($3.nextLabel, VECTOFF, EMPTY, EMPTY, EMPTY);}
 	;
 
 wstmt	: WHILE  { $1.num = NextLabel();
