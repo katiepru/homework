@@ -1,9 +1,0 @@
-program main;
-var a, b: integer;
-c: array[10] of integer;
-d: array[10] of integer;
-begin
-    for a:=2,9 do
-       c[a] := 1 + c[ c[a] ]
-    endfor
-end.
