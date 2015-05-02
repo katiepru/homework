@@ -179,8 +179,6 @@ writestmt: PRINT '(' exp ')' { int newOffset = NextOffset(1); /* call generates 
 	;
 
 fstmt	: FOR {
-                $1.num = NextLabel();
-                emit(NOLABEL, BR, $1.num, EMPTY, EMPTY);
               } ctrlexp DO
           stmt {
                    int r1 = NextRegister();
@@ -206,10 +204,10 @@ fstmt	: FOR {
                    printf("Result is %d\n\n", dep);
                    if(dep == 0) {
                        emitFoundNoDependenciesAndWillVectorize();
-                       emit($1.num, VECTON, EMPTY, EMPTY, EMPTY);
+                       emit($3.vLabel, VECTON, EMPTY, EMPTY, EMPTY);
                    } else {
                        emitFoundDependenciesAndWillNotVectorize();
-                       emit($1.num, NOP, EMPTY, EMPTY, EMPTY);
+                       emit($3.vLabel, NOP, EMPTY, EMPTY, EMPTY);
                    }
                    emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
@@ -617,11 +615,13 @@ ctrlexp	: ID ASG ICONST ',' ICONST
                                 printf(FOR_NONINT, $1.str);
                             }
                             $$.offset = s->offset;
+                            $$.vLabel = NextLabel();
                             emit(NOLABEL, LOADI, s->offset, addr1, EMPTY);
                             emit(NOLABEL, ADD, 0, addr1, addr2);
                             emit(NOLABEL, LOADI, $3.num, min, EMPTY);
                             emit(NOLABEL, LOADI, $5.num, max, EMPTY);
                             emit(NOLABEL, STORE, min, addr2, EMPTY);
+                            emit(NOLABEL, BR, $$.vLabel, EMPTY, EMPTY);
 
                             emitComment("Generate control code for \"FOR\"");
                             int loadVal = NextRegister();

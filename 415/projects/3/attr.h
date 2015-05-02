@@ -35,6 +35,7 @@ typedef struct {
         int offset;
         int label;
         int nextLabel;
+        int vLabel;
         int foo;
         char *vars[50];
         depInfo deps[50];
