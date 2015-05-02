@@ -199,10 +199,13 @@ fstmt	: FOR {
                    printf("\nChecking dep...\n");
                    char dep = depTest($3.cdeps, $5.deps[0], $5.deps[1]);
                    printf("Result is %d\n\n", dep);
-                   if(dep == 0)
+                   if(dep == 0) {
+                       emitFoundNoDependenciesAndWillVectorize();
                        emit($1.num, VECTON, EMPTY, EMPTY, EMPTY);
-                   else
+                   } else {
+                       emitFoundDependenciesAndWillNotVectorize();
                        emit($1.num, NOP, EMPTY, EMPTY, EMPTY);
+                   }
                    emit(NOLABEL, BR, $3.label, EMPTY, EMPTY);
 
           }
