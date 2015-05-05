@@ -255,6 +255,8 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         $$.targetRegister = newReg2;
 
                         $$.vars[0] = $1.str;
+                        $$.deps[0].varname = $1.str;
+                        $$.deps[0].scalar = 1;
                         $$.deps[0].complete = -1;
 
 

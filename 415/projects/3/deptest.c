@@ -63,6 +63,12 @@ char depTest(ctrldeps ind, depInfo lhs, depInfo *rhss, int nrhs)
     char res, dep;
     depInfo rhs;
 
+    //Check if scalar assignment
+    if(lhs.scalar) {
+        emitFoundOutputDependence(lhs.varname);
+        return 1;
+    }
+
     //Check LHS is missing vars
     if(lhs.indname == 0 ) {
         emitFoundOutputDependence(lhs.varname);

@@ -17,6 +17,7 @@ typedef struct {
     int a;
     int c;
     char *indname;
+    int scalar;
 
     char hasA;
     char hasC;
