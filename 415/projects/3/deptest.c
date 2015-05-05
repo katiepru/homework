@@ -148,7 +148,6 @@ char sivTest(ctrldeps ind, depInfo lhs, depInfo rhs) {
     if(res > (ind.ub - ind.lb))
         return 0;
 
-    printf("Varname is %s\n", lhs.varname);
     emitFoundTrueDependenceWithDistance(lhs.varname, res);
     return 1;
 
