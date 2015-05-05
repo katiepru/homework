@@ -280,6 +280,7 @@ lhs	: ID			{ /* BOGUS  - needs to be fixed */
                         $$.deps[0].hasA = $3.deps[0].hasA;
                         $$.deps[0].hasC = $3.deps[0].hasC;
                         $$.deps[0].indname = $3.deps[0].indname;
+                        $$.deps[0].complete = 1;
                         $$.dnum = 1;
 
                         $$.targetRegister = newReg5;
