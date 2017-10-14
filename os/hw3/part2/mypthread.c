@@ -1,5 +1,7 @@
 #include "mypthread.h"
 
+#define DEFAULT_PRIORITY 25
+
 _mypthread_t **threads;
 mypthread_t running_thread;
 Queue *run_queue;
@@ -217,6 +219,7 @@ _mypthread_t *thread_init(mypthread_t threadID)
     threads[threadID] = ret;
     ret->tid = threadID;
     ret->retval = NULL;
+    ret->priority = DEFAULT_PRIORITY;
     ret->status = RUNNABLE;
     if(getcontext(&(ret->context)) == -1)
     {

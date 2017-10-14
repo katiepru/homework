@@ -44,6 +44,7 @@ typedef struct _mypthread_t {
     ThreadState status;
     ucontext_t context;
     thread_func f;
+    int priority;
     void *retval;
 } _mypthread_t;
 
